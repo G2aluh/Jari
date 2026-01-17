@@ -2,10 +2,12 @@ import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/core/theme/app_text_styles.dart';
 import 'package:benang_merah/app/modules/alat/views/peminjam/alat_list_peminjam_view.dart';
 import 'package:benang_merah/app/modules/kategori/views/kategori_list_view.dart';
-import 'package:benang_merah/app/modules/dashboard/peminjam/widgets/pengajuan_peminjaman_dialog.dart';
+import 'package:benang_merah/app/modules/dashboard/peminjam/dialog/pengajuan_peminjaman_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:get/get.dart';
+import 'package:benang_merah/app/routes/app_routes.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class PeminjamDashboardView extends StatefulWidget {
@@ -70,7 +72,6 @@ class _PeminjamDashboardViewState extends State<PeminjamDashboardView> {
         backgroundColor: Colors.red,
         textColor: Colors.white,
         fontSize: 16.0,
-        
       );
     }
   }
@@ -451,6 +452,11 @@ class _PeminjamDashboardViewState extends State<PeminjamDashboardView> {
         showSelectedLabels: false,
         showUnselectedLabels: false,
         type: BottomNavigationBarType.fixed,
+        onTap: (value) {
+          if (value == 1) {
+            Get.toNamed(Routes.riwayatPeminjam);
+          }
+        },
         items: [
           BottomNavigationBarItem(
             icon: Icon(IconlyBold.category),

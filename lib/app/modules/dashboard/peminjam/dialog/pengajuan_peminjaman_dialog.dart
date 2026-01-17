@@ -117,7 +117,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Warna.ungu,
+                color: Warna.putih,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
               child: Row(
@@ -126,14 +126,13 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                   const Text(
                     'Daftar Barang Sewa',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Warna.hitamBackground,
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close, color: Colors.white),
+                    icon: const Icon(Icons.close, color: Warna.hitamBackground),
                   ),
                 ],
               ),
@@ -163,7 +162,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: Warna.putih,
                 borderRadius: BorderRadius.vertical(
                   bottom: Radius.circular(20),
                 ),
@@ -172,33 +171,24 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[300],
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text('Batal'),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
                       onPressed: () {
                         // Here you can process the rental items with their quantities
                         // For now, just close the dialog
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
+                        shadowColor: Colors.transparent,
+                        elevation: 0,
                         backgroundColor: Warna.ungu,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text('Sewa Sekarang'),
+                      child: const Text('Sewa Sekarang', style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500
+                      ),),
                     ),
                   ),
                 ],
@@ -218,6 +208,8 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
     required VoidCallback onDecrement,
   }) {
     return Card(
+      color: Warna.ungu.withOpacity(0.2),
+      elevation: 0,
       margin: const EdgeInsets.only(bottom: 10),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -229,7 +221,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
               height: 60,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: Colors.grey[200],
+                color: Warna.putih,
               ),
               child: image.isNotEmpty
                   ? ClipRRect(
@@ -254,7 +246,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: Warna.putih,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
