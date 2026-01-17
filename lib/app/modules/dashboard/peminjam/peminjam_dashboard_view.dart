@@ -103,11 +103,7 @@ class _PeminjamDashboardViewState extends State<PeminjamDashboardView> {
           IconButton(
             padding: EdgeInsets.symmetric(horizontal: 16),
             onPressed: () {},
-            icon: Badge(
-              alignment: Alignment(1, -1.5),
-              backgroundColor: Warna.ungu,
-              child: Icon(IconlyLight.notification),
-            ),
+            icon: Icon(IconlyLight.logout),
           ),
         ],
       ),
