@@ -1,6 +1,7 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/modules/alat/views/peminjam/alat_list_peminjam_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 
 class RentalSelectionDialog extends StatefulWidget {
   final Set<int> rentedItems;
@@ -22,11 +23,18 @@ class RentalSelectionDialog extends StatefulWidget {
 
 class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
   Map<String, int> _quantities = {};
+  final TextEditingController _dateController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _initializeQuantities();
+  }
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    super.dispose();
   }
 
   void _initializeQuantities() {
@@ -120,19 +128,73 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                 color: Warna.putih,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
-                  const Text(
-                    'Daftar Barang Sewa',
-                    style: TextStyle(
-                      color: Warna.hitamBackground,
-                      fontSize: 18,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Daftar Barang Sewa',
+                        style: TextStyle(
+                          color: Warna.hitamBackground,
+                          fontSize: 18,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(
+                          Icons.close,
+                          color: Warna.hitamBackground,
+                        ),
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close, color: Warna.hitamBackground),
+                  //Form Tanggal Kembali Rencana (Date Picker)
+                  //Form Tanggal Kembali Rencana (Date Picker)
+                  TextFormField(
+                    controller: _dateController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Warna.putih,
+                      labelText: 'Tanggal Kembali Rencana',
+                      suffixIcon: Icon(Icons.calendar_today, color: Warna.abuAbu),
+                      border: OutlineInputBorder(),
+                    ),
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2100),
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: ColorScheme.light(
+                                primary: Warna.ungu,
+                                onPrimary: Colors.white,
+                                onSurface: Colors.black,
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Warna.ungu,
+                                ),
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
+                      );
+
+                      if (pickedDate != null) {
+                        // Format date to dd/MM/yyyy
+                        String formattedDate =
+                            "${pickedDate.day.toString().padLeft(2, '0')}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year}";
+                        setState(() {
+                          _dateController.text = formattedDate;
+                        });
+                      }
+                    },
                   ),
                 ],
               ),
@@ -185,10 +247,20 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text('Sewa Sekarang', style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500
-                      ),),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(IconlyBold.bag, color: Warna.putih),
+                          SizedBox(width: 8),
+                          const Text(
+                            'Sewa Sekarang',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

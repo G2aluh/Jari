@@ -3,7 +3,7 @@ import 'package:benang_merah/app/core/theme/app_text_styles.dart';
 import 'package:benang_merah/app/modules/alat/views/peminjam/alat_list_peminjam_view.dart';
 import 'package:benang_merah/app/modules/auth/controllers/auth_controller.dart';
 import 'package:benang_merah/app/modules/kategori/views/kategori_list_view.dart';
-import 'package:benang_merah/app/modules/dashboard/peminjam/dialog/pengajuan_peminjaman_dialog.dart';
+import 'package:benang_merah/app/modules/peminjam/views/dialog/pengajuan_peminjaman_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
@@ -20,6 +20,8 @@ class PeminjamDashboardView extends StatefulWidget {
 
 class _PeminjamDashboardViewState extends State<PeminjamDashboardView> {
   bool _showBadge = false;
+  bool _isSearchActive = false;
+  final TextEditingController _searchController = TextEditingController();
   Set<int> _rentedItems = <int>{};
   Set<String> _rentedNewItem = <String>{};
 
@@ -82,25 +84,46 @@ class _PeminjamDashboardViewState extends State<PeminjamDashboardView> {
     final AuthController authController = Get.find<AuthController>();
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Warna.hitamBackground,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Warna.hitamBackground,
         foregroundColor: Warna.putih,
-        title: ActionChip(
-          label: Text("Peminjaman Barang"),
-          labelStyle: TextStyle(color: Warna.putih),
-          avatar: Icon(IconlyBold.scan, color: Warna.putih),
-          shape: StadiumBorder(),
-          side: BorderSide(width: 0),
-          backgroundColor: Warna.hitamTransparan,
-          onPressed: () {},
-        ),
+        title: _isSearchActive
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                style: TextStyle(color: Warna.putih),
+                decoration: InputDecoration(
+                  hintText: "Cari barang...",
+                  hintStyle: TextStyle(color: Colors.grey),
+                  border: InputBorder.none,
+                ),
+              )
+            : ActionChip(
+                label: Text("Peminjaman Barang"),
+                labelStyle: TextStyle(color: Warna.putih),
+                avatar: Icon(IconlyBold.scan, color: Warna.putih),
+                shape: StadiumBorder(),
+                side: BorderSide(width: 0),
+                backgroundColor: Warna.hitamTransparan,
+                onPressed: () {},
+              ),
         centerTitle: true,
         leading: IconButton(
           padding: EdgeInsets.symmetric(horizontal: 16),
-          onPressed: () {},
-          icon: Icon(IconlyLight.search),
+          onPressed: () {
+            setState(() {
+              if (_isSearchActive) {
+                _isSearchActive = false;
+                _searchController.clear();
+              } else {
+                _isSearchActive = true;
+              }
+            });
+          },
+          icon: Icon(_isSearchActive ? Icons.arrow_back : IconlyLight.search),
         ),
         actions: [
           IconButton(

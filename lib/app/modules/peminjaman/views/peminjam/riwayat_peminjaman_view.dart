@@ -177,7 +177,7 @@ class RiwayatPeminjamanView extends StatelessWidget {
                                 child: Text(
                                   data['status'],
                                   style: TextStyle(
-                                    color: Warna.putih,
+                                    color: _getTextColor(data['status']),
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -264,13 +264,29 @@ class RiwayatPeminjamanView extends StatelessWidget {
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Menunggu':
+        return Colors.orange.withOpacity(0.2);
+      case 'Selesai':
+        return Colors.green.withOpacity(0.2);
+      case 'Ditolak':
+        return Colors.redAccent.withOpacity(0.2);
+      case 'Dipinjam':
+        return Colors.greenAccent.withOpacity(0.2);
+      case 'Terlambat':
+        return Colors.red.withOpacity(0.2);
+      default:
+        return Warna.ungu.withOpacity(0.2);
+    }
+  }
+  Color _getTextColor(String status) {
+    switch (status) {
+      case 'Menunggu':
         return Colors.orange;
       case 'Selesai':
         return Colors.green;
       case 'Ditolak':
-        return Colors.red;
+        return Colors.redAccent;
       case 'Dipinjam':
-        return Warna.ungu;
+        return Colors.greenAccent;
       case 'Terlambat':
         return Colors.red;
       default:

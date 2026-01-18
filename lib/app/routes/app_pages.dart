@@ -5,7 +5,7 @@ import '../modules/auth/views/login_view.dart';
 import '../modules/auth/bindings/auth_binding.dart';
 
 // Peminjam
-import '../modules/dashboard/peminjam/peminjam_dashboard_view.dart';
+import '../modules/peminjam/views/peminjam_dashboard_view.dart';
 import '../modules/peminjaman/views/peminjam/riwayat_peminjaman_view.dart';
 import '../modules/peminjaman/views/peminjam/dialog/detail_riwayat_peminjaman_view.dart';
 import '../modules/peminjam/views/return_equipment/return_equipment_view.dart';
