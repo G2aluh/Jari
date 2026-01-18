@@ -6,5 +6,7 @@ class Warna {
   static const Color ungu = Color.fromARGB(255, 121, 103, 255);
   static const Color hitamTransparan = Color(0xFF272b30);
   static const Color kuning = Color.fromARGB(255, 255, 220, 103);
+  static const Color unguHitam = Color.fromARGB(255, 140, 3, 198);
+  static const Color abuAbu = Color.fromARGB(255, 61, 61, 61);
   
 }

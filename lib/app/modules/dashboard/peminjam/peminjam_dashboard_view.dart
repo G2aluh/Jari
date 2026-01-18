@@ -1,6 +1,7 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/core/theme/app_text_styles.dart';
 import 'package:benang_merah/app/modules/alat/views/peminjam/alat_list_peminjam_view.dart';
+import 'package:benang_merah/app/modules/auth/controllers/auth_controller.dart';
 import 'package:benang_merah/app/modules/kategori/views/kategori_list_view.dart';
 import 'package:benang_merah/app/modules/dashboard/peminjam/dialog/pengajuan_peminjaman_dialog.dart';
 import 'package:flutter/material.dart';
@@ -78,6 +79,8 @@ class _PeminjamDashboardViewState extends State<PeminjamDashboardView> {
 
   @override
   Widget build(BuildContext context) {
+    final AuthController authController = Get.find<AuthController>();
+
     return Scaffold(
       backgroundColor: Warna.hitamBackground,
       appBar: AppBar(
@@ -85,9 +88,9 @@ class _PeminjamDashboardViewState extends State<PeminjamDashboardView> {
         backgroundColor: Warna.hitamBackground,
         foregroundColor: Warna.putih,
         title: ActionChip(
-          label: Text("Malang"),
+          label: Text("Peminjaman Barang"),
           labelStyle: TextStyle(color: Warna.putih),
-          avatar: Icon(IconlyLight.location, color: Warna.putih),
+          avatar: Icon(IconlyBold.scan, color: Warna.putih),
           shape: StadiumBorder(),
           side: BorderSide(width: 0),
           backgroundColor: Warna.hitamTransparan,
@@ -102,7 +105,10 @@ class _PeminjamDashboardViewState extends State<PeminjamDashboardView> {
         actions: [
           IconButton(
             padding: EdgeInsets.symmetric(horizontal: 16),
-            onPressed: () {},
+            onPressed: () {
+              authController.logout();
+              Get.offAllNamed('/login');
+            },
             icon: Icon(IconlyLight.logout),
           ),
         ],
