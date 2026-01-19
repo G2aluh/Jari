@@ -69,6 +69,14 @@ class RiwayatPeminjamanView extends StatelessWidget {
           icon: Icon(Icons.arrow_back, color: Warna.putih),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        actions: [
+          IconButton(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            onPressed: () {
+            },
+            icon: Icon(IconlyLight.search, color: Warna.putih),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -76,26 +84,6 @@ class RiwayatPeminjamanView extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                // Search Bar
-                TextField(
-                  style: TextStyle(color: Warna.putih),
-                  decoration: InputDecoration(
-                    hintText: "Cari riwayat peminjaman...",
-                    hintStyle: TextStyle(color: Colors.grey),
-                    prefixIcon: Icon(IconlyLight.search, color: Colors.grey),
-                    filled: true,
-                    fillColor: Warna.abuAbu,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
-                SizedBox(height: 16),
-                
-                
-
                 //Alert Barang Terlambat
                 Container(
                   padding: EdgeInsets.all(12),
@@ -221,11 +209,13 @@ class RiwayatPeminjamanView extends StatelessWidget {
                       ),
                     ),
                     //LihatDetailButton
+                    SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.all(16),
                               backgroundColor: Warna.abuAbu,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -236,6 +226,7 @@ class RiwayatPeminjamanView extends StatelessWidget {
                   Navigator.of(context).pushNamed('/detail-riwayat-peminjam');
                             
                             },
+                            
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -251,6 +242,7 @@ class RiwayatPeminjamanView extends StatelessWidget {
                         ),
                       ],
                     ),
+                    SizedBox(height: 8,)
                   ],
                 );
               },
@@ -258,6 +250,7 @@ class RiwayatPeminjamanView extends StatelessWidget {
           ),
         ],
       ),
+      
     );
   }
 

@@ -239,6 +239,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 16),
                         shadowColor: Colors.transparent,
                         elevation: 0,
                         backgroundColor: Warna.ungu,

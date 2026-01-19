@@ -1,8 +1,7 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/core/theme/app_text_styles.dart';
+import 'package:benang_merah/app/modules/petugas/widgets/return_item.dart';
 import 'package:flutter/material.dart';
-
-import 'package:benang_merah/app/modules/petugas/views/return_monitoring/dialog/detail_pengembalian_dialog.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 
 class ReturnMonitoringView extends StatelessWidget {
@@ -11,28 +10,51 @@ class ReturnMonitoringView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(24),
+      padding: EdgeInsets.only(top: 0, left: 24, right: 24, bottom: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
             child: ListView(
               children: [
-                
-                SizedBox(height: 18),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Icon(IconlyBold.infoSquare, color: Warna.kuning),
-                    SizedBox(width: 8),
-                    Text(
-                      'Klik transaksi untuk melihat detail',
-                      style: AppTextStyles.primaryText.copyWith(fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+                //Alert Informasi
+                Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Warna.kuning.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Warna.kuning.withOpacity(0.5)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(IconlyBold.infoSquare, color: Warna.kuning),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Informasi",
+                              style: TextStyle(
+                                color: Warna.kuning,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              "Pilih Transaksi untuk melihat detail & konfirmasi pengembalian",
+                              style: TextStyle(
+                                color: Warna.kuning.withOpacity(0.8),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Divider(),
                 SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -44,80 +66,39 @@ class ReturnMonitoringView extends StatelessWidget {
                     ),
                   ],
                 ),
-                
+
                 SizedBox(height: 8),
-                _buildReturnItem(
-                  context,
-                  'PJM-20260114-0001',
-                  '15 Jan 2023',
-                  'Dipinjam',
-                  Colors.green,
+                ReturnItem(
+                  name: 'PJM-20260114-0001',
+                  date: '15 Jan 2023',
+                  status: 'Dipinjam',
+                  statusColor: Colors.green,
                 ),
                 SizedBox(height: 12),
-                _buildReturnItem(
-                  context,
-                  'PJM-20260114-0002',
-                  '10 Jan 2023',
-                  'Terlambat',
-                  Colors.red,
+                ReturnItem(
+                  name: 'PJM-20260114-0002',
+                  date: '10 Jan 2023',
+                  status: 'Terlambat',
+                  statusColor: Colors.red,
                 ),
                 SizedBox(height: 12),
-                _buildReturnItem(
-                  context,
-                  'PJM-20260114-0003',
-                  '20 Jan 2023',
-                  'Dipinjam',
-                  Colors.green,
+                ReturnItem(
+                  name: 'PJM-20260114-0003',
+                  date: '20 Jan 2023',
+                  status: 'Dipinjam',
+                  statusColor: Colors.green,
                 ),
                 SizedBox(height: 12),
-                _buildReturnItem(
-                  context,
-                  'PJM-20260114-0004',
-                  '25 Jan 2023',
-                  'Dipinjam',
-                  Colors.green,
+                ReturnItem(
+                  name: 'PJM-20260114-0004',
+                  date: '25 Jan 2023',
+                  status: 'Dipinjam',
+                  statusColor: Colors.green,
                 ),
               ],
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildReturnItem(
-    BuildContext context,
-    String name,
-    String date,
-    String status,
-    Color statusColor,
-  ) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Warna.hitamTransparan,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: ListTile(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) => const DetailPengembalianDialog(),
-          );
-        },
-        contentPadding: EdgeInsets.all(16),
-        title: Text(name, style: TextStyle(color: Warna.putih)),
-        subtitle: Text(
-          'Harus kembali: $date',
-          style: TextStyle(color: Warna.putih.withOpacity(0.7)),
-        ),
-        trailing: Container(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: statusColor.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(status, style: TextStyle(color: statusColor)),
-        ),
       ),
     );
   }

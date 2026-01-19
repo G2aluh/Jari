@@ -35,6 +35,10 @@ class BaseDashboardLayout extends StatelessWidget {
         elevation: 0,
         backgroundColor: Warna.hitamBackground,
         foregroundColor: Warna.putih,
+        leading: IconButton(
+          icon: Icon(IconlyLight.search),
+          onPressed: () {},
+        ),
        title: ActionChip(
           label: Text(title),
           labelStyle: TextStyle(color: Warna.putih),

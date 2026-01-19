@@ -1,10 +1,9 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
 
-class DetailPengembalianDialog extends StatelessWidget {
-  const DetailPengembalianDialog({super.key});
+class KonfirmasiPeminjamanDialog extends StatelessWidget {
+  const KonfirmasiPeminjamanDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +19,7 @@ class DetailPengembalianDialog extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Detail Pengembalian",
+                  "Konfirmasi Peminjaman",
                   style: AppTextStyles.primaryText.copyWith(
                     fontSize: 18,
                     color: Warna.putih,
@@ -33,7 +32,7 @@ class DetailPengembalianDialog extends StatelessWidget {
               ],
             ),
             SizedBox(height: 16),
-            SizedBox(
+             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -46,15 +45,12 @@ class DetailPengembalianDialog extends StatelessWidget {
                 ),
                 onPressed: () => _showDaftarAlatDialog(context),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Daftar Alat"),
-                      Icon(Icons.arrow_forward, color: Warna.putih),
+                        Text("Daftar Alat"),
+                        Icon(Icons.arrow_forward, color: Warna.putih),
                     ],
                   ),
                 ),
@@ -64,94 +60,6 @@ class DetailPengembalianDialog extends StatelessWidget {
             _buildReadOnlyField("Peminjam", "Peminjam 1"),
             SizedBox(height: 12),
             _buildReadOnlyField("Tanggal Jatuh Tempo", "16 Jan 2026"),
-            SizedBox(height: 12),
-            _buildReadOnlyField("Tanggal Kembali", "15 Jan 2026"),
-            SizedBox(height: 12),
-            _buildReadOnlyField("Total  Denda", "Rp. 0"),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                // Text(
-                //   "Kondisi Kerusakan",
-                //   style: TextStyle(color: Colors.grey[400], fontSize: 14),
-                // ),
-              ],
-            ),
-            // SingleChildScrollView(
-            //   scrollDirection: Axis.horizontal,
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //     children: [
-            //       _buildDamageButton(
-            //         context,
-            //         "Baik",
-            //         Warna.abuAbu.withOpacity(0.6),
-            //       ),
-            //       SizedBox(width: 8),
-            //       _buildDamageButton(
-            //         context,
-            //         "Ringan",
-            //         Warna.abuAbu.withOpacity(0.3),
-            //       ),
-            //       SizedBox(width: 8),
-            //       _buildDamageButton(
-            //         context,
-            //         "Sedang",
-            //         Warna.abuAbu.withOpacity(0.3),
-            //       ),
-            //       SizedBox(width: 8),
-            //       _buildDamageButton(
-            //         context,
-            //         "Parah",
-            //         Warna.abuAbu.withOpacity(0.3),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      shadowColor: Colors.transparent,
-                      elevation: 0,
-                      backgroundColor: Warna.merah,
-                      foregroundColor: Warna.putih,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    onPressed: () {
-                      // Handle damage assessment selection
-                      Navigator.pop(context); // Close dialog for now
-                    },
-                    child: Text("Tolak"),
-                  ),
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      shadowColor: Colors.transparent,
-                      elevation: 0,
-                      backgroundColor: Warna.ijo,
-                      foregroundColor: Warna.putih,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    onPressed: () {
-                      // Handle damage assessment selection
-                      Navigator.pop(context); // Close dialog for now
-                    },
-                    child: Text("Konfirmasi"),
-                  ),
-                ),
-              ],
-            ),
             SizedBox(height: 16),
             Row(
               children: [
@@ -175,11 +83,31 @@ class DetailPengembalianDialog extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.print),
-                        SizedBox(width: 8),
+                        Icon(Icons.print, color: Warna.putih),
+                        SizedBox(width: 4),
                         Text("Cetak"),
                       ],
                     ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      shadowColor: Colors.transparent,
+                      elevation: 0,
+                      backgroundColor: Warna.ijo,
+                      foregroundColor: Warna.putih,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      // Handle damage assessment selection
+                      Navigator.pop(context); // Close dialog for now
+                    },
+                    child: Text("Konfirmasi"),
                   ),
                 ),
               ],
@@ -216,24 +144,6 @@ class DetailPengembalianDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildDamageButton(BuildContext context, String label, Color color) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        shadowColor: Colors.transparent,
-        elevation: 0,
-        backgroundColor: color,
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      ),
-      onPressed: () {
-        // Handle damage assessment selection
-        Navigator.pop(context); // Close dialog for now
-      },
-      child: Text(label),
-    );
-  }
-
   void _showDaftarAlatDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -243,14 +153,11 @@ class DetailPengembalianDialog extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          icon: Row(
+         icon: Row(
             children: [
               Icon(Icons.info, color: Warna.putih, size: 20),
               SizedBox(width: 4),
-              Text(
-                "Daftar Alat Dipinjam",
-                style: TextStyle(fontSize: 14, color: Warna.putih),
-              ),
+              Text("Daftar Alat Dipinjam", style: TextStyle(fontSize: 14, color: Warna.putih)),
             ],
           ),
           content: Column(

@@ -37,6 +37,7 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.all(16),
                   backgroundColor: Warna.abuAbu,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -111,7 +112,9 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
         Expanded(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.all(14),
+              elevation: 0,
+              shadowColor: Colors.transparent,
+              padding: EdgeInsets.all(16),
               backgroundColor: Warna.ungu,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -124,7 +127,7 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
                 Icon(Icons.refresh, color: Warna.putih, size: 20),
                 SizedBox(width: 8),
                 Text(
-                  "Ajukan Pengembalian",
+                  " lian",
                   style: TextStyle(
                     color: Warna.putih,
                     fontSize: 16,
