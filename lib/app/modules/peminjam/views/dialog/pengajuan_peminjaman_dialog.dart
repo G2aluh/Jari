@@ -1,5 +1,6 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/modules/alat/views/peminjam/alat_list_peminjam_view.dart';
+import 'package:benang_merah/app/modules/peminjam/widgets/stock_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 
@@ -82,6 +83,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
           _buildRentalItemCard(
             name: alat.nama,
             image: alat.gambar,
+            stock: alat.stok,
             quantity: quantity,
             onIncrement: () => _incrementQuantity(key),
             onDecrement: () => _decrementQuantity(key),
@@ -103,6 +105,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
         _buildRentalItemCard(
           name: alat.nama,
           image: alat.gambar,
+          stock: alat.stok,
           quantity: quantity,
           onIncrement: () => _incrementQuantity(key),
           onDecrement: () => _decrementQuantity(key),
@@ -158,7 +161,10 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                       filled: true,
                       fillColor: Warna.putih,
                       labelText: 'Tanggal Kembali Rencana',
-                      suffixIcon: Icon(Icons.calendar_today, color: Warna.abuAbu),
+                      suffixIcon: Icon(
+                        Icons.calendar_today,
+                        color: Warna.abuAbu,
+                      ),
                       border: OutlineInputBorder(),
                     ),
                     onTap: () async {
@@ -276,6 +282,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
   Widget _buildRentalItemCard({
     required String name,
     required String image,
+    required String stock,
     required int quantity,
     required VoidCallback onIncrement,
     required VoidCallback onDecrement,
@@ -306,12 +313,19 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
             const SizedBox(width: 12),
             // Item name
             Expanded(
-              child: Text(
-                name,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  StockContainer(stock: stock),
+                ],
               ),
             ),
             const SizedBox(width: 12),

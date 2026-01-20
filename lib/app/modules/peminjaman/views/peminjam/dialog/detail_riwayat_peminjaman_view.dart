@@ -127,7 +127,7 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
                 Icon(Icons.refresh, color: Warna.putih, size: 20),
                 SizedBox(width: 8),
                 Text(
-                  " lian",
+                  "Ajukan Pengembalian",
                   style: TextStyle(
                     color: Warna.putih,
                     fontSize: 16,

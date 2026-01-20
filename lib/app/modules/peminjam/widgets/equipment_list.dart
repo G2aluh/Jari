@@ -2,6 +2,7 @@ import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/core/theme/app_text_styles.dart';
 import 'package:benang_merah/app/modules/alat/views/peminjam/alat_list_peminjam_view.dart';
 import 'package:benang_merah/app/modules/peminjam/controllers/peminjam_dashboard_controller.dart';
+import 'package:benang_merah/app/modules/peminjam/widgets/stock_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:get/get.dart';
@@ -60,27 +61,8 @@ class EquipmentList extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Container(
-                              width: 30,
-                              decoration: BoxDecoration(
-                                color: Warna.hitamTransparan,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-
-                              //Stok
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: Text(
-                                      alat.stok,
-                                      style: AppTextStyles.stokText,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            //Stok
+                            StockContainer(stock: alat.stok),
                           ],
                         ),
                       ),
@@ -88,7 +70,7 @@ class EquipmentList extends StatelessWidget {
 
                     //NAMA BARANG
                     Text(alat.nama, style: AppTextStyles.namaBarangText),
-                    SizedBox(height: 8),
+                    SizedBox(height: 2),
                     //Sewa Button
                     Obx(
                       () => ElevatedButton(

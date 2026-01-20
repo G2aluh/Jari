@@ -1,6 +1,7 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/core/theme/app_text_styles.dart';
 import 'package:benang_merah/app/modules/peminjam/controllers/peminjam_dashboard_controller.dart';
+import 'package:benang_merah/app/modules/peminjam/widgets/stock_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:get/get.dart';
@@ -70,26 +71,9 @@ class NewEquipmentSection extends StatelessWidget {
                           "Mesin Obras",
                           style: AppTextStyles.namaBarangText,
                         ),
-                        SizedBox(width: 8),
-                        Container(
-                          width: 30,
-                          decoration: BoxDecoration(
-                            color: Warna.hitamTransparan,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Text(
-                                  "12",
-                                  style: AppTextStyles.stokText,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        SizedBox(width: 4),
+                        //Stok Container
+                        StockContainer(stock: "12"),
                       ],
                     ),
                     Row(
