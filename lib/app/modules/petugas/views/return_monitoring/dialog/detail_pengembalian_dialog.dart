@@ -10,7 +10,10 @@ class DetailPengembalianDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Warna.hitamBackground,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Warna.putih.withOpacity(0.2)),
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -42,7 +45,7 @@ class DetailPengembalianDialog extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: EdgeInsets.symmetric(vertical: 8),
                 ),
                 onPressed: () => _showDaftarAlatDialog(context),
                 child: Padding(
@@ -117,7 +120,7 @@ class DetailPengembalianDialog extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 16),
                       shadowColor: Colors.transparent,
                       elevation: 0,
-                      backgroundColor: Warna.merah,
+                      backgroundColor: Colors.red,
                       foregroundColor: Warna.putih,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -137,7 +140,7 @@ class DetailPengembalianDialog extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 16),
                       shadowColor: Colors.transparent,
                       elevation: 0,
-                      backgroundColor: Warna.ijo,
+                      backgroundColor: Colors.green,
                       foregroundColor: Warna.putih,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

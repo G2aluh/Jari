@@ -20,6 +20,7 @@ class ReturnItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
+        border: Border.all(color: Warna.putih.withOpacity(0.2)),
         color: Warna.hitamTransparan,
         borderRadius: BorderRadius.circular(12),
       ),
@@ -40,7 +41,7 @@ class ReturnItem extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: statusColor.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(6),
           ),
           child: Text(status, style: TextStyle(color: statusColor)),
         ),

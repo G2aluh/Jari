@@ -13,6 +13,8 @@ abstract class Routes {
   static const userManagement = '/user-management';
   static const equipmentManagement = '/equipment-management';
   static const categoryManagement = '/category-management';
+  static const loanManagement = '/loan-management';
+  static const returnManagement = '/return-management';
   static const activityLog = '/activity-log';
 
   // Petugas Dashboard

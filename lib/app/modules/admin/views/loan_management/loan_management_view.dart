@@ -2,47 +2,54 @@ import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
-class EquipmentManagementView extends StatelessWidget {
-  const EquipmentManagementView({super.key});
+class LoanManagementView extends StatelessWidget {
+  const LoanManagementView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Dummy data for equipment
-    final List<Map<String, dynamic>> equipment = [
+    // Dummy data for loans
+    final List<Map<String, dynamic>> loans = [
       {
-        'name': 'Mesin Jahit Butterfly',
-        'stock': 5,
-        'category': 'Peralatan Jahit',
-        'status': 'Tersedia',
-        'gambar': 'assets/images/benang.png',
+        'id': '#1023',
+        'borrower': 'John Doe',
+        'items': [
+          {'name': 'Mesin Jahit', 'qty': 1},
+          {'name': 'Benang', 'qty': 5},
+        ],
+        'status': 'Menunggu',
+        'date': '21 Jan 2026',
+        'returnDate': '28 Jan 2026',
       },
       {
-        'name': 'Obeng Set Tekiro',
-        'stock': 12,
-        'category': 'Peralatan Bengkel',
-        'status': 'Tersedia',
-        'gambar': 'assets/images/gunting.png',
+        'id': '#1022',
+        'borrower': 'Jane Smith',
+        'items': [
+          {'name': 'Obeng Set', 'qty': 1},
+        ],
+        'status': 'Disetujui',
+        'date': '20 Jan 2026',
+        'returnDate': '27 Jan 2026',
       },
       {
-        'name': 'Gerinda Tangan Bosch',
-        'stock': 3,
-        'category': 'Peralatan Bengkel',
-        'status': 'Terbatas',
-        'gambar': 'assets/images/setrika.png',
+        'id': '#1021',
+        'borrower': 'Ahmad Dahlan',
+        'items': [
+          {'name': 'Laptop Asus Rog', 'qty': 1},
+          {'name': 'Mouse Logitech', 'qty': 1},
+        ],
+        'status': 'Ditolak',
+        'date': '19 Jan 2026',
+        'returnDate': '26 Jan 2026',
       },
       {
-        'name': 'Laptop Asus Rog',
-        'stock': 0,
-        'category': 'Elektronik',
-        'status': 'Habis',
-        'gambar': 'assets/images/mesinJahit.png',
-      },
-      {
-        'name': 'Kamera Canon EOS',
-        'stock': 2,
-        'category': 'Multimedia',
-        'status': 'Tersedia',
-        'gambar': 'assets/images/mesinObras.png',
+        'id': '#1020',
+        'borrower': 'Siti Nurhaliza',
+        'items': [
+          {'name': 'Kamera Canon', 'qty': 1},
+        ],
+        'status': 'Selesai',
+        'date': '18 Jan 2026',
+        'returnDate': '25 Jan 2026',
       },
     ];
 
@@ -54,7 +61,7 @@ class EquipmentManagementView extends StatelessWidget {
           TextField(
             style: TextStyle(color: Warna.putih),
             decoration: InputDecoration(
-              hintText: 'Cari alat...',
+              hintText: 'Cari kode peminjaman...',
               hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
               prefixIcon: Icon(
                 Icons.search,
@@ -78,35 +85,23 @@ class EquipmentManagementView extends StatelessWidget {
           ),
           SizedBox(height: 16),
 
-          // Add Equipment Button
-          Align(
-            alignment: Alignment.center,
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(Icons.add),
-                    label: Text('Tambah Alat'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Warna.ungu,
-                      foregroundColor: Warna.putih,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 24),
+          // Use similar "Add" button placeholder if needed for consistency,
+          // though "Add Loan" might be less common for Admin.
+          // But user asked for "mirip", so keeping the layout consistent.
+          // Leaving it blank or creating a dummy button?
+          // Usually Admin views follow the pattern. Let's add it but maybe for "Manual Loan".
+          // Or just omit if not requested. But the structure "search -> space -> list" is good.
+          // I will omit the "Add" button as typically Peminjaman starts from User.
+          // If user insists on *exactly* similar, I'd add it.
+          // For now, I'll stick to the list.
 
-          // Equipment List
-          ...equipment
+          // Actually, let's keep the spacing consistent.
+          SizedBox(height: 8),
+
+          // Loan List
+          ...loans
               .map(
-                (item) => Container(
+                (loan) => Container(
                   margin: EdgeInsets.only(bottom: 12),
                   padding: EdgeInsets.only(
                     left: 18,
@@ -128,55 +123,37 @@ class EquipmentManagementView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          width: 50,
-                          height: 50,
+                          padding: EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Warna.abuAbu,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: Warna.putih.withOpacity(0.2),
-                            ),
+                            color: Warna.ungu.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.asset(
-                              item['gambar'],
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Icon(
-                                    Icons.image_not_supported,
-                                    color: Warna.putih,
-                                  ),
-                            ),
+                          child: Icon(
+                            Icons.assignment,
+                            color: Warna.ungu,
+                            size: 24,
                           ),
                         ),
-                        SizedBox(width: 12),
+                        SizedBox(width: 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                item['name'],
+                                loan['id'],
                                 style: TextStyle(
                                   color: Warna.putih,
                                   fontWeight: FontWeight.bold,
+                                  fontSize: 16,
                                 ),
                               ),
                               SizedBox(height: 4),
-                              Text(
-                                item['category'],
-                                style: TextStyle(
-                                  color: Warna.putih.withOpacity(0.7),
-                                ),
-                              ),
-                              SizedBox(height: 6),
                               Row(
                                 children: [
                                   Text(
-                                    'Stok: ${item['stock']}',
+                                    loan['date'],
                                     style: TextStyle(
-                                      color: Warna.kuning,
-                                      fontWeight: FontWeight.bold,
+                                      color: Warna.putih.withOpacity(0.5),
                                       fontSize: 12,
                                     ),
                                   ),
@@ -188,14 +165,14 @@ class EquipmentManagementView extends StatelessWidget {
                                     ),
                                     decoration: BoxDecoration(
                                       color: _getStatusColor(
-                                        item['status'],
+                                        loan['status'],
                                       ).withOpacity(0.2),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
-                                      item['status'],
+                                      loan['status'],
                                       style: TextStyle(
-                                        color: _getStatusColor(item['status']),
+                                        color: _getStatusColor(loan['status']),
                                         fontSize: 10,
                                       ),
                                     ),
@@ -211,7 +188,7 @@ class EquipmentManagementView extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             GestureDetector(
-                              onTap: () => _showEditDialog(context, item),
+                              onTap: () => _showEditDialog(context, loan),
                               child: Container(
                                 padding: EdgeInsets.all(6),
                                 decoration: BoxDecoration(
@@ -230,7 +207,7 @@ class EquipmentManagementView extends StatelessWidget {
                             ),
                             SizedBox(height: 8),
                             GestureDetector(
-                              onTap: () => _showDeleteDialog(context, item),
+                              onTap: () => _showDeleteDialog(context, loan),
                               child: Container(
                                 padding: EdgeInsets.all(6),
                                 decoration: BoxDecoration(
@@ -260,16 +237,15 @@ class EquipmentManagementView extends StatelessWidget {
     );
   }
 
-  void _showEditDialog(BuildContext context, Map<String, dynamic> item) {
-    final TextEditingController nameController = TextEditingController(
-      text: item['name'],
+  void _showEditDialog(BuildContext context, Map<String, dynamic> loan) {
+    String selectedStatus = loan['status'];
+    final TextEditingController dateController = TextEditingController(
+      text: loan['date'],
     );
-    final TextEditingController stockController = TextEditingController(
-      text: item['stock'].toString(),
+    final TextEditingController returnDateController = TextEditingController(
+      text: loan['returnDate'],
     );
-    final TextEditingController categoryController = TextEditingController(
-      text: item['category'],
-    );
+    final List<Map<String, dynamic>> items = loan['items'];
 
     showDialog(
       context: context,
@@ -279,46 +255,97 @@ class EquipmentManagementView extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(color: Warna.putih.withOpacity(0.2)),
         ),
-        title: Text('Edit Alat', style: TextStyle(color: Warna.putih)),
+        title: Text(
+          'Edit Peminjaman ${loan['id']}',
+          style: TextStyle(color: Warna.putih),
+        ),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Image Preview
+              Text(
+                "Daftar Alat",
+                style: TextStyle(
+                  color: Warna.putih,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 8),
               Container(
-                width: 100,
-                height: 100,
+                padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Warna.abuAbu,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Warna.putih.withOpacity(0.2)),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    item['gambar'],
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Icon(
-                      Icons.image_not_supported,
-                      color: Warna.putih,
-                      size: 40,
-                    ),
-                  ),
+                child: Column(
+                  children: items
+                      .map(
+                        (item) => Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                item['name'],
+                                style: TextStyle(color: Warna.putih),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Warna.hitamBackground,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  "x${item['qty']}",
+                                  style: TextStyle(
+                                    color: Warna.putih,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList(),
                 ),
               ),
-              SizedBox(height: 8),
-              TextButton.icon(
-                onPressed: () {},
-                icon: Icon(Icons.upload, color: Warna.ungu),
-                label: Text("Ubah Gambar", style: TextStyle(color: Warna.ungu)),
-              ),
               SizedBox(height: 16),
-
-              TextField(
-                controller: nameController,
+              DropdownButtonFormField<String>(
+                value: selectedStatus,
+                dropdownColor: Warna.abuAbu,
                 style: TextStyle(color: Warna.putih),
                 decoration: InputDecoration(
-                  labelText: 'Nama Alat',
+                  labelText: 'Status Peminjaman',
+                  labelStyle: TextStyle(color: Warna.putih.withOpacity(0.7)),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Warna.putih.withOpacity(0.5)),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Warna.ungu),
+                  ),
+                ),
+                items: ['Menunggu', 'Disetujui', 'Ditolak']
+                    .map(
+                      (status) =>
+                          DropdownMenuItem(value: status, child: Text(status)),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  selectedStatus = value!;
+                },
+              ),
+              SizedBox(height: 16),
+              TextField(
+                controller: dateController,
+                style: TextStyle(color: Warna.putih),
+                decoration: InputDecoration(
+                  labelText: 'Tanggal Pinjam',
                   labelStyle: TextStyle(color: Warna.putih.withOpacity(0.7)),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Warna.putih.withOpacity(0.5)),
@@ -330,26 +357,10 @@ class EquipmentManagementView extends StatelessWidget {
               ),
               SizedBox(height: 16),
               TextField(
-                controller: stockController,
-                keyboardType: TextInputType.number,
+                controller: returnDateController,
                 style: TextStyle(color: Warna.putih),
                 decoration: InputDecoration(
-                  labelText: 'Stok Alat',
-                  labelStyle: TextStyle(color: Warna.putih.withOpacity(0.7)),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Warna.putih.withOpacity(0.5)),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Warna.ungu),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextField(
-                controller: categoryController,
-                style: TextStyle(color: Warna.putih),
-                decoration: InputDecoration(
-                  labelText: 'Kategori Alat',
+                  labelText: 'Tanggal Kembali',
                   labelStyle: TextStyle(color: Warna.putih.withOpacity(0.7)),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Warna.putih.withOpacity(0.5)),
@@ -391,7 +402,7 @@ class EquipmentManagementView extends StatelessWidget {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, Map<String, dynamic> item) {
+  void _showDeleteDialog(BuildContext context, Map<String, dynamic> loan) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -400,9 +411,9 @@ class EquipmentManagementView extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(color: Warna.putih.withOpacity(0.2)),
         ),
-        title: Text('Hapus Alat', style: TextStyle(color: Warna.putih)),
+        title: Text('Hapus Peminjaman', style: TextStyle(color: Warna.putih)),
         content: Text(
-          'Apakah Anda yakin ingin menghapus alat "${item['name']}"?',
+          'Apakah Anda yakin ingin menghapus data peminjaman "${loan['id']}"?',
           style: TextStyle(color: Warna.putih.withOpacity(0.7)),
         ),
         actions: [
@@ -436,12 +447,14 @@ class EquipmentManagementView extends StatelessWidget {
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'Tersedia':
+      case 'Menunggu':
+        return Warna.kuning;
+      case 'Disetujui':
         return Colors.green;
-      case 'Terbatas':
-        return Colors.orange;
-      case 'Habis':
+      case 'Ditolak':
         return Colors.red;
+      case 'Selesai':
+        return Colors.blue;
       default:
         return Colors.grey;
     }

@@ -120,6 +120,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
+          
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -289,6 +290,10 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
   }) {
     return Card(
       color: Warna.ungu.withOpacity(0.2),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: Warna.ungu),
+      ),
       elevation: 0,
       margin: const EdgeInsets.only(bottom: 10),
       child: Padding(

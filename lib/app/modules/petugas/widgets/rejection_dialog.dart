@@ -8,8 +8,11 @@ class RejectionDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Warna.abuAbu,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      backgroundColor: Warna.hitamBackground,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Warna.putih.withOpacity(0.2)),
+      ),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -41,7 +44,7 @@ class RejectionDialog extends StatelessWidget {
             maxLines: 3,
             decoration: InputDecoration(
               filled: true,
-              fillColor: Warna.hitamBackground,
+              fillColor: Warna.abuAbu,
 
               hintText: "Contoh: Stok alat tidak mencukupi",
               hintStyle: TextStyle(color: Colors.grey),

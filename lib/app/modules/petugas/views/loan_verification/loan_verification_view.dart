@@ -16,6 +16,36 @@ class LoanVerificationView extends StatelessWidget {
           Expanded(
             child: ListView(
               children: [
+                // Search Bar
+                TextField(
+                  style: TextStyle(color: Warna.putih),
+                  decoration: InputDecoration(
+                    hintText: 'Cari verifikasi...',
+                    hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Warna.putih.withOpacity(0.5),
+                    ),
+                    filled: true,
+                    fillColor: Warna.hitamTransparan,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Warna.putih.withOpacity(0.2),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Warna.putih.withOpacity(0.2),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Warna.ungu),
+                    ),
+                  ),
+                ),
                 SizedBox(height: 18),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,

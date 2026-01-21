@@ -9,7 +9,9 @@ class KonfirmasiPeminjamanDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Warna.hitamBackground,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16),
+      side: BorderSide(color: Warna.putih.withOpacity(0.2)),
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -41,7 +43,7 @@ class KonfirmasiPeminjamanDialog extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: EdgeInsets.symmetric(vertical: 8),
                 ),
                 onPressed: () => _showDaftarAlatDialog(context),
                 child: Padding(

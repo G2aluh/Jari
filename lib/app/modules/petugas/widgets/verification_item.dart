@@ -20,6 +20,7 @@ class VerificationItem extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
+        border: Border.all(color: Warna.putih.withOpacity(0.2)),
         color: Warna.hitamTransparan,
         borderRadius: BorderRadius.circular(12),
       ),

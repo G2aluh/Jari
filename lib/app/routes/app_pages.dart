@@ -16,6 +16,8 @@ import '../modules/admin/bindings/admin_dashboard_binding.dart';
 import '../modules/admin/views/user_management/user_management_view.dart';
 import '../modules/admin/views/equipment_management/equipment_management_view.dart';
 import '../modules/admin/views/category_management/category_management_view.dart';
+import '../modules/admin/views/loan_management/loan_management_view.dart';
+import '../modules/admin/views/return_management/return_management_view.dart';
 import '../modules/admin/views/activity_log/activity_log_view.dart';
 
 // Petugas
@@ -71,6 +73,14 @@ class AppPages {
     GetPage(
       name: Routes.categoryManagement,
       page: () => const CategoryManagementView(),
+    ),
+    GetPage(
+      name: Routes.loanManagement,
+      page: () => const LoanManagementView(),
+    ),
+    GetPage(
+      name: Routes.returnManagement,
+      page: () => const ReturnManagementView(),
     ),
     GetPage(name: Routes.activityLog, page: () => const ActivityLogView()),
 

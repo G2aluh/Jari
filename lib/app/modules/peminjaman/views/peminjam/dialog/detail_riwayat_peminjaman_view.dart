@@ -40,7 +40,7 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
                   padding: EdgeInsets.all(16),
                   backgroundColor: Warna.abuAbu,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 onPressed: () => _showDaftarAlatDialog(context),
@@ -90,7 +90,7 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Warna.abuAbu,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             value,
@@ -117,7 +117,7 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
               padding: EdgeInsets.all(16),
               backgroundColor: Warna.ungu,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
             onPressed: () {},
