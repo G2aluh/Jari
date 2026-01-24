@@ -59,7 +59,6 @@ class BaseDashboardLayout extends StatelessWidget {
               onPressed: () {},
             ),
             centerTitle: true,
-
             actions: [
               IconButton(
                 padding: EdgeInsets.symmetric(horizontal: 16),

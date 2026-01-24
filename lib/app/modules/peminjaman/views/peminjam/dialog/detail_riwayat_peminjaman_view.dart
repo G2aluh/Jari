@@ -38,9 +38,10 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.all(16),
-                  backgroundColor: Warna.abuAbu,
+                  backgroundColor: Warna.hitamTransparan,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(color: Warna.putih.withOpacity(0.2)),
                   ),
                 ),
                 onPressed: () => _showDaftarAlatDialog(context),
@@ -49,15 +50,9 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
                   children: [
                     Text(
                       "Daftar Alat",
-                      style: TextStyle(
-                        color: Warna.putih,
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Warna.putih, fontSize: 14),
                     ),
-                    Icon(
-                      Icons.arrow_forward,
-                      color: Warna.putih,
-                    ),
+                    Icon(Icons.arrow_forward, color: Warna.putih),
                   ],
                 ),
               ),
@@ -70,9 +65,6 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
             _buildReadOnlyField("Tanggal Kembali", "-"),
             SizedBox(height: 16),
             _buildReadOnlyField("Denda", "Rp 0"),
-            SizedBox(height: 32),
-            _buildAjukanPengembalianButton(),
-            
           ],
         ),
       ),
@@ -89,8 +81,9 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
           width: double.infinity,
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Warna.abuAbu,
+            color: Warna.hitamTransparan,
             borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Warna.putih.withOpacity(0.2)),
           ),
           child: Text(
             value,
@@ -105,57 +98,24 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
     );
   }
 
-  //Ajukan pengembalian button
-  Widget _buildAjukanPengembalianButton() {
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 0,
-              shadowColor: Colors.transparent,
-              padding: EdgeInsets.all(16),
-              backgroundColor: Warna.ungu,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            onPressed: () {},
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.refresh, color: Warna.putih, size: 20),
-                SizedBox(width: 8),
-                Text(
-                  "Ajukan Pengembalian",
-                  style: TextStyle(
-                    color: Warna.putih,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   void _showDaftarAlatDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: Warna.abuAbu,
+          backgroundColor: Warna.hitamBackground,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: Warna.putih.withOpacity(0.2)),
           ),
           icon: Row(
             children: [
               Icon(Icons.info, color: Warna.putih, size: 20),
               SizedBox(width: 4),
-              Text("Daftar Alat Dipinjam", style: TextStyle(fontSize: 14, color: Warna.putih)),
+              Text(
+                "Daftar Alat Dipinjam",
+                style: TextStyle(fontSize: 14, color: Warna.putih),
+              ),
             ],
           ),
           content: Column(
@@ -194,7 +154,7 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
             ),
             child: Text(
               "x$qty",
-              style: TextStyle(color: Warna.putih, fontWeight: FontWeight.bold ),
+              style: TextStyle(color: Warna.putih, fontWeight: FontWeight.bold),
             ),
           ),
         ],

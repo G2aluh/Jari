@@ -4,11 +4,10 @@ import 'package:benang_merah/app/modules/peminjam/widgets/category_list.dart';
 import 'package:benang_merah/app/modules/peminjam/widgets/dashboard_app_bar.dart';
 import 'package:benang_merah/app/modules/peminjam/widgets/equipment_list.dart';
 import 'package:benang_merah/app/modules/peminjam/widgets/new_equipment_section.dart';
-import 'package:benang_merah/app/modules/peminjam/widgets/return_section.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:get/get.dart';
-import 'package:benang_merah/app/routes/app_routes.dart';
 
 class PeminjamDashboardView extends StatelessWidget {
   const PeminjamDashboardView({super.key});
@@ -41,7 +40,6 @@ class PeminjamDashboardView extends StatelessWidget {
               children: [
                 EquipmentList(controller: controller),
                 NewEquipmentSection(controller: controller),
-                const ReturnSection(),
               ],
             ),
           ),
@@ -56,7 +54,7 @@ class PeminjamDashboardView extends StatelessWidget {
         type: BottomNavigationBarType.fixed,
         onTap: (value) {
           if (value == 1) {
-            Get.toNamed(Routes.riwayatPeminjam);
+            controller.showHistorySelectionDialog(context);
           }
         },
         items: [

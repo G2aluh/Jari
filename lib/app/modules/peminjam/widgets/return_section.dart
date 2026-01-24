@@ -18,12 +18,12 @@ class ReturnSection extends StatelessWidget {
         'status': 'Menunggu',
         'date': '21 Jan 2026',
       },
-      // {
-      //   'id': '#1020',
-      //   'item': '1 Item',
-      //   'status': 'Selesai',
-      //   'date': '18 Jan 2026',
-      // },
+      {
+        'id': '#1020',
+        'item': '1 Item',
+        'status': 'Selesai',
+        'date': '18 Jan 2026',
+      },
     ];
 
     return Padding(
@@ -78,7 +78,7 @@ class ReturnSection extends StatelessWidget {
   Widget _buildReturnCard(Map<String, dynamic> returnItem) {
     Color statusColor = returnItem['status'] == 'Selesai'
         ? Colors.green
-        : Warna.kuning;
+        : Colors.orange;
 
     return GestureDetector(
       onTap: () {
@@ -135,14 +135,13 @@ class ReturnSection extends StatelessWidget {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.1),
+                color: statusColor,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 returnItem['status'],
                 style: TextStyle(
-                  color: statusColor,
-                  fontWeight: FontWeight.bold,
+                  color: Warna.putih,
                   fontSize: 12,
                 ),
               ),

@@ -25,6 +25,7 @@ class RentalSelectionDialog extends StatefulWidget {
 class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
   Map<String, int> _quantities = {};
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _keteranganController = TextEditingController();
 
   @override
   void initState() {
@@ -35,6 +36,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
   @override
   void dispose() {
     _dateController.dispose();
+    _keteranganController.dispose();
     super.dispose();
   }
 
@@ -120,53 +122,94 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // Header with close button
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
               decoration: BoxDecoration(
                 color: Warna.putih,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                border: Border(
+                  bottom: BorderSide(color: Colors.grey.withOpacity(0.1)),
+                ),
               ),
-              child: Column(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Daftar Barang Sewa',
-                        style: TextStyle(
-                          color: Warna.hitamBackground,
-                          fontSize: 18,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(
-                          Icons.close,
-                          color: Warna.hitamBackground,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    'Daftar Barang Sewa',
+                    style: TextStyle(
+                      color: Warna.hitamBackground,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  //Form Tanggal Kembali Rencana (Date Picker)
-                  //Form Tanggal Kembali Rencana (Date Picker)
+                  InkWell(
+                    onTap: () => Navigator.pop(context),
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        size: 20,
+                        color: Warna.hitamBackground,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Content
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  // Form Fields Section
+                  Text(
+                    "Informasi Peminjaman",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Warna.hitamBackground,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+
+                  // Tanggal Kembali Rencana (Date Picker)
                   TextFormField(
                     controller: _dateController,
                     readOnly: true,
+                    style: TextStyle(fontSize: 14),
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Warna.putih,
+                      fillColor: Colors.grey[50],
                       labelText: 'Tanggal Kembali Rencana',
-                      suffixIcon: Icon(
-                        Icons.calendar_today,
-                        color: Warna.abuAbu,
+                      labelStyle: TextStyle(color: Colors.grey[600]),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
-                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(
+                        Icons.calendar_today_outlined,
+                        size: 20,
+                        color: Warna.ungu,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Warna.ungu),
+                      ),
                     ),
                     onTap: () async {
                       DateTime? pickedDate = await showDatePicker(
@@ -182,11 +225,6 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                                 onPrimary: Colors.white,
                                 onSurface: Colors.black,
                               ),
-                              textButtonTheme: TextButtonThemeData(
-                                style: TextButton.styleFrom(
-                                  foregroundColor: Warna.ungu,
-                                ),
-                              ),
                             ),
                             child: child!,
                           );
@@ -194,7 +232,6 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                       );
 
                       if (pickedDate != null) {
-                        // Format date to dd/MM/yyyy
                         String formattedDate =
                             "${pickedDate.day.toString().padLeft(2, '0')}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year}";
                         setState(() {
@@ -203,35 +240,98 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                       }
                     },
                   ),
-                ],
-              ),
-            ),
-            // Content
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: ListView(
-                  children: rentalItems.isEmpty
+
+                  SizedBox(height: 16),
+
+                  // Keterangan Input
+                  TextFormField(
+                    controller: _keteranganController,
+                    maxLines: 2,
+                    style: TextStyle(fontSize: 14),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey[50],
+                      alignLabelWithHint: true,
+                      labelText: 'Keterangan (Opsional)',
+                      hintText: 'Tambahkan catatan jika perlu...',
+                      labelStyle: TextStyle(color: Colors.grey[600]),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: Icon(
+                          Icons.note_alt_outlined,
+                          size: 20,
+                          color: Warna.ungu,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Warna.ungu),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Text(
+                        "Barang Dipilih",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Warna.hitamBackground,
+                        ),
+                      ),
+                      Spacer(),
+                      Text(
+                        "${rentalItems.length} Barang",
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 12),
+
+                  ...rentalItems.isEmpty
                       ? [
-                          Center(
-                            child: Text(
-                              'Tidak ada barang yang dipilih',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 16,
-                              ),
+                          Container(
+                            padding: EdgeInsets.all(30),
+                            alignment: Alignment.center,
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.shopping_basket_outlined,
+                                  size: 48,
+                                  color: Colors.grey[300],
+                                ),
+                                SizedBox(height: 12),
+                                Text(
+                                  'Belum ada barang dipilih',
+                                  style: TextStyle(color: Colors.grey[500]),
+                                ),
+                              ],
                             ),
                           ),
                         ]
                       : rentalItems,
-                ),
+                ],
               ),
             ),
+
             // Action buttons
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Warna.putih,
+                border: Border(
+                  top: BorderSide(color: Colors.grey.withOpacity(0.1)),
+                ),
                 borderRadius: BorderRadius.vertical(
                   bottom: Radius.circular(20),
                 ),
@@ -241,30 +341,27 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        // Here you can process the rental items with their quantities
-                        // For now, just close the dialog
+                        // TODO: Process rental with _keteranganController.text
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        shadowColor: Colors.transparent,
+                        padding: EdgeInsets.symmetric(vertical: 18),
+                        shadowColor: Warna.ungu.withOpacity(0.3),
                         elevation: 0,
                         backgroundColor: Warna.ungu,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(IconlyBold.bag, color: Warna.putih),
-                          SizedBox(width: 8),
                           const Text(
-                            'Sewa Sekarang',
+                            'Ajukan Peminjaman',
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],

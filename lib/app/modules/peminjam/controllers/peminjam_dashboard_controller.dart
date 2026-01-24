@@ -84,8 +84,70 @@ class PeminjamDashboardController extends GetxController {
         colorText: Colors.white,
         borderRadius: 10,
         margin: EdgeInsets.all(10),
-        
       );
     }
+  }
+
+  void showHistorySelectionDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Pilih Menu",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            _buildSelectionItem(
+              icon: Icons.history,
+              title: "Riwayat Peminjaman",
+              onTap: () {
+                Get.back();
+                Get.toNamed('/riwayat-peminjam');
+              },
+            ),
+            Divider(),
+            _buildSelectionItem(
+              icon: Icons.assignment_return,
+              title: "Pengembalian Alat",
+              onTap: () {
+                Get.back();
+                Get.toNamed('/return-equipment');
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectionItem({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Container(
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.purple.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, color: Colors.purple),
+      ),
+      title: Text(title, style: TextStyle(fontWeight: FontWeight.w500)),
+      trailing: Icon(Icons.chevron_right, color: Colors.grey),
+      onTap: onTap,
+      contentPadding: EdgeInsets.zero,
+    );
   }
 }
