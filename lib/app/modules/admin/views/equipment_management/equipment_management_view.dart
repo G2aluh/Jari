@@ -1,5 +1,6 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/core/theme/app_text_styles.dart';
+import 'package:benang_merah/app/modules/kategori/views/kategori_list_view.dart';
 import 'package:flutter/material.dart';
 
 class EquipmentManagementView extends StatelessWidget {
@@ -12,21 +13,21 @@ class EquipmentManagementView extends StatelessWidget {
       {
         'name': 'Mesin Jahit Butterfly',
         'stock': 5,
-        'category': 'Peralatan Jahit',
+        'category': 'Menjahit',
         'status': 'Tersedia',
         'gambar': 'assets/images/benang.png',
       },
       {
         'name': 'Obeng Set Tekiro',
         'stock': 12,
-        'category': 'Peralatan Bengkel',
+        'category': 'Elektronik',
         'status': 'Tersedia',
         'gambar': 'assets/images/gunting.png',
       },
       {
         'name': 'Gerinda Tangan Bosch',
         'stock': 3,
-        'category': 'Peralatan Bengkel',
+        'category': 'Elektronik',
         'status': 'Terbatas',
         'gambar': 'assets/images/setrika.png',
       },
@@ -40,7 +41,7 @@ class EquipmentManagementView extends StatelessWidget {
       {
         'name': 'Kamera Canon EOS',
         'stock': 2,
-        'category': 'Multimedia',
+        'category': 'Desain',
         'status': 'Tersedia',
         'gambar': 'assets/images/mesinObras.png',
       },
@@ -85,7 +86,7 @@ class EquipmentManagementView extends StatelessWidget {
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () => _showAddDialog(context),
                     icon: Icon(Icons.add),
                     label: Text('Tambah Alat'),
                     style: ElevatedButton.styleFrom(
@@ -170,37 +171,13 @@ class EquipmentManagementView extends StatelessWidget {
                                 ),
                               ),
                               SizedBox(height: 6),
-                              Row(
-                                children: [
-                                  Text(
-                                    'Stok: ${item['stock']}',
-                                    style: TextStyle(
-                                      color: Warna.kuning,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 6,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: _getStatusColor(
-                                        item['status'],
-                                      ).withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      item['status'],
-                                      style: TextStyle(
-                                        color: _getStatusColor(item['status']),
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              Text(
+                                'Stok: ${item['stock']}',
+                                style: TextStyle(
+                                  color: _getStockColor(item['stock']),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
                               ),
                             ],
                           ),
@@ -267,126 +244,321 @@ class EquipmentManagementView extends StatelessWidget {
     final TextEditingController stockController = TextEditingController(
       text: item['stock'].toString(),
     );
-    final TextEditingController categoryController = TextEditingController(
-      text: item['category'],
-    );
+    String? selectedCategory;
+    try {
+      selectedCategory = kategoriList
+          .firstWhere((e) => e.nama == item['category'])
+          .nama;
+    } catch (e) {
+      selectedCategory = null;
+    }
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Warna.hitamBackground,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: Warna.putih.withOpacity(0.2)),
-        ),
-        title: Text('Edit Alat', style: TextStyle(color: Warna.putih)),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Image Preview
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: Warna.abuAbu,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Warna.putih.withOpacity(0.2)),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    item['gambar'],
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Icon(
-                      Icons.image_not_supported,
-                      color: Warna.putih,
-                      size: 40,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Warna.hitamBackground,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(color: Warna.putih.withOpacity(0.2)),
+            ),
+            content: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Image Preview
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Warna.abuAbu,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Warna.putih.withOpacity(0.2)),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset(
+                          item['gambar'],
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Icon(
+                            Icons.image_not_supported,
+                            color: Warna.putih,
+                            size: 40,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 8),
-              TextButton.icon(
-                onPressed: () {},
-                icon: Icon(Icons.upload, color: Warna.ungu),
-                label: Text("Ubah Gambar", style: TextStyle(color: Warna.ungu)),
-              ),
-              SizedBox(height: 16),
+                    SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: () {},
+                      label: Text(
+                        "Ubah Gambar",
+                        style: TextStyle(color: Warna.ungu),
+                      ),
+                      icon: Icon(Icons.edit, color: Warna.ungu, size: 16),
+                    ),
+                    SizedBox(height: 16),
 
-              TextField(
-                controller: nameController,
-                style: TextStyle(color: Warna.putih),
-                decoration: InputDecoration(
-                  labelText: 'Nama Alat',
-                  labelStyle: TextStyle(color: Warna.putih.withOpacity(0.7)),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Warna.putih.withOpacity(0.5)),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Warna.ungu),
-                  ),
+                    TextField(
+                      controller: nameController,
+                      style: TextStyle(color: Warna.putih),
+                      decoration: InputDecoration(
+                        labelText: 'Nama Alat',
+                        labelStyle: TextStyle(
+                          color: Warna.putih.withOpacity(0.7),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Warna.putih.withOpacity(0.5),
+                          ),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Warna.ungu),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    TextField(
+                      controller: stockController,
+                      keyboardType: TextInputType.number,
+                      style: TextStyle(color: Warna.putih),
+                      decoration: InputDecoration(
+                        labelText: 'Stok Alat',
+                        labelStyle: TextStyle(
+                          color: Warna.putih.withOpacity(0.7),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Warna.putih.withOpacity(0.5),
+                          ),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Warna.ungu),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      value: selectedCategory,
+                      dropdownColor: Warna.abuAbu,
+                      style: TextStyle(color: Warna.putih),
+                      decoration: InputDecoration(
+                        labelText: 'Kategori Alat',
+                        labelStyle: TextStyle(
+                          color: Warna.putih.withOpacity(0.7),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Warna.putih.withOpacity(0.5),
+                          ),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Warna.ungu),
+                        ),
+                      ),
+                      items: kategoriList.map((category) {
+                        return DropdownMenuItem(
+                          value: category.nama,
+                          child: Text(category.nama),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedCategory = value;
+                        });
+                      },
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 16),
-              TextField(
-                controller: stockController,
-                keyboardType: TextInputType.number,
-                style: TextStyle(color: Warna.putih),
-                decoration: InputDecoration(
-                  labelText: 'Stok Alat',
-                  labelStyle: TextStyle(color: Warna.putih.withOpacity(0.7)),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Warna.putih.withOpacity(0.5)),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Warna.ungu),
-                  ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Batal',
+                  style: TextStyle(color: Warna.putih.withOpacity(0.7)),
                 ),
               ),
-              SizedBox(height: 16),
-              TextField(
-                controller: categoryController,
-                style: TextStyle(color: Warna.putih),
-                decoration: InputDecoration(
-                  labelText: 'Kategori Alat',
-                  labelStyle: TextStyle(color: Warna.putih.withOpacity(0.7)),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Warna.putih.withOpacity(0.5)),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Warna.ungu,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Warna.ungu),
+                ),
+                onPressed: () {
+                  // Handle edit logic here
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Simpan',
+                  style: TextStyle(
+                    color: Warna.putih,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
             ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Batal',
-              style: TextStyle(color: Warna.putih.withOpacity(0.7)),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showAddDialog(BuildContext context) {
+    final TextEditingController nameController = TextEditingController();
+    final TextEditingController stockController = TextEditingController();
+    String? selectedCategory;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Warna.hitamBackground,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(color: Warna.putih.withOpacity(0.2)),
             ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Warna.ungu,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+            content: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Image Selection Placeholder
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Warna.abuAbu,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Warna.putih.withOpacity(0.2)),
+                      ),
+                      child: Icon(
+                        Icons.add_a_photo,
+                        color: Warna.putih.withOpacity(0.5),
+                        size: 40,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: () {},
+                      label: Text(
+                        "Pilih Gambar",
+                        style: TextStyle(color: Warna.ungu),
+                      ),
+                      icon: Icon(Icons.upload, color: Warna.ungu, size: 16),
+                    ),
+                    SizedBox(height: 16),
+
+                    TextField(
+                      controller: nameController,
+                      style: TextStyle(color: Warna.putih),
+                      decoration: InputDecoration(
+                        labelText: 'Nama Alat',
+                        labelStyle: TextStyle(
+                          color: Warna.putih.withOpacity(0.7),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Warna.putih.withOpacity(0.5),
+                          ),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Warna.ungu),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    TextField(
+                      controller: stockController,
+                      keyboardType: TextInputType.number,
+                      style: TextStyle(color: Warna.putih),
+                      decoration: InputDecoration(
+                        labelText: 'Stok Alat',
+                        labelStyle: TextStyle(
+                          color: Warna.putih.withOpacity(0.7),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Warna.putih.withOpacity(0.5),
+                          ),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Warna.ungu),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      value: selectedCategory,
+                      dropdownColor: Warna.abuAbu,
+                      style: TextStyle(color: Warna.putih),
+                      decoration: InputDecoration(
+                        labelText: 'Kategori Alat',
+                        labelStyle: TextStyle(
+                          color: Warna.putih.withOpacity(0.7),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Warna.putih.withOpacity(0.5),
+                          ),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Warna.ungu),
+                        ),
+                      ),
+                      items: kategoriList.map((category) {
+                        return DropdownMenuItem(
+                          value: category.nama,
+                          child: Text(category.nama),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedCategory = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
-            onPressed: () {
-              // Handle edit logic here
-              Navigator.pop(context);
-            },
-            child: Text(
-              'Simpan',
-              style: TextStyle(color: Warna.putih, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Batal',
+                  style: TextStyle(color: Warna.putih.withOpacity(0.7)),
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Warna.ungu,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () {
+                  // Handle add logic here
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Tambah',
+                  style: TextStyle(
+                    color: Warna.putih,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -434,16 +606,13 @@ class EquipmentManagementView extends StatelessWidget {
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'Tersedia':
-        return Colors.green;
-      case 'Terbatas':
-        return Colors.orange;
-      case 'Habis':
-        return Colors.red;
-      default:
-        return Colors.grey;
+  Color _getStockColor(int stock) {
+    if (stock == 0) {
+      return Colors.red;
+    } else if (stock < 5) {
+      return Colors.orange;
+    } else {
+      return Colors.green;
     }
   }
 }

@@ -232,6 +232,7 @@ class _CategoryManagementViewState extends State<CategoryManagementView> {
             isEdit ? 'Edit Kategori' : 'Tambah Kategori',
             style: TextStyle(color: Warna.putih),
           ),
+          
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,

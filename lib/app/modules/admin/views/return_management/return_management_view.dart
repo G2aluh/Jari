@@ -18,7 +18,6 @@ class ReturnManagementView extends StatelessWidget {
         ],
         'status': 'Menunggu',
         'date': '22 Jan 2026',
-        'fine': 50000, // Changed from note to fine
       },
       {
         'id': '#R-100',
@@ -232,7 +231,7 @@ class ReturnManagementView extends StatelessWidget {
       text: item['date'],
     );
     final TextEditingController fineController = TextEditingController(
-      text: item['fine'].toString(),
+      text: (item['fine'] ?? 0).toString(),
     );
     final List<Map<String, dynamic>> items = item['items'];
 
@@ -350,7 +349,7 @@ class ReturnManagementView extends StatelessWidget {
                 keyboardType: TextInputType.number,
                 style: TextStyle(color: Warna.putih),
                 decoration: InputDecoration(
-                  labelText: 'Denda (Nominal)',
+                  labelText: 'Denda Keterlambatan',
                   labelStyle: TextStyle(color: Warna.putih.withOpacity(0.7)),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Warna.putih.withOpacity(0.5)),

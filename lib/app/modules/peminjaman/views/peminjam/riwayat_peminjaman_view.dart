@@ -69,13 +69,7 @@ class RiwayatPeminjamanView extends StatelessWidget {
           icon: Icon(Icons.arrow_back, color: Warna.putih),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        actions: [
-          IconButton(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            onPressed: () {},
-            icon: Icon(IconlyLight.search, color: Warna.putih),
-          ),
-        ],
+        
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24),
