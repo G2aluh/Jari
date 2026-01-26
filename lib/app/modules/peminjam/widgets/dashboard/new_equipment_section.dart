@@ -1,7 +1,7 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/core/theme/app_text_styles.dart';
 import 'package:benang_merah/app/modules/peminjam/controllers/peminjam_dashboard_controller.dart';
-import 'package:benang_merah/app/modules/peminjam/widgets/stock_container.dart';
+import 'package:benang_merah/app/modules/peminjam/widgets/common/stock_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:get/get.dart';

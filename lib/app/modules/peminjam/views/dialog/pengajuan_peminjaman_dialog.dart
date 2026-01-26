@@ -1,8 +1,7 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/modules/alat/views/peminjam/alat_list_peminjam_view.dart';
-import 'package:benang_merah/app/modules/peminjam/widgets/stock_container.dart';
+import 'package:benang_merah/app/modules/peminjam/widgets/common/stock_container.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
 
 class RentalSelectionDialog extends StatefulWidget {
   final Set<int> rentedItems;

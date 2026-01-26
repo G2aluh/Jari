@@ -6,6 +6,7 @@ import 'package:benang_merah/app/modules/admin/views/equipment_management/equipm
 import 'package:benang_merah/app/modules/admin/views/category_management/category_management_view.dart';
 import 'package:benang_merah/app/modules/admin/views/loan_management/loan_management_view.dart';
 import 'package:benang_merah/app/modules/admin/views/return_management/return_management_view.dart';
+import 'package:benang_merah/app/modules/admin/views/settings/settings_view.dart';
 import 'package:benang_merah/app/modules/admin/views/activity_log/activity_log_view.dart';
 import 'package:flutter/material.dart';
 
@@ -35,6 +36,8 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
         return const ReturnManagementView();
       case 6:
         return const ActivityLogView();
+      case 7:
+        return const SettingsView();
       default:
         return _buildDashboardPage();
     }
@@ -56,6 +59,8 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
         return 'Manajemen Pengembalian';
       case 6:
         return 'Log Aktivitas';
+      case 7:
+        return 'Pengaturan';
       default:
         return 'Dashboard Admin';
     }

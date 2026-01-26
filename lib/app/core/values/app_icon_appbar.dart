@@ -9,4 +9,5 @@ const menuItems = [
   Icon(Icons.calendar_today, color: Warna.putih), // Peminjaman
   Icon(Icons.assignment_return, color: Warna.putih), // Pengembalian
   Icon(Icons.bar_chart, color: Warna.putih), // Log
+  Icon(Icons.settings, color: Warna.putih), // Settings
 ];

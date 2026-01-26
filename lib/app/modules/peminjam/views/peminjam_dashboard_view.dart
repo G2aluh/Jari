@@ -1,9 +1,9 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/modules/peminjam/controllers/peminjam_dashboard_controller.dart';
-import 'package:benang_merah/app/modules/peminjam/widgets/category_list.dart';
-import 'package:benang_merah/app/modules/peminjam/widgets/dashboard_app_bar.dart';
-import 'package:benang_merah/app/modules/peminjam/widgets/equipment_list.dart';
-import 'package:benang_merah/app/modules/peminjam/widgets/new_equipment_section.dart';
+import 'package:benang_merah/app/modules/peminjam/widgets/dashboard/category_list.dart';
+import 'package:benang_merah/app/modules/peminjam/widgets/dashboard/dashboard_app_bar.dart';
+import 'package:benang_merah/app/modules/peminjam/widgets/dashboard/equipment_list.dart';
+import 'package:benang_merah/app/modules/peminjam/widgets/dashboard/new_equipment_section.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';

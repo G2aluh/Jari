@@ -32,13 +32,24 @@ class _LoginViewState extends State<LoginView> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // App logo/title
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/login-logo3.png',
+                      height: 150,
+                      width: 150,
+                    ),
+
+                  ],
+                ),
+                SizedBox(height: 24),
                 Container(
-                  margin: EdgeInsets.only(bottom: 40),
+                  margin: EdgeInsets.only(bottom: 16),
                   child: Center(
                     child: Text(
-                      'Sistem Peminjaman Alat',
-                      style: AppTextStyles.primaryText.copyWith(fontSize: 28),
+                      'Masuk Ke Dalam Aplikasi',
+                      style: AppTextStyles.primaryText.copyWith(fontSize: 20, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -51,7 +62,7 @@ class _LoginViewState extends State<LoginView> {
                     controller: _usernameController,
                     style: TextStyle(color: Warna.putih),
                     decoration: InputDecoration(
-                      labelText: 'Username',
+                      labelText: 'Email',
                       labelStyle: TextStyle(
                         color: Warna.putih.withOpacity(0.7),
                       ),
@@ -65,7 +76,7 @@ class _LoginViewState extends State<LoginView> {
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Warna.ungu, width: 2),
                       ),
-                      prefixIcon: Icon(Icons.person, color: Warna.putih),
+                      prefixIcon: Icon(Icons.email, color: Warna.putih),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {

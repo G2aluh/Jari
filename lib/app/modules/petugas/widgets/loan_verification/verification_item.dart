@@ -1,6 +1,6 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/modules/petugas/views/loan_verification/dialog/loan_verification_dialog.dart';
-import 'package:benang_merah/app/modules/petugas/widgets/rejection_dialog.dart';
+import 'package:benang_merah/app/modules/petugas/widgets/loan_verification/rejection_dialog.dart';
 import 'package:flutter/material.dart';
 
 class VerificationItem extends StatelessWidget {
