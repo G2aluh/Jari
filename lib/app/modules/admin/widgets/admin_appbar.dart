@@ -36,8 +36,7 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           padding: EdgeInsets.symmetric(horizontal: 16),
           onPressed: () {
-            authController.logout();
-            Get.offAllNamed('/login');
+            authController.showLogoutConfirmation();
           },
           icon: Icon(IconlyLight.logout),
         ),

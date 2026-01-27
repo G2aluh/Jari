@@ -1,4 +1,8 @@
+import 'package:benang_merah/app/modules/auth/views/login_view.dart';
+import 'package:benang_merah/app/widgets/logout_confirmation_dialog.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthController extends GetxController {
   final _currentUserRole = ''.obs;
@@ -12,27 +16,81 @@ class AuthController extends GetxController {
   static const String PETUGAS = 'petugas';
   static const String PEMINJAM = 'peminjam';
 
-  // Mock login function - in real app, this would connect to backend
-  Future<bool> login(String username, String password, String role) async {
-    // Simulate API call delay
-    await Future.delayed(Duration(seconds: 1));
+  final _supabase = Supabase.instance.client;
 
-    // In a real app, validate credentials with backend
-    // For now, we'll just accept any credentials and assign the selected role
-    if (username.isNotEmpty && password.isNotEmpty && role.isNotEmpty) {
-      _currentUserRole.value = role;
-      _isLoggedIn.value = true;
-      update();
-      return true;
+  Future<bool> login(String email, String password) async {
+    try {
+      final AuthResponse res = await _supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+
+      final User? user = res.user;
+
+      if (user != null) {
+        // Retrieve user role from 'pengguna' table
+        final data = await _supabase
+            .from('pengguna')
+            .select('role')
+            .eq('id', user.id)
+            .maybeSingle();
+
+        if (data == null) {
+          print(
+            "ERROR: User authenticated but no record found in 'public.pengguna' for ID: ${user.id}",
+          );
+          Get.snackbar(
+            "Login Gagal",
+            "Data profil tidak ditemukan. Hubungi Admin.",
+          );
+          await _supabase.auth.signOut();
+          return false;
+        }
+
+        final String role = data['role'] as String;
+
+        // Handle role string mapping if needed (e.g. if DB returns capitalized)
+        _currentUserRole.value = role.toLowerCase();
+        _isLoggedIn.value = true;
+        update();
+        return true;
+      }
+      return false;
+    } on AuthException {
+      Get.snackbar(
+        "Login Gagal",
+        "Email atau password salah",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return false;
+    } catch (e) {
+      Get.snackbar(
+        "Login Gagal",
+        "Terjadi kesalahan: $e",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return false;
     }
-    return false;
   }
 
-  // Mock logout function
-  void logout() {
-    _currentUserRole.value = '';
+  // Logout function
+  Future<void> logout() async {
+    await _supabase.auth.signOut();
     _isLoggedIn.value = false;
-    update();
+    _currentUserRole.value = '';
+    Get.offAll(() => const LoginView());
+  }
+
+  void showLogoutConfirmation() {
+    Get.dialog(
+      LogoutConfirmationDialog(
+        onConfirm: () {
+          logout();
+        },
+      ),
+    );
   }
 
   // Check if user has a specific role

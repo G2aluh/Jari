@@ -49,7 +49,7 @@ class BaseDashboardLayout extends StatelessWidget {
             elevation: 0,
             backgroundColor: Warna.hitamBackground,
             foregroundColor: Warna.putih,
-            
+
             title: ActionChip(
               label: Text(title),
               labelStyle: TextStyle(color: Warna.putih),
@@ -63,8 +63,7 @@ class BaseDashboardLayout extends StatelessWidget {
               IconButton(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 onPressed: () {
-                  authController.logout();
-                  Get.offAllNamed('/login');
+                  authController.showLogoutConfirmation();
                 },
                 icon: Icon(IconlyLight.logout),
               ),

@@ -17,174 +17,134 @@ class _LoginViewState extends State<LoginView> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  String _selectedRole = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Warna.hitamBackground,
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Form(
             key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/login-logo3.png',
-                      height: 150,
-                      width: 150,
-                    ),
-
-                  ],
-                ),
-                SizedBox(height: 24),
-                Container(
-                  margin: EdgeInsets.only(bottom: 16),
-                  child: Center(
-                    child: Text(
-                      'Masuk Ke Dalam Aplikasi',
-                      style: AppTextStyles.primaryText.copyWith(fontSize: 20, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-
-                // Username Field
-                Container(
-                  margin: EdgeInsets.only(bottom: 16),
-                  child: TextFormField(
-                    controller: _usernameController,
-                    style: TextStyle(color: Warna.putih),
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      labelStyle: TextStyle(
-                        color: Warna.putih.withOpacity(0.7),
-                      ),
-                      filled: true,
-                      fillColor: Warna.hitamTransparan,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Warna.ungu, width: 2),
-                      ),
-                      prefixIcon: Icon(Icons.email, color: Warna.putih),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Masukkan username';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-
-                // Password Field
-                Container(
-                  margin: EdgeInsets.only(bottom: 24),
-                  child: TextFormField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    style: TextStyle(color: Warna.putih),
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      labelStyle: TextStyle(
-                        color: Warna.putih.withOpacity(0.7),
-                      ),
-                      filled: true,
-                      fillColor: Warna.hitamTransparan,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Warna.ungu, width: 2),
-                      ),
-                      prefixIcon: Icon(Icons.lock, color: Warna.putih),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Masukkan password';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-
-                // Role Selection Dropdown
-                Container(
-                  margin: EdgeInsets.only(bottom: 24),
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedRole.isEmpty ? null : _selectedRole,
-                    decoration: InputDecoration(
-                      labelText: 'Pilih Peran',
-                      labelStyle: TextStyle(
-                        color: Warna.putih.withOpacity(0.7),
-                      ),
-                      filled: true,
-                      fillColor: Warna.hitamTransparan,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Warna.ungu, width: 2),
-                      ),
-                    ),
-                    dropdownColor: Warna.hitamTransparan,
-                    style: TextStyle(color: Warna.putih),
-                    items: [
-                      DropdownMenuItem(value: 'admin', child: Text('Admin')),
-                      DropdownMenuItem(
-                        value: 'petugas',
-                        child: Text('Petugas'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'peminjam',
-                        child: Text('Peminjam'),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.only(top: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/login-logo3.png',
+                        height: 150,
+                        width: 150,
                       ),
                     ],
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedRole = value ?? '';
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Pilih peran anda';
-                      }
-                      return null;
-                    },
                   ),
-                ),
+                  SizedBox(height: 24),
+                  Container(
+                    margin: EdgeInsets.only(bottom: 16),
+                    child: Center(
+                      child: Text(
+                        'Masuk Ke Dalam Aplikasi',
+                        style: AppTextStyles.primaryText.copyWith(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
 
-                // Login Button
-                Obx(() {
-                  return ElevatedButton(
-                    onPressed: _authController.isLoggedIn
-                        ? null
-                        : () async {
-                            if (_formKey.currentState!.validate()) {
-                              if (_selectedRole.isNotEmpty) {
+                  // Username Field
+                  Container(
+                    margin: EdgeInsets.only(bottom: 16),
+                    child: TextFormField(
+                      controller: _usernameController,
+                      style: TextStyle(color: Warna.putih),
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        labelStyle: TextStyle(
+                          color: Warna.putih.withOpacity(0.7),
+                        ),
+                        filled: true,
+                        fillColor: Warna.hitamTransparan,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Warna.ungu, width: 2),
+                        ),
+                        prefixIcon: Icon(Icons.email, color: Warna.putih),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Masukkan email';
+                        }
+                        if (!GetUtils.isEmail(value)) {
+                          return 'Format email tidak valid';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+
+                  // Password Field
+                  Container(
+                    margin: EdgeInsets.only(bottom: 24),
+                    child: TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+
+                      //mata terbuka
+                      style: TextStyle(color: Warna.putih),
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        labelStyle: TextStyle(
+                          color: Warna.putih.withOpacity(0.7),
+                        ),
+                        filled: true,
+                        fillColor: Warna.hitamTransparan,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Warna.ungu, width: 2),
+                        ),
+                        prefixIcon: Icon(Icons.lock, color: Warna.putih),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Masukkan password';
+                        }
+                        if (value.length < 6) {
+                          return 'Password minimal 6 karakter';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+
+                  // Login Button
+                  Obx(() {
+                    return ElevatedButton(
+                      onPressed: _authController.isLoggedIn
+                          ? null
+                          : () async {
+                              if (_formKey.currentState!.validate()) {
                                 final success = await _authController.login(
                                   _usernameController.text.trim(),
                                   _passwordController.text,
-                                  _selectedRole,
                                 );
 
                                 if (success) {
-                                  // Navigate to role-specific dashboard
-                                  switch (_selectedRole) {
+                                  // Navigate to role-specific dashboard based on role from DB
+                                  switch (_authController.currentUserRole) {
                                     case 'admin':
                                       Get.offAllNamed('/admin-dashboard');
                                       break;
@@ -194,45 +154,40 @@ class _LoginViewState extends State<LoginView> {
                                     case 'peminjam':
                                       Get.offAllNamed('/peminjam-dashboard');
                                       break;
+                                    default:
+                                      Get.snackbar(
+                                        'Error',
+                                        'Role tidak dikenali',
+                                        backgroundColor: Colors.red,
+                                        colorText: Colors.white,
+                                      );
                                   }
                                 } else {
-                                  Get.snackbar(
-                                    'Gagal',
-                                    'Login gagal. Silakan coba lagi.',
-                                    backgroundColor: Colors.red,
-                                    colorText: Colors.white,
-                                  );
+                                  // Error handling is already done in AuthController
                                 }
-                              } else {
-                                Get.snackbar(
-                                  'Peringatan',
-                                  'Silakan pilih peran terlebih dahulu.',
-                                  backgroundColor: Colors.orange,
-                                  colorText: Colors.white,
-                                );
                               }
-                            }
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Warna.ungu,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Warna.ungu,
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
-                    ),
-                    child: _authController.isLoggedIn
-                        ? CircularProgressIndicator(color: Warna.putih)
-                        : Text(
-                            'LOGIN',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Warna.putih,
+                      child: _authController.isLoggedIn
+                          ? CircularProgressIndicator(color: Warna.putih)
+                          : Text(
+                              'Masuk',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Warna.putih,
+                              ),
                             ),
-                          ),
-                  );
-                }),
-              ],
+                    );
+                  }),
+                ],
+              ),
             ),
           ),
         ),
