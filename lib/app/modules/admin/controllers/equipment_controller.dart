@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:benang_merah/app/modules/admin/models/alat_model.dart';
 import 'package:benang_merah/app/modules/admin/models/kategori_alat_model.dart';
@@ -22,11 +23,54 @@ class EquipmentController extends GetxController {
 
   static const String _bucketName = 'alat-images';
 
+  // Realtime subscriptions
+  RealtimeChannel? _alatChannel;
+  RealtimeChannel? _kategoriChannel;
+
   @override
   void onInit() {
     super.onInit();
     fetchEquipments();
     fetchCategories();
+    _setupRealtimeSubscriptions();
+  }
+
+  @override
+  void onClose() {
+    _alatChannel?.unsubscribe();
+    _kategoriChannel?.unsubscribe();
+    super.onClose();
+  }
+
+  /// Setup realtime subscriptions for alat and kategori tables
+  void _setupRealtimeSubscriptions() {
+    // Subscribe to alat table changes
+    _alatChannel = _supabase
+        .channel('alat_changes')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'alat',
+          callback: (payload) {
+            debugPrint('Realtime alat: ${payload.eventType}');
+            fetchEquipments(); // Refresh list on any change
+          },
+        )
+        .subscribe();
+
+    // Subscribe to kategori_alat table changes
+    _kategoriChannel = _supabase
+        .channel('kategori_changes')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'kategori_alat',
+          callback: (payload) {
+            debugPrint('Realtime kategori: ${payload.eventType}');
+            fetchCategories(); // Refresh categories on any change
+          },
+        )
+        .subscribe();
   }
 
   /// Fetch all equipments with category relation
@@ -55,7 +99,6 @@ class EquipmentController extends GetxController {
     try {
       debugPrint('Fetching categories from kategori_alat table...');
 
-      // Try to fetch without ordering first (in case column name differs)
       final response = await _supabase.from('kategori_alat').select();
 
       debugPrint('Categories response: $response');
@@ -197,11 +240,11 @@ class EquipmentController extends GetxController {
       });
 
       selectedImageFile.value = null;
-      await fetchEquipments();
+      // Realtime will handle refresh
       _showSuccess('Alat berhasil ditambahkan');
       return true;
     } catch (e) {
-      _showError('Gagal menambah alat. Terjadi kesalahan pada program, $e');
+      _showError('Kode alat sudah ada.');
       return false;
     } finally {
       isLoading.value = false;
@@ -249,7 +292,7 @@ class EquipmentController extends GetxController {
           .eq('id', id);
 
       selectedImageFile.value = null;
-      await fetchEquipments();
+      // Realtime will handle refresh
       _showSuccess('Alat berhasil diperbarui');
       return true;
     } catch (e) {
@@ -267,7 +310,7 @@ class EquipmentController extends GetxController {
 
       await _supabase.from('alat').update({'aktif': false}).eq('id', id);
 
-      await fetchEquipments();
+      // Realtime will handle refresh
       _showSuccess('Alat berhasil dinonaktifkan');
       return true;
     } catch (e) {
@@ -285,7 +328,7 @@ class EquipmentController extends GetxController {
 
       await _supabase.from('alat').update({'aktif': true}).eq('id', id);
 
-      await fetchEquipments();
+      // Realtime will handle refresh
       _showSuccess('Alat berhasil diaktifkan');
       return true;
     } catch (e) {
@@ -309,7 +352,7 @@ class EquipmentController extends GetxController {
       // Delete from database
       await _supabase.from('alat').delete().eq('id', id);
 
-      await fetchEquipments();
+      // Realtime will handle refresh
       _showSuccess('Alat berhasil dihapus permanen');
       return true;
     } catch (e) {
