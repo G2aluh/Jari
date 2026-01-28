@@ -1,31 +1,30 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
+import 'package:benang_merah/app/modules/admin/controllers/user_management_controller.dart';
+import 'package:benang_merah/app/modules/admin/widgets/user/activate_user_dialog.dart';
 import 'package:benang_merah/app/modules/admin/widgets/user/add_user_dialog.dart';
 import 'package:benang_merah/app/modules/admin/widgets/user/delete_user_dialog.dart';
 import 'package:benang_merah/app/modules/admin/widgets/user/edit_user_dialog.dart';
 import 'package:benang_merah/app/modules/admin/widgets/user/user_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class UserManagementView extends StatelessWidget {
   const UserManagementView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Dummy data for users
-    final List<Map<String, String>> users = [
-      {'name': 'Admin Utama', 'role': 'Admin', 'email': 'admin@example.com'},
-      {'name': 'Budi Santoso', 'role': 'Petugas', 'email': 'budi@example.com'},
-      {'name': 'Siti Aminah', 'role': 'Peminjam', 'email': 'siti@example.com'},
-      {'name': 'Rudi Hartono', 'role': 'Peminjam', 'email': 'rudi@example.com'},
-      {'name': 'Dewi Lestari', 'role': 'Petugas', 'email': 'dewi@example.com'},
-    ];
+    // Initialize controller
+    final controller = Get.put(UserManagementController());
 
-    return Container(
+    return SingleChildScrollView(
       padding: EdgeInsets.only(bottom: 24, left: 24, right: 24),
-      child: ListView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Search Input
           TextField(
             style: TextStyle(color: Warna.putih),
+            onChanged: controller.searchUsers,
             decoration: InputDecoration(
               hintText: 'Cari pengguna...',
               hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
@@ -52,60 +51,103 @@ class UserManagementView extends StatelessWidget {
           SizedBox(height: 16),
 
           // Add User Button
-          Align(
-            alignment: Alignment.center,
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _showAddDialog(context),
-                    icon: Icon(Icons.add),
-                    label: Text('Tambah Pengguna'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Warna.ungu,
-                      foregroundColor: Warna.putih,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                    ),
-                  ),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => _showAddDialog(context, controller),
+              icon: Icon(Icons.add),
+              label: Text('Tambah Pengguna'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Warna.ungu,
+                foregroundColor: Warna.putih,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              ],
+                padding: EdgeInsets.symmetric(vertical: 16),
+              ),
             ),
           ),
           SizedBox(height: 24),
 
           // User List
-          ...users
-              .map(
-                (user) => UserCard(
-                  user: user,
-                  onEdit: () => _showEditDialog(context, user),
-                  onDelete: () => _showDeleteDialog(context, user),
+          Obx(() {
+            if (controller.isLoading.value && controller.users.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 50),
+                  child: CircularProgressIndicator(color: Warna.ungu),
                 ),
-              )
-              .toList(),
+              );
+            }
+
+            if (controller.filteredUsers.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 50),
+                  child: Text(
+                    'Tidak ada pengguna ditemukan',
+                    style: TextStyle(color: Warna.putih.withOpacity(0.7)),
+                  ),
+                ),
+              );
+            }
+
+            return Column(
+              children: controller.filteredUsers.map((user) {
+                return UserCard(
+                  user: user,
+                  onEdit: () => _showEditDialog(context, controller, user),
+                  onToggleStatus: () =>
+                      _showToggleStatusDialog(context, controller, user),
+                );
+              }).toList(),
+            );
+          }),
         ],
       ),
     );
   }
 
-  void _showAddDialog(BuildContext context) {
-    showDialog(context: context, builder: (context) => const AddUserDialog());
-  }
-
-  void _showEditDialog(BuildContext context, Map<String, String> user) {
+  void _showAddDialog(
+    BuildContext context,
+    UserManagementController controller,
+  ) {
     showDialog(
       context: context,
-      builder: (context) => EditUserDialog(user: user),
+      builder: (context) => AddUserDialog(controller: controller),
     );
   }
 
-  void _showDeleteDialog(BuildContext context, Map<String, String> user) {
+  void _showEditDialog(
+    BuildContext context,
+    UserManagementController controller,
+    dynamic user,
+  ) {
     showDialog(
       context: context,
-      builder: (context) => DeleteUserDialog(user: user),
+      builder: (context) => EditUserDialog(user: user, controller: controller),
     );
+  }
+
+  void _showToggleStatusDialog(
+    BuildContext context,
+    UserManagementController controller,
+    dynamic user,
+  ) {
+    if (user.aktif) {
+      // User aktif → tampilkan dialog nonaktifkan
+      showDialog(
+        context: context,
+        builder: (context) =>
+            DeleteUserDialog(user: user, controller: controller),
+      );
+    } else {
+      // User nonaktif → tampilkan dialog aktifkan
+      showDialog(
+        context: context,
+        builder: (context) =>
+            ActivateUserDialog(user: user, controller: controller),
+      );
+    }
   }
 }

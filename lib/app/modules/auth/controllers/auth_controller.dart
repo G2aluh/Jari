@@ -28,10 +28,10 @@ class AuthController extends GetxController {
       final User? user = res.user;
 
       if (user != null) {
-        // Retrieve user role from 'pengguna' table
+        // Retrieve user data from 'pengguna' table
         final data = await _supabase
             .from('pengguna')
-            .select('role')
+            .select('role, aktif')
             .eq('id', user.id)
             .maybeSingle();
 
@@ -42,6 +42,19 @@ class AuthController extends GetxController {
           Get.snackbar(
             "Login Gagal",
             "Data profil tidak ditemukan. Hubungi Admin.",
+          );
+          await _supabase.auth.signOut();
+          return false;
+        }
+
+        // Cek apakah akun aktif
+        final bool isActive = data['aktif'] as bool? ?? false;
+        if (!isActive) {
+          Get.snackbar(
+            "Login Gagal",
+            "Akun Anda telah dinonaktifkan. Hubungi Admin.",
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
           );
           await _supabase.auth.signOut();
           return false;

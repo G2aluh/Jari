@@ -3,27 +3,27 @@ import 'package:benang_merah/app/modules/admin/controllers/user_management_contr
 import 'package:benang_merah/app/modules/admin/models/pengguna_model.dart';
 import 'package:flutter/material.dart';
 
-class DeleteUserDialog extends StatefulWidget {
+class ActivateUserDialog extends StatefulWidget {
   final Pengguna user;
   final UserManagementController controller;
 
-  const DeleteUserDialog({
+  const ActivateUserDialog({
     super.key,
     required this.user,
     required this.controller,
   });
 
   @override
-  State<DeleteUserDialog> createState() => _DeleteUserDialogState();
+  State<ActivateUserDialog> createState() => _ActivateUserDialogState();
 }
 
-class _DeleteUserDialogState extends State<DeleteUserDialog> {
+class _ActivateUserDialogState extends State<ActivateUserDialog> {
   bool isLoading = false;
 
-  Future<void> _handleDelete() async {
+  Future<void> _handleActivate() async {
     setState(() => isLoading = true);
 
-    final success = await widget.controller.deleteUser(widget.user.id);
+    final success = await widget.controller.activateUser(widget.user.id);
 
     setState(() => isLoading = false);
 
@@ -42,7 +42,7 @@ class _DeleteUserDialogState extends State<DeleteUserDialog> {
       ),
       title: Row(
         children: [
-          Text('Hapus Pengguna', style: TextStyle(color: Warna.putih)),
+          Text('Aktifkan Pengguna', style: TextStyle(color: Warna.putih)),
         ],
       ),
       content: Column(
@@ -50,18 +50,16 @@ class _DeleteUserDialogState extends State<DeleteUserDialog> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Apakah Anda yakin ingin menghapus pengguna ini?',
+            'Apakah Anda yakin ingin mengaktifkan kembali pengguna ini?',
             style: TextStyle(color: Warna.putih.withOpacity(0.7)),
           ),
           SizedBox(height: 16),
-
-          // User info card
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Warna.hitamTransparan,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.red.withOpacity(0.3)),
+              border: Border.all(color: Colors.green.withOpacity(0.3)),
             ),
             child: Row(
               children: [
@@ -104,11 +102,10 @@ class _DeleteUserDialogState extends State<DeleteUserDialog> {
             ),
           ),
           SizedBox(height: 12),
-
           Text(
-            '*Pengguna akan dinonaktifkan dan tidak dapat login.',
+            '*Pengguna akan dapat login kembali.',
             style: TextStyle(
-              color: Colors.orange,
+              color: Colors.green,
               fontSize: 12,
             ),
           ),
@@ -124,12 +121,12 @@ class _DeleteUserDialogState extends State<DeleteUserDialog> {
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.green,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          onPressed: isLoading ? null : _handleDelete,
+          onPressed: isLoading ? null : _handleActivate,
           child: isLoading
               ? SizedBox(
                   width: 20,
@@ -140,7 +137,7 @@ class _DeleteUserDialogState extends State<DeleteUserDialog> {
                   ),
                 )
               : Text(
-                  'Hapus',
+                  'Aktifkan',
                   style: TextStyle(
                     color: Warna.putih,
                   ),

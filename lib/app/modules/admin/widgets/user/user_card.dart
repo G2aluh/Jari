@@ -1,16 +1,17 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
+import 'package:benang_merah/app/modules/admin/models/pengguna_model.dart';
 import 'package:flutter/material.dart';
 
 class UserCard extends StatelessWidget {
-  final Map<String, String> user;
+  final Pengguna user;
   final VoidCallback onEdit;
-  final VoidCallback onDelete;
+  final VoidCallback onToggleStatus;
 
   const UserCard({
     super.key,
     required this.user,
     required this.onEdit,
-    required this.onDelete,
+    required this.onToggleStatus,
   });
 
   @override
@@ -19,7 +20,11 @@ class UserCard extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
       decoration: BoxDecoration(
-        border: Border.all(color: Warna.putih.withOpacity(0.2)),
+        border: Border.all(
+          color: user.aktif
+              ? Warna.putih.withOpacity(0.2)
+              : Colors.red.withOpacity(0.3),
+        ),
         color: Warna.hitamTransparan,
         borderRadius: BorderRadius.circular(12),
       ),
@@ -28,50 +33,93 @@ class UserCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Avatar
             CircleAvatar(
-              backgroundColor: Warna.ungu.withOpacity(0.2),
+              backgroundColor: user.aktif
+                  ? Warna.ungu.withOpacity(0.2)
+                  : Colors.grey.withOpacity(0.2),
               child: Text(
-                user['name']![0],
+                user.nama.isNotEmpty ? user.nama[0].toUpperCase() : '?',
                 style: TextStyle(
-                  color: Warna.ungu,
+                  color: user.aktif ? Warna.ungu : Colors.grey,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             SizedBox(width: 12),
+
+            // User Info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    user['name']!,
-                    style: TextStyle(
-                      color: Warna.putih,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  // Name with status indicator
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          user.nama,
+                          style: TextStyle(
+                            color: user.aktif
+                                ? Warna.putih
+                                : Warna.putih.withOpacity(0.5),
+                            fontWeight: FontWeight.bold,
+                            decoration: user.aktif
+                                ? null
+                                : TextDecoration.lineThrough,
+                          ),
+                        ),
+                      ),
+                      if (!user.aktif)
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'Nonaktif',
+                            style: TextStyle(color: Colors.red, fontSize: 10),
+                          ),
+                        ),
+                    ],
                   ),
                   SizedBox(height: 4),
+
+                  // Email
                   Text(
-                    user['email']!,
+                    user.email,
                     style: TextStyle(color: Warna.putih.withOpacity(0.7)),
                   ),
                   SizedBox(height: 6),
+
+                  // Role badge
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Warna.hitamBackground.withOpacity(0.2),
+                      color: _getRoleColor(user.role).withOpacity(0.2),
                       borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: Warna.putih.withOpacity(0.2)),
+                      border: Border.all(
+                        color: _getRoleColor(user.role).withOpacity(0.5),
+                      ),
                     ),
                     child: Text(
-                      user['role']!,
-                      style: TextStyle(color: Warna.putih, fontSize: 12),
+                      user.roleDisplay,
+                      style: TextStyle(
+                        color: _getRoleColor(user.role),
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
             SizedBox(width: 12),
+
+            // Action buttons
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
@@ -90,7 +138,7 @@ class UserCard extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 GestureDetector(
-                  onTap: onDelete,
+                  onTap: onToggleStatus,
                   child: Container(
                     padding: EdgeInsets.all(6),
                     decoration: BoxDecoration(
@@ -98,7 +146,12 @@ class UserCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(color: Warna.putih.withOpacity(0.2)),
                     ),
-                    child: Icon(Icons.delete, color: Warna.putih, size: 16),
+                    // Merah jika aktif (untuk nonaktifkan), putih jika nonaktif (untuk aktifkan)
+                    child: Icon(
+                      Icons.stop_circle,
+                      color: user.aktif ? Colors.red : Warna.putih,
+                      size: 16,
+                    ),
                   ),
                 ),
               ],
@@ -107,5 +160,18 @@ class UserCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color _getRoleColor(String role) {
+    switch (role.toLowerCase()) {
+      case 'admin':
+        return Colors.orange;
+      case 'petugas':
+        return Colors.blue;
+      case 'peminjam':
+        return Colors.green;
+      default:
+        return Warna.putih;
+    }
   }
 }
