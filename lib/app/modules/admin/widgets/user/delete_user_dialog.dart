@@ -42,7 +42,7 @@ class _DeleteUserDialogState extends State<DeleteUserDialog> {
       ),
       title: Row(
         children: [
-          Text('Hapus Pengguna', style: TextStyle(color: Warna.putih)),
+          Text('Nonaktifkan Pengguna', style: TextStyle(color: Warna.putih)),
         ],
       ),
       content: Column(
@@ -50,7 +50,7 @@ class _DeleteUserDialogState extends State<DeleteUserDialog> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Apakah Anda yakin ingin menghapus pengguna ini?',
+            'Apakah Anda yakin ingin menonaktifkan pengguna ini?',
             style: TextStyle(color: Warna.putih.withOpacity(0.7)),
           ),
           SizedBox(height: 16),
@@ -140,7 +140,7 @@ class _DeleteUserDialogState extends State<DeleteUserDialog> {
                   ),
                 )
               : Text(
-                  'Hapus',
+                  'Nonaktifkan',
                   style: TextStyle(
                     color: Warna.putih,
                   ),

@@ -1,9 +1,10 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/modules/admin/controllers/equipment_controller.dart';
 import 'package:benang_merah/app/modules/admin/models/alat_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditEquipmentDialog extends StatefulWidget {
   final Alat alat;
@@ -27,7 +28,8 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
   late TextEditingController stokTersediaController;
 
   late String? selectedKategoriId;
-  File? selectedImage;
+  XFile? selectedImage;
+  Uint8List? selectedImageBytes;
   bool isLoading = false;
   bool isDeleting = false;
 
@@ -87,7 +89,11 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
   Future<void> _pickImage() async {
     final image = await widget.controller.pickImage();
     if (image != null) {
-      setState(() => selectedImage = image);
+      final bytes = await image.readAsBytes();
+      setState(() {
+        selectedImage = image;
+        selectedImageBytes = bytes;
+      });
     }
   }
 
@@ -178,11 +184,7 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
             SizedBox(height: 12),
             Text(
               '⚠️ Tindakan ini tidak dapat dibatalkan!',
-              style: TextStyle(
-                color: Colors.orange,
-                fontSize: 12,
-                fontStyle: FontStyle.italic,
-              ),
+              style: TextStyle(color: Colors.orange, fontSize: 12),
             ),
           ],
         ),
@@ -259,6 +261,27 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
     );
   }
 
+  Widget _buildImagePreview() {
+    if (selectedImageBytes != null) {
+      return Image.memory(selectedImageBytes!, fit: BoxFit.cover);
+    } else if (widget.alat.alatUrl != null && widget.alat.alatUrl!.isNotEmpty) {
+      return Image.network(
+        widget.alat.alatUrl!,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => Icon(
+          Icons.image_not_supported,
+          color: Warna.putih.withOpacity(0.5),
+        ),
+      );
+    } else {
+      return Icon(
+        Icons.add_a_photo,
+        color: Warna.putih.withOpacity(0.5),
+        size: 40,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final canSave = hasChanges && !isLoading && !isDeleting;
@@ -326,23 +349,7 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: selectedImage != null
-                                ? Image.file(selectedImage!, fit: BoxFit.cover)
-                                : widget.alat.alatUrl != null &&
-                                      widget.alat.alatUrl!.isNotEmpty
-                                ? Image.network(
-                                    widget.alat.alatUrl!,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Icon(
-                                      Icons.image_not_supported,
-                                      color: Warna.putih.withOpacity(0.5),
-                                    ),
-                                  )
-                                : Icon(
-                                    Icons.add_a_photo,
-                                    color: Warna.putih.withOpacity(0.5),
-                                    size: 40,
-                                  ),
+                            child: _buildImagePreview(),
                           ),
                         ),
                       ),

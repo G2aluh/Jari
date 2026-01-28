@@ -1,11 +1,10 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:benang_merah/app/modules/admin/models/alat_model.dart';
 import 'package:benang_merah/app/modules/admin/models/kategori_alat_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart' as path;
 
 class EquipmentController extends GetxController {
   final _supabase = Supabase.instance.client;
@@ -17,8 +16,8 @@ class EquipmentController extends GetxController {
   final isLoading = false.obs;
   final searchQuery = ''.obs;
 
-  // For image upload
-  final selectedImage = Rxn<File>();
+  // For image upload - using XFile for cross-platform support
+  final selectedImageFile = Rxn<XFile>();
   final isUploading = false.obs;
 
   static const String _bucketName = 'alat-images';
@@ -91,8 +90,8 @@ class EquipmentController extends GetxController {
     }
   }
 
-  /// Pick image from gallery
-  Future<File?> pickImage() async {
+  /// Pick image from gallery - cross-platform (mobile & web)
+  Future<XFile?> pickImage() async {
     try {
       final pickedFile = await _imagePicker.pickImage(
         source: ImageSource.gallery,
@@ -102,8 +101,8 @@ class EquipmentController extends GetxController {
       );
 
       if (pickedFile != null) {
-        selectedImage.value = File(pickedFile.path);
-        return selectedImage.value;
+        selectedImageFile.value = pickedFile;
+        return pickedFile;
       }
       return null;
     } catch (e) {
@@ -112,26 +111,37 @@ class EquipmentController extends GetxController {
     }
   }
 
-  /// Upload image to Supabase Storage
-  Future<String?> uploadImage(File imageFile, String kodeAlat) async {
+  /// Upload image to Supabase Storage - cross-platform support
+  Future<String?> uploadImage(XFile imageFile, String kodeAlat) async {
     try {
       isUploading.value = true;
 
-      final ext = path.extension(imageFile.path);
-      final fileName =
+      // Get file extension from name
+      final fileName = imageFile.name;
+      final ext = fileName.contains('.')
+          ? '.${fileName.split('.').last}'
+          : '.jpg';
+      final uploadFileName =
           '${kodeAlat}_${DateTime.now().millisecondsSinceEpoch}$ext';
+
+      // Read as bytes for cross-platform compatibility
+      final Uint8List bytes = await imageFile.readAsBytes();
 
       await _supabase.storage
           .from(_bucketName)
-          .upload(
-            fileName,
-            imageFile,
-            fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
+          .uploadBinary(
+            uploadFileName,
+            bytes,
+            fileOptions: FileOptions(
+              cacheControl: '3600',
+              upsert: true,
+              contentType: 'image/${ext.replaceAll('.', '')}',
+            ),
           );
 
       final publicUrl = _supabase.storage
           .from(_bucketName)
-          .getPublicUrl(fileName);
+          .getPublicUrl(uploadFileName);
 
       return publicUrl;
     } catch (e) {
@@ -166,7 +176,7 @@ class EquipmentController extends GetxController {
     required String namaAlat,
     String? kategoriId,
     required int stokTotal,
-    File? imageFile,
+    XFile? imageFile,
   }) async {
     try {
       isLoading.value = true;
@@ -186,7 +196,7 @@ class EquipmentController extends GetxController {
         'alat_url': imageUrl,
       });
 
-      selectedImage.value = null;
+      selectedImageFile.value = null;
       await fetchEquipments();
       _showSuccess('Alat berhasil ditambahkan');
       return true;
@@ -208,7 +218,7 @@ class EquipmentController extends GetxController {
     required int stokTersedia,
     bool aktif = true,
     String? existingImageUrl,
-    File? newImageFile,
+    XFile? newImageFile,
   }) async {
     try {
       isLoading.value = true;
@@ -238,7 +248,7 @@ class EquipmentController extends GetxController {
           })
           .eq('id', id);
 
-      selectedImage.value = null;
+      selectedImageFile.value = null;
       await fetchEquipments();
       _showSuccess('Alat berhasil diperbarui');
       return true;
@@ -311,7 +321,7 @@ class EquipmentController extends GetxController {
   }
 
   void clearSelectedImage() {
-    selectedImage.value = null;
+    selectedImageFile.value = null;
   }
 
   void _showSuccess(String message) {

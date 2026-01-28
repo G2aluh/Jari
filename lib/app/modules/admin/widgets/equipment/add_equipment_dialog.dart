@@ -1,8 +1,8 @@
-import 'dart:io';
 import 'package:benang_merah/app/core/theme/app_colors.dart';
 import 'package:benang_merah/app/modules/admin/controllers/equipment_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddEquipmentDialog extends StatefulWidget {
   final EquipmentController controller;
@@ -20,7 +20,7 @@ class _AddEquipmentDialogState extends State<AddEquipmentDialog> {
   final stokController = TextEditingController();
 
   String? selectedKategoriId;
-  File? selectedImage;
+  XFile? selectedImage;
   bool isLoading = false;
 
   @override
@@ -108,7 +108,23 @@ class _AddEquipmentDialogState extends State<AddEquipmentDialog> {
                   child: selectedImage != null
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.file(selectedImage!, fit: BoxFit.cover),
+                          child: FutureBuilder<dynamic>(
+                            future: selectedImage!.readAsBytes(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Image.memory(
+                                  snapshot.data,
+                                  fit: BoxFit.cover,
+                                );
+                              }
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Warna.putih,
+                                ),
+                              );
+                            },
+                          ),
                         )
                       : Icon(
                           Icons.add_a_photo,

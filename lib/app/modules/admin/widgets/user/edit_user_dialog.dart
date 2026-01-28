@@ -141,8 +141,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
               style: TextStyle(
                 color: Colors.orange,
                 fontSize: 12,
-                fontStyle: FontStyle.italic,
-              ),
+                ),
             ),
           ],
         ),
