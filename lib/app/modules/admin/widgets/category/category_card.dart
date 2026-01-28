@@ -1,8 +1,9 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
+import 'package:benang_merah/app/modules/admin/models/kategori_alat_model.dart';
 import 'package:flutter/material.dart';
 
 class CategoryCard extends StatelessWidget {
-  final Map<String, dynamic> category;
+  final KategoriAlat category;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -12,6 +13,18 @@ class CategoryCard extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
   });
+
+  IconData _getIcon() {
+    // Convert icon code to IconData
+    if (category.iconCode > 0) {
+      return IconData(
+        category.iconCode,
+        fontFamily: category.iconFamily,
+        fontPackage: category.iconPackage,
+      );
+    }
+    return Icons.category;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +47,7 @@ class CategoryCard extends StatelessWidget {
                 color: Warna.ungu.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(category['icon'], color: Warna.ungu, size: 24),
+              child: Icon(_getIcon(), color: Warna.ungu, size: 24),
             ),
             SizedBox(width: 16),
             Expanded(
@@ -42,13 +55,27 @@ class CategoryCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    category['name'],
+                    category.namaKategori,
                     style: TextStyle(
                       color: Warna.putih,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),
+                  if (category.deskripsi != null &&
+                      category.deskripsi!.isNotEmpty)
+                    Padding(
+                      padding: EdgeInsets.only(top: 4),
+                      child: Text(
+                        category.deskripsi!,
+                        style: TextStyle(
+                          color: Warna.putih.withOpacity(0.6),
+                          fontSize: 12,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -79,7 +106,7 @@ class CategoryCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(color: Warna.putih.withOpacity(0.2)),
                     ),
-                    child: Icon(Icons.delete, color: Warna.putih, size: 16),
+                    child: Icon(Icons.delete, color: Colors.red, size: 16),
                   ),
                 ),
               ],

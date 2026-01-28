@@ -1,61 +1,29 @@
 import 'package:benang_merah/app/core/theme/app_colors.dart';
+import 'package:benang_merah/app/modules/admin/controllers/equipment_controller.dart';
+import 'package:benang_merah/app/modules/admin/models/alat_model.dart';
 import 'package:benang_merah/app/modules/admin/widgets/equipment/add_equipment_dialog.dart';
 import 'package:benang_merah/app/modules/admin/widgets/equipment/delete_equipment_dialog.dart';
 import 'package:benang_merah/app/modules/admin/widgets/equipment/edit_equipment_dialog.dart';
 import 'package:benang_merah/app/modules/admin/widgets/equipment/equipment_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class EquipmentManagementView extends StatelessWidget {
   const EquipmentManagementView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Dummy data for equipment
-    final List<Map<String, dynamic>> equipment = [
-      {
-        'name': 'Mesin Jahit Butterfly',
-        'stock': 5,
-        'category': 'Menjahit',
-        'status': 'Tersedia',
-        'gambar': 'assets/images/benang.png',
-      },
-      {
-        'name': 'Obeng Set Tekiro',
-        'stock': 12,
-        'category': 'Elektronik',
-        'status': 'Tersedia',
-        'gambar': 'assets/images/gunting.png',
-      },
-      {
-        'name': 'Gerinda Tangan Bosch',
-        'stock': 3,
-        'category': 'Elektronik',
-        'status': 'Terbatas',
-        'gambar': 'assets/images/setrika.png',
-      },
-      {
-        'name': 'Laptop Asus Rog',
-        'stock': 0,
-        'category': 'Elektronik',
-        'status': 'Habis',
-        'gambar': 'assets/images/mesinJahit.png',
-      },
-      {
-        'name': 'Kamera Canon EOS',
-        'stock': 2,
-        'category': 'Desain',
-        'status': 'Tersedia',
-        'gambar': 'assets/images/mesinObras.png',
-      },
-    ];
+    final controller = Get.put(EquipmentController());
 
-    return Container(
+    return SingleChildScrollView(
       padding: EdgeInsets.only(bottom: 24, left: 24, right: 24),
-      child: ListView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Search Input
           TextField(
             style: TextStyle(color: Warna.putih),
+            onChanged: controller.searchEquipments,
             decoration: InputDecoration(
               hintText: 'Cari alat...',
               hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
@@ -82,63 +50,91 @@ class EquipmentManagementView extends StatelessWidget {
           SizedBox(height: 16),
 
           // Add Equipment Button
-          Align(
-            alignment: Alignment.center,
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _showAddDialog(context),
-                    icon: Icon(Icons.add),
-                    label: Text('Tambah Alat'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Warna.ungu,
-                      foregroundColor: Warna.putih,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                    ),
-                  ),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => _showAddDialog(context, controller),
+              icon: Icon(Icons.add),
+              label: Text('Tambah Alat'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Warna.ungu,
+                foregroundColor: Warna.putih,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              ],
+                padding: EdgeInsets.symmetric(vertical: 16),
+              ),
             ),
           ),
           SizedBox(height: 24),
 
           // Equipment List
-          ...equipment
-              .map(
-                (item) => EquipmentCard(
-                  item: item,
-                  onEdit: () => _showEditDialog(context, item),
-                  onDelete: () => _showDeleteDialog(context, item),
+          Obx(() {
+            if (controller.isLoading.value && controller.equipments.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 50),
+                  child: CircularProgressIndicator(color: Warna.ungu),
                 ),
-              )
-              .toList(),
+              );
+            }
+
+            if (controller.filteredEquipments.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 50),
+                  child: Text(
+                    'Tidak ada alat ditemukan',
+                    style: TextStyle(color: Warna.putih.withOpacity(0.7)),
+                  ),
+                ),
+              );
+            }
+
+            return Column(
+              children: controller.filteredEquipments.map((alat) {
+                return EquipmentCard(
+                  alat: alat,
+                  onEdit: () => _showEditDialog(context, controller, alat),
+                  onToggleStatus: () =>
+                      _showToggleStatusDialog(context, controller, alat),
+                );
+              }).toList(),
+            );
+          }),
         ],
       ),
     );
   }
 
-  void _showEditDialog(BuildContext context, Map<String, dynamic> item) {
+  void _showAddDialog(BuildContext context, EquipmentController controller) {
     showDialog(
       context: context,
-      builder: (context) => EditEquipmentDialog(item: item),
+      builder: (context) => AddEquipmentDialog(controller: controller),
     );
   }
 
-  void _showAddDialog(BuildContext context) {
+  void _showEditDialog(
+    BuildContext context,
+    EquipmentController controller,
+    Alat alat,
+  ) {
     showDialog(
       context: context,
-      builder: (context) => const AddEquipmentDialog(),
+      builder: (context) =>
+          EditEquipmentDialog(alat: alat, controller: controller),
     );
   }
 
-  void _showDeleteDialog(BuildContext context, Map<String, dynamic> item) {
+  void _showToggleStatusDialog(
+    BuildContext context,
+    EquipmentController controller,
+    Alat alat,
+  ) {
     showDialog(
       context: context,
-      builder: (context) => DeleteEquipmentDialog(item: item),
+      builder: (context) =>
+          DeleteEquipmentDialog(alat: alat, controller: controller),
     );
   }
 }
