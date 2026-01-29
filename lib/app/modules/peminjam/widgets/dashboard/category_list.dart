@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:benang_merah/app/core/theme/app_text_styles.dart';
-import 'package:benang_merah/app/modules/kategori/views/kategori_list_view.dart';
+import 'package:jari/app/core/theme/app_text_styles.dart';
+import 'package:jari/app/modules/kategori/views/kategori_list_view.dart';
 
 class CategoryList extends StatelessWidget {
   const CategoryList({super.key});

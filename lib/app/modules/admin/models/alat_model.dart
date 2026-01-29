@@ -1,4 +1,4 @@
-import 'package:benang_merah/app/modules/admin/models/kategori_alat_model.dart';
+import 'package:jari/app/modules/admin/models/kategori_alat_model.dart';
 
 /// Model untuk Alat
 class Alat {

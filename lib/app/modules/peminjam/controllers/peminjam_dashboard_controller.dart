@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:benang_merah/app/modules/alat/views/peminjam/alat_list_peminjam_view.dart';
-import 'package:benang_merah/app/modules/peminjam/views/dialog/pengajuan_peminjaman_dialog.dart';
+import 'package:jari/app/modules/alat/views/peminjam/alat_list_peminjam_view.dart';
+import 'package:jari/app/modules/peminjam/views/dialog/pengajuan_peminjaman_dialog.dart';
 
 class PeminjamDashboardController extends GetxController {
   // State

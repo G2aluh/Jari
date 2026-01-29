@@ -1,10 +1,10 @@
-import 'package:benang_merah/app/core/theme/app_colors.dart';
-import 'package:benang_merah/app/modules/admin/controllers/equipment_controller.dart';
-import 'package:benang_merah/app/modules/admin/models/alat_model.dart';
-import 'package:benang_merah/app/modules/admin/widgets/equipment/add_equipment_dialog.dart';
-import 'package:benang_merah/app/modules/admin/widgets/equipment/delete_equipment_dialog.dart';
-import 'package:benang_merah/app/modules/admin/widgets/equipment/edit_equipment_dialog.dart';
-import 'package:benang_merah/app/modules/admin/widgets/equipment/equipment_card.dart';
+import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/modules/admin/controllers/equipment_controller.dart';
+import 'package:jari/app/modules/admin/models/alat_model.dart';
+import 'package:jari/app/modules/admin/widgets/equipment/add_equipment_dialog.dart';
+import 'package:jari/app/modules/admin/widgets/equipment/delete_equipment_dialog.dart';
+import 'package:jari/app/modules/admin/widgets/equipment/edit_equipment_dialog.dart';
+import 'package:jari/app/modules/admin/widgets/equipment/equipment_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

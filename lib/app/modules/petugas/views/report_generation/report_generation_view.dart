@@ -1,6 +1,6 @@
-import 'package:benang_merah/app/core/theme/app_colors.dart';
-import 'package:benang_merah/app/modules/petugas/widgets/report_generation/history_item.dart';
-import 'package:benang_merah/app/modules/petugas/widgets/report_generation/report_item.dart';
+import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/modules/petugas/widgets/report_generation/history_item.dart';
+import 'package:jari/app/modules/petugas/widgets/report_generation/report_item.dart';
 import 'package:flutter/material.dart';
 
 class ReportGenerationView extends StatelessWidget {

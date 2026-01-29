@@ -1,4 +1,4 @@
-import 'package:benang_merah/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class LoanCard extends StatelessWidget {

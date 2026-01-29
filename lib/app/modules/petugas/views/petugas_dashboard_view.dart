@@ -1,9 +1,9 @@
-import 'package:benang_merah/app/widgets/base_dashboard_layout.dart';
+import 'package:jari/app/widgets/base_dashboard_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:benang_merah/app/modules/petugas/views/loan_verification/loan_verification_view.dart';
-import 'package:benang_merah/app/modules/petugas/views/return_monitoring/return_monitoring_view.dart';
-import 'package:benang_merah/app/modules/petugas/views/report_generation/report_generation_view.dart';
+import 'package:jari/app/modules/petugas/views/loan_verification/loan_verification_view.dart';
+import 'package:jari/app/modules/petugas/views/return_monitoring/return_monitoring_view.dart';
+import 'package:jari/app/modules/petugas/views/report_generation/report_generation_view.dart';
 
 class PetugasDashboardView extends StatefulWidget {
   const PetugasDashboardView({super.key});

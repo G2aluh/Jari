@@ -1,5 +1,5 @@
-import 'package:benang_merah/app/modules/auth/views/login_view.dart';
-import 'package:benang_merah/app/widgets/logout_confirmation_dialog.dart';
+import 'package:jari/app/modules/auth/views/login_view.dart';
+import 'package:jari/app/widgets/logout_confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

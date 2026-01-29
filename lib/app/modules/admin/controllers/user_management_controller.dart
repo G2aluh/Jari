@@ -1,4 +1,4 @@
-import 'package:benang_merah/app/modules/admin/models/pengguna_model.dart';
+import 'package:jari/app/modules/admin/models/pengguna_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

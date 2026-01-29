@@ -1,4 +1,4 @@
-import 'package:benang_merah/app/modules/admin/models/kategori_alat_model.dart';
+import 'package:jari/app/modules/admin/models/kategori_alat_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -131,7 +131,7 @@ class CategoryController extends GetxController {
       _showSuccess('Kategori berhasil dihapus');
       return true;
     } catch (e) {
-      _showError('Gagal menghapus kategori: $e');
+      _showError('Kategori memiliki keterkaitan di manajemen alat (sedang di gunakan)');
       return false;
     } finally {
       isLoading.value = false;

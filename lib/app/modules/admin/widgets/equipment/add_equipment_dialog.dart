@@ -1,5 +1,5 @@
-import 'package:benang_merah/app/core/theme/app_colors.dart';
-import 'package:benang_merah/app/modules/admin/controllers/equipment_controller.dart';
+import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/modules/admin/controllers/equipment_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';

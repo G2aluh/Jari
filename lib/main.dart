@@ -1,6 +1,6 @@
-import 'package:benang_merah/app/modules/auth/controllers/auth_controller.dart';
-import 'package:benang_merah/app/routes/app_pages.dart';
-import 'package:benang_merah/app/routes/app_routes.dart';
+import 'package:jari/app/modules/auth/controllers/auth_controller.dart';
+import 'package:jari/app/routes/app_pages.dart';
+import 'package:jari/app/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,7 +32,7 @@ class MainApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(textTheme: GoogleFonts.urbanistTextTheme()),
-      title: 'Benang Merah',
+      title: 'Jari',
       initialRoute: Routes.login,
       getPages: AppPages.pages,
     );

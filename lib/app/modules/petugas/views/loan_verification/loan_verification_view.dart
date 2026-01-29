@@ -1,6 +1,6 @@
-import 'package:benang_merah/app/core/theme/app_colors.dart';
-import 'package:benang_merah/app/core/theme/app_text_styles.dart';
-import 'package:benang_merah/app/modules/petugas/widgets/loan_verification/verification_item.dart';
+import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/theme/app_text_styles.dart';
+import 'package:jari/app/modules/petugas/widgets/loan_verification/verification_item.dart';
 import 'package:flutter/material.dart';
 
 class LoanVerificationView extends StatelessWidget {

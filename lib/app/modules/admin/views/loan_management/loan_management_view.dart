@@ -1,7 +1,7 @@
-import 'package:benang_merah/app/core/theme/app_colors.dart';
-import 'package:benang_merah/app/modules/admin/widgets/loan/delete_loan_dialog.dart';
-import 'package:benang_merah/app/modules/admin/widgets/loan/edit_loan_dialog.dart';
-import 'package:benang_merah/app/modules/admin/widgets/loan/loan_card.dart';
+import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/modules/admin/widgets/loan/delete_loan_dialog.dart';
+import 'package:jari/app/modules/admin/widgets/loan/edit_loan_dialog.dart';
+import 'package:jari/app/modules/admin/widgets/loan/loan_card.dart';
 import 'package:flutter/material.dart';
 
 class LoanManagementView extends StatelessWidget {

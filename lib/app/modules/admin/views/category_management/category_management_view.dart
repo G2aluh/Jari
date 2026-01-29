@@ -1,10 +1,10 @@
-import 'package:benang_merah/app/core/theme/app_colors.dart';
-import 'package:benang_merah/app/modules/admin/controllers/category_controller.dart';
-import 'package:benang_merah/app/modules/admin/models/kategori_alat_model.dart';
-import 'package:benang_merah/app/modules/admin/widgets/category/add_category_dialog.dart';
-import 'package:benang_merah/app/modules/admin/widgets/category/category_card.dart';
-import 'package:benang_merah/app/modules/admin/widgets/category/delete_category_dialog.dart';
-import 'package:benang_merah/app/modules/admin/widgets/category/edit_category_dialog.dart';
+import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/modules/admin/controllers/category_controller.dart';
+import 'package:jari/app/modules/admin/models/kategori_alat_model.dart';
+import 'package:jari/app/modules/admin/widgets/category/add_category_dialog.dart';
+import 'package:jari/app/modules/admin/widgets/category/category_card.dart';
+import 'package:jari/app/modules/admin/widgets/category/delete_category_dialog.dart';
+import 'package:jari/app/modules/admin/widgets/category/edit_category_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

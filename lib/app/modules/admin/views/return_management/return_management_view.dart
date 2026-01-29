@@ -1,7 +1,7 @@
-import 'package:benang_merah/app/core/theme/app_colors.dart';
-import 'package:benang_merah/app/modules/admin/widgets/return/delete_return_dialog.dart';
-import 'package:benang_merah/app/modules/admin/widgets/return/edit_return_dialog.dart';
-import 'package:benang_merah/app/modules/admin/widgets/return/return_card.dart';
+import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/modules/admin/widgets/return/delete_return_dialog.dart';
+import 'package:jari/app/modules/admin/widgets/return/edit_return_dialog.dart';
+import 'package:jari/app/modules/admin/widgets/return/return_card.dart';
 import 'package:flutter/material.dart';
 
 class ReturnManagementView extends StatelessWidget {

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'package:benang_merah/app/modules/admin/models/alat_model.dart';
-import 'package:benang_merah/app/modules/admin/models/kategori_alat_model.dart';
+import 'package:jari/app/modules/admin/models/alat_model.dart';
+import 'package:jari/app/modules/admin/models/kategori_alat_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

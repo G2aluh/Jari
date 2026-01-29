@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:benang_merah/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/theme/app_colors.dart';
 
 const menuItems = [
   Icon(Icons.home, color: Warna.putih),

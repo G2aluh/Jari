@@ -1,13 +1,13 @@
-import 'package:benang_merah/app/core/theme/app_colors.dart';
-import 'package:benang_merah/app/modules/admin/widgets/admin_appbar.dart';
-import 'package:benang_merah/app/widgets/base_dashboard_layout.dart';
-import 'package:benang_merah/app/modules/admin/views/user_management/user_management_view.dart';
-import 'package:benang_merah/app/modules/admin/views/equipment_management/equipment_management_view.dart';
-import 'package:benang_merah/app/modules/admin/views/category_management/category_management_view.dart';
-import 'package:benang_merah/app/modules/admin/views/loan_management/loan_management_view.dart';
-import 'package:benang_merah/app/modules/admin/views/return_management/return_management_view.dart';
-import 'package:benang_merah/app/modules/admin/views/settings/settings_view.dart';
-import 'package:benang_merah/app/modules/admin/views/activity_log/activity_log_view.dart';
+import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/modules/admin/widgets/admin_appbar.dart';
+import 'package:jari/app/widgets/base_dashboard_layout.dart';
+import 'package:jari/app/modules/admin/views/user_management/user_management_view.dart';
+import 'package:jari/app/modules/admin/views/equipment_management/equipment_management_view.dart';
+import 'package:jari/app/modules/admin/views/category_management/category_management_view.dart';
+import 'package:jari/app/modules/admin/views/loan_management/loan_management_view.dart';
+import 'package:jari/app/modules/admin/views/return_management/return_management_view.dart';
+import 'package:jari/app/modules/admin/views/settings/settings_view.dart';
+import 'package:jari/app/modules/admin/views/activity_log/activity_log_view.dart';
 import 'package:flutter/material.dart';
 
 class AdminDashboardView extends StatefulWidget {

@@ -1,6 +1,6 @@
-import 'package:benang_merah/app/core/values/app_icon_appbar.dart';
+import 'package:jari/app/core/values/app_icon_appbar.dart';
 import 'package:flutter/material.dart';
-import 'package:benang_merah/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/theme/app_colors.dart';
 
 class SideDrawerMenu extends StatefulWidget {
   final Function(int)? onNavTap;

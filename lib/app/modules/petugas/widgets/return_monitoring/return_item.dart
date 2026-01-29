@@ -1,5 +1,5 @@
-import 'package:benang_merah/app/core/theme/app_colors.dart';
-import 'package:benang_merah/app/modules/petugas/views/return_monitoring/dialog/detail_pengembalian_dialog.dart';
+import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/modules/petugas/views/return_monitoring/dialog/detail_pengembalian_dialog.dart';
 import 'package:flutter/material.dart';
 
 class ReturnItem extends StatelessWidget {
