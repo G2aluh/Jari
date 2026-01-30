@@ -69,7 +69,7 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.close, color: Warna.putih.withOpacity(0.5)),
+                  icon: Icon(Icons.close, color: Warna.putih),
                 ),
               ],
             ),

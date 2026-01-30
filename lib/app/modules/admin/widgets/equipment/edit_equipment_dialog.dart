@@ -183,7 +183,7 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
             ),
             SizedBox(height: 12),
             Text(
-              '⚠️ Tindakan ini tidak dapat dibatalkan!',
+              '*Tindakan ini tidak dapat dibatalkan!',
               style: TextStyle(color: Colors.orange, fontSize: 12),
             ),
           ],

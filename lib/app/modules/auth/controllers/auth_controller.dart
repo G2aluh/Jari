@@ -65,6 +65,14 @@ class AuthController extends GetxController {
         // Handle role string mapping if needed (e.g. if DB returns capitalized)
         _currentUserRole.value = role.toLowerCase();
         _isLoggedIn.value = true;
+
+        // Log aktivitas login
+        try {
+          await _supabase.rpc('log_user_login', params: {'p_user_id': user.id});
+        } catch (_) {
+          // Silent fail - jangan gagalkan login jika log gagal
+        }
+
         update();
         return true;
       }
@@ -90,6 +98,16 @@ class AuthController extends GetxController {
 
   // Logout function
   Future<void> logout() async {
+    // Log aktivitas logout sebelum signOut
+    final userId = _supabase.auth.currentUser?.id;
+    if (userId != null) {
+      try {
+        await _supabase.rpc('log_user_logout', params: {'p_user_id': userId});
+      } catch (_) {
+        // Silent fail
+      }
+    }
+
     await _supabase.auth.signOut();
     _isLoggedIn.value = false;
     _currentUserRole.value = '';

@@ -96,6 +96,7 @@ class NewEquipmentSection extends StatelessWidget {
             child: Obx(
               () => ElevatedButton(
                 style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 18),
                   shadowColor: Colors.transparent,
                   elevation: 0,
                   backgroundColor:
@@ -103,7 +104,7 @@ class NewEquipmentSection extends StatelessWidget {
                       ? Colors.grey
                       : Warna.ungu,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 onPressed: () => controller.toggleRentNewItem("Mesin Obras"),

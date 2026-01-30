@@ -17,6 +17,7 @@ class _LoginViewState extends State<LoginView> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _obsecuredPassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -97,9 +98,7 @@ class _LoginViewState extends State<LoginView> {
                     margin: EdgeInsets.only(bottom: 24),
                     child: TextFormField(
                       controller: _passwordController,
-                      obscureText: true,
-
-                      //mata terbuka
+                      obscureText: _obsecuredPassword,
                       style: TextStyle(color: Warna.putih),
                       decoration: InputDecoration(
                         labelText: 'Password',
@@ -117,6 +116,20 @@ class _LoginViewState extends State<LoginView> {
                           borderSide: BorderSide(color: Warna.ungu, width: 2),
                         ),
                         prefixIcon: Icon(Icons.lock, color: Warna.putih),
+
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obsecuredPassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Warna.putih,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obsecuredPassword = !_obsecuredPassword;
+                            });
+                          },
+                        ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -169,9 +182,9 @@ class _LoginViewState extends State<LoginView> {
                             },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Warna.ungu,
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        padding: EdgeInsets.symmetric(vertical: 18),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       child: _authController.isLoggedIn

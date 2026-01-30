@@ -137,11 +137,8 @@ class _EditUserDialogState extends State<EditUserDialog> {
             ),
             SizedBox(height: 12),
             Text(
-              '⚠️ Tindakan ini tidak dapat dibatalkan!',
-              style: TextStyle(
-                color: Colors.orange,
-                fontSize: 12,
-                ),
+              '*indakan ini tidak dapat dibatalkan!',
+              style: TextStyle(color: Colors.orange, fontSize: 12),
             ),
           ],
         ),

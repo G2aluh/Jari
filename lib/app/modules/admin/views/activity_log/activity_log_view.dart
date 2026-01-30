@@ -1,109 +1,174 @@
 import 'package:jari/app/core/theme/app_colors.dart';
-import 'package:jari/app/core/theme/app_text_styles.dart';
+import 'package:jari/app/modules/admin/controllers/log_aktivitas_controller.dart';
+import 'package:jari/app/modules/admin/models/log_aktivitas_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ActivityLogView extends StatelessWidget {
   const ActivityLogView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Dummy data for logs
-    final List<Map<String, dynamic>> logs = [
-      {
-        'action': 'Login berhasil',
-        'user': 'Admin',
-        'time': '1 Jan 2023, 10:30 AM',
-        'icon': Icons.login,
-        'color': Warna.ungu,
-      },
-      {
-        'action': 'Penambahan alat baru',
-        'user': 'Admin',
-        'time': '1 Jan 2023, 11:15 AM',
-        'icon': Icons.inventory_2,
-        'color': Warna.kuning,
-      },
-      {
-        'action': 'Penambahan pengguna baru',
-        'user': 'Admin',
-        'time': '1 Jan 2023, 11:45 AM',
-        'icon': Icons.person_add,
-        'color': Warna.putih,
-      },
-      {
-        'action': 'Verifikasi peminjaman',
-        'user': 'Petugas',
-        'time': '1 Jan 2023, 1:20 PM',
-        'icon': Icons.check_circle,
-        'color': Warna.ungu,
-      },
-      {
-        'action': 'Pengembalian alat',
-        'user': 'Peminjam',
-        'time': '1 Jan 2023, 3:45 PM',
-        'icon': Icons.undo,
-        'color': Warna.kuning,
-      },
-    ];
+    // Initialize controller
+    final controller = Get.put(LogAktivitasController());
 
     return Container(
-      padding: EdgeInsets.all(24),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Log Aktivitas',
-            style: AppTextStyles.primaryText.copyWith(fontSize: 28),
-            textAlign: TextAlign.center,
+          // Header with refresh button
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Log Aktivitas',
+                style: TextStyle(
+                  color: Warna.putih,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              IconButton(
+                onPressed: () => controller.refreshLogs(),
+                icon: Icon(Icons.refresh, color: Warna.putih),
+                tooltip: 'Refresh',
+              ),
+            ],
           ),
-          SizedBox(height: 12),
-          Text(
-            'Lihat histori aktivitas pengguna dalam sistem',
-            style: TextStyle(fontSize: 16, color: Warna.putih.withOpacity(0.7)),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 24),
+          const SizedBox(height: 16),
+
+          // Log list
           Expanded(
-            child: ListView.separated(
-              itemCount: logs.length,
-              separatorBuilder: (context, index) => SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final log = logs[index];
-                return Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Warna.putih.withOpacity(0.2)),
-                    color: Warna.hitamTransparan,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: log['color'].withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(8),
+            child: Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (controller.logList.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.history,
+                        size: 64,
+                        color: Warna.putih.withOpacity(0.3),
                       ),
-                      child: Icon(log['icon'], color: log['color']),
-                    ),
-                    title: Text(
-                      log['action'],
-                      style: TextStyle(
-                        color: Warna.putih,
-                        fontWeight: FontWeight.bold,
+                      const SizedBox(height: 16),
+                      Text(
+                        'Belum ada log aktivitas',
+                        style: TextStyle(
+                          color: Warna.putih.withOpacity(0.5),
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                    subtitle: Text(
-                      '${log['user']} - ${log['time']}',
-                      style: TextStyle(color: Warna.putih.withOpacity(0.7)),
-                    ),
+                    ],
                   ),
                 );
-              },
-            ),
+              }
+
+              return RefreshIndicator(
+                onRefresh: () => controller.refreshLogs(),
+                child: ListView.separated(
+                  itemCount: controller.logList.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final log = controller.logList[index];
+                    return _buildLogItem(log);
+                  },
+                ),
+              );
+            }),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLogItem(LogAktivitas log) {
+    // Determine icon and color based on activity text
+    IconData icon = Icons.info;
+    Color color = Warna.ungu;
+
+    final aktivitasLower = log.aktivitas.toLowerCase();
+
+    if (aktivitasLower.contains('login')) {
+      icon = Icons.login;
+      color = Warna.ungu;
+    } else if (aktivitasLower.contains('logout')) {
+      icon = Icons.logout;
+      color = Warna.kuning;
+    } else if (aktivitasLower.contains('tambah') ||
+        aktivitasLower.contains('create') ||
+        aktivitasLower.contains('buat')) {
+      icon = Icons.add_circle;
+      color = Colors.green;
+    } else if (aktivitasLower.contains('hapus') ||
+        aktivitasLower.contains('delete')) {
+      icon = Icons.delete;
+      color = Colors.red;
+    } else if (aktivitasLower.contains('edit') ||
+        aktivitasLower.contains('update') ||
+        aktivitasLower.contains('ubah')) {
+      icon = Icons.edit;
+      color = Warna.kuning;
+    } else if (aktivitasLower.contains('peminjaman')) {
+      icon = Icons.inventory_2;
+      color = Warna.ungu;
+    } else if (aktivitasLower.contains('pengembalian') ||
+        aktivitasLower.contains('kembali')) {
+      icon = Icons.undo;
+      color = Colors.green;
+    } else if (aktivitasLower.contains('setuju') ||
+        aktivitasLower.contains('approve') ||
+        aktivitasLower.contains('verifikasi')) {
+      icon = Icons.check_circle;
+      color = Colors.green;
+    } else if (aktivitasLower.contains('tolak') ||
+        aktivitasLower.contains('reject')) {
+      icon = Icons.cancel;
+      color = Colors.red;
+    } else if (aktivitasLower.contains('alat') ||
+        aktivitasLower.contains('equipment')) {
+      icon = Icons.build;
+      color = Warna.kuning;
+    } else if (aktivitasLower.contains('pengguna') ||
+        aktivitasLower.contains('user')) {
+      icon = Icons.person;
+      color = Warna.putih;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Warna.putih.withOpacity(0.2)),
+        color: Warna.hitamTransparan,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: color),
+        ),
+        title: Text(
+          log.aktivitas,
+          style: const TextStyle(
+            color: Warna.putih,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(
+          '${log.namaPengguna} - ${log.tanggalFormatted}',
+          style: TextStyle(color: Warna.putih.withOpacity(0.7)),
+        ),
       ),
     );
   }
