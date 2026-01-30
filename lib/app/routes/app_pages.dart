@@ -74,14 +74,8 @@ class AppPages {
       name: Routes.categoryManagement,
       page: () => const CategoryManagementView(),
     ),
-    GetPage(
-      name: Routes.loanManagement,
-      page: () => const LoanManagementView(),
-    ),
-    GetPage(
-      name: Routes.returnManagement,
-      page: () => const ReturnManagementView(),
-    ),
+    GetPage(name: Routes.loanManagement, page: () => LoanManagementView()),
+    GetPage(name: Routes.returnManagement, page: () => ReturnManagementView()),
     GetPage(name: Routes.activityLog, page: () => const ActivityLogView()),
 
     // Petugas Dashboard

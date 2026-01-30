@@ -1,43 +1,23 @@
 import 'package:jari/app/core/theme/app_colors.dart';
 import 'package:jari/app/modules/admin/controllers/peminjaman_controller.dart';
-import 'package:jari/app/modules/admin/models/peminjaman_model.dart';
+import 'package:jari/app/modules/admin/models/pengguna_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class EditLoanDialog extends StatefulWidget {
-  final Peminjaman peminjaman;
+class AddPeminjamanDialog extends StatefulWidget {
   final PeminjamanController controller;
 
-  const EditLoanDialog({
-    super.key,
-    required this.peminjaman,
-    required this.controller,
-  });
+  const AddPeminjamanDialog({super.key, required this.controller});
 
   @override
-  State<EditLoanDialog> createState() => _EditLoanDialogState();
+  State<AddPeminjamanDialog> createState() => _AddPeminjamanDialogState();
 }
 
-class _EditLoanDialogState extends State<EditLoanDialog> {
-  late StatusPeminjaman _status;
-  late DateTime _tanggalJatuhTempo;
-  late TextEditingController _catatanController;
+class _AddPeminjamanDialogState extends State<AddPeminjamanDialog> {
+  Pengguna? _selectedPeminjam;
+  DateTime _tanggalPinjam = DateTime.now();
+  DateTime _tanggalJatuhTempo = DateTime.now().add(const Duration(days: 7));
   bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _status = widget.peminjaman.status;
-    _tanggalJatuhTempo = widget.peminjaman.tanggalJatuhTempo ?? DateTime.now();
-    _catatanController = TextEditingController(
-      text: widget.peminjaman.catatanPenolakan ?? '',
-    );
-  }
-
-  @override
-  void dispose() {
-    _catatanController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +40,7 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Edit Peminjaman',
+                  'Tambah Peminjaman',
                   style: TextStyle(
                     color: Warna.putih,
                     fontSize: 20,
@@ -73,50 +53,84 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-
-            // Kode Peminjaman (read-only)
-            Text(
-              'Kode: ${widget.peminjaman.kodePeminjaman ?? "-"}',
-              style: TextStyle(color: Warna.ungu, fontSize: 14),
-            ),
             const SizedBox(height: 24),
 
-            // Status Dropdown
+            // Peminjam Dropdown
             Text(
-              'Status',
+              'Peminjam',
               style: TextStyle(
                 color: Warna.putih.withOpacity(0.7),
                 fontSize: 14,
               ),
             ),
             const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: Warna.hitamTransparan,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Warna.putih.withOpacity(0.2)),
+            Obx(
+              () => Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: Warna.hitamTransparan,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Warna.putih.withOpacity(0.2)),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<Pengguna>(
+                    isExpanded: true,
+                    dropdownColor: Warna.hitamBackground,
+                    hint: Text(
+                      'Pilih Peminjam',
+                      style: TextStyle(color: Warna.putih.withOpacity(0.5)),
+                    ),
+                    value: _selectedPeminjam,
+                    items: widget.controller.peminjamList.map((peminjam) {
+                      return DropdownMenuItem<Pengguna>(
+                        value: peminjam,
+                        child: Text(
+                          peminjam.nama,
+                          style: TextStyle(color: Warna.putih),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedPeminjam = value;
+                      });
+                    },
+                  ),
+                ),
               ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<StatusPeminjaman>(
-                  isExpanded: true,
-                  dropdownColor: Warna.hitamBackground,
-                  value: _status,
-                  items: StatusPeminjaman.values.map((status) {
-                    return DropdownMenuItem<StatusPeminjaman>(
-                      value: status,
-                      child: Text(
-                        status.displayName,
-                        style: TextStyle(color: Warna.putih),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() => _status = value);
-                    }
-                  },
+            ),
+            const SizedBox(height: 16),
+
+            // Tanggal Pinjam
+            Text(
+              'Tanggal Pinjam',
+              style: TextStyle(
+                color: Warna.putih.withOpacity(0.7),
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: () => _selectDate(context, true),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Warna.hitamTransparan,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Warna.putih.withOpacity(0.2)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today, color: Warna.ungu, size: 20),
+                    const SizedBox(width: 12),
+                    Text(
+                      _formatDate(_tanggalPinjam),
+                      style: TextStyle(color: Warna.putih),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -132,7 +146,7 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
             ),
             const SizedBox(height: 8),
             GestureDetector(
-              onTap: _selectDate,
+              onTap: () => _selectDate(context, false),
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -152,45 +166,7 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-
-            // Catatan (visible when ditolak)
-            if (_status == StatusPeminjaman.ditolak) ...[
-              Text(
-                'Catatan Penolakan',
-                style: TextStyle(
-                  color: Warna.putih.withOpacity(0.7),
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _catatanController,
-                maxLines: 3,
-                style: TextStyle(color: Warna.putih),
-                decoration: InputDecoration(
-                  hintText: 'Masukkan alasan penolakan...',
-                  hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
-                  filled: true,
-                  fillColor: Warna.hitamTransparan,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Warna.putih.withOpacity(0.2)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Warna.putih.withOpacity(0.2)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Warna.ungu),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-
-            const SizedBox(height: 8),
+            const SizedBox(height: 24),
 
             // Buttons
             Row(
@@ -245,10 +221,10 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
     );
   }
 
-  Future<void> _selectDate() async {
+  Future<void> _selectDate(BuildContext context, bool isPinjam) async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: _tanggalJatuhTempo,
+      initialDate: isPinjam ? _tanggalPinjam : _tanggalJatuhTempo,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
       builder: (context, child) {
@@ -267,7 +243,13 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
     );
 
     if (picked != null) {
-      setState(() => _tanggalJatuhTempo = picked);
+      setState(() {
+        if (isPinjam) {
+          _tanggalPinjam = picked;
+        } else {
+          _tanggalJatuhTempo = picked;
+        }
+      });
     }
   }
 
@@ -276,15 +258,24 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
   }
 
   Future<void> _submit() async {
+    if (_selectedPeminjam == null) {
+      Get.snackbar(
+        'Error',
+        'Pilih peminjam terlebih dahulu',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(12),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
 
-    final success = await widget.controller.updatePeminjaman(
-      id: widget.peminjaman.id,
-      status: _status,
+    final success = await widget.controller.addPeminjaman(
+      peminjamId: _selectedPeminjam!.id,
+      tanggalPinjam: _tanggalPinjam,
       tanggalJatuhTempo: _tanggalJatuhTempo,
-      catatanPenolakan: _status == StatusPeminjaman.ditolak
-          ? _catatanController.text
-          : null,
     );
 
     setState(() => _isLoading = false);

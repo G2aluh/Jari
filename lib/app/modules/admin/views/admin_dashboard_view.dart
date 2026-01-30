@@ -31,9 +31,9 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
       case 3:
         return const CategoryManagementView();
       case 4:
-        return const LoanManagementView();
+        return LoanManagementView();
       case 5:
-        return const ReturnManagementView();
+        return ReturnManagementView();
       case 6:
         return const ActivityLogView();
       case 7:

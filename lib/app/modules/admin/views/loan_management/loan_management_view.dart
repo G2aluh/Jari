@@ -1,66 +1,26 @@
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/modules/admin/controllers/peminjaman_controller.dart';
+import 'package:jari/app/modules/admin/widgets/loan/add_peminjaman_dialog.dart';
 import 'package:jari/app/modules/admin/widgets/loan/delete_loan_dialog.dart';
 import 'package:jari/app/modules/admin/widgets/loan/edit_loan_dialog.dart';
 import 'package:jari/app/modules/admin/widgets/loan/loan_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class LoanManagementView extends StatelessWidget {
-  const LoanManagementView({super.key});
+  LoanManagementView({super.key});
+
+  final PeminjamanController controller = Get.put(PeminjamanController());
 
   @override
   Widget build(BuildContext context) {
-    // Dummy data for loans
-    final List<Map<String, dynamic>> loans = [
-      {
-        'id': '#1023',
-        'borrower': 'John Doe',
-        'items': [
-          {'name': 'Mesin Jahit', 'qty': 1},
-          {'name': 'Benang', 'qty': 5},
-        ],
-        'status': 'Menunggu',
-        'date': '21 Jan 2026',
-        'returnDate': '28 Jan 2026',
-      },
-      {
-        'id': '#1022',
-        'borrower': 'Jane Smith',
-        'items': [
-          {'name': 'Obeng Set', 'qty': 1},
-        ],
-        'status': 'Disetujui',
-        'date': '20 Jan 2026',
-        'returnDate': '27 Jan 2026',
-      },
-      {
-        'id': '#1021',
-        'borrower': 'Ahmad Dahlan',
-        'items': [
-          {'name': 'Laptop Asus Rog', 'qty': 1},
-          {'name': 'Mouse Logitech', 'qty': 1},
-        ],
-        'status': 'Ditolak',
-        'date': '19 Jan 2026',
-        'returnDate': '26 Jan 2026',
-      },
-      {
-        'id': '#1020',
-        'borrower': 'Siti Nurhaliza',
-        'items': [
-          {'name': 'Kamera Canon', 'qty': 1},
-        ],
-        'status': 'Selesai',
-        'date': '18 Jan 2026',
-        'returnDate': '25 Jan 2026',
-      },
-    ];
-
     return Container(
-      padding: EdgeInsets.only(bottom: 24, left: 24, right: 24),
-      child: ListView(
+      padding: const EdgeInsets.only(bottom: 24, left: 24, right: 24),
+      child: Column(
         children: [
           // Search Input
           TextField(
+            onChanged: controller.searchPeminjaman,
             style: TextStyle(color: Warna.putih),
             decoration: InputDecoration(
               hintText: 'Cari kode peminjaman...',
@@ -85,47 +45,102 @@ class LoanManagementView extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
-          // Use similar "Add" button placeholder if needed for consistency,
-          // though "Add Loan" might be less common for Admin.
-          // But user asked for "mirip", so keeping the layout consistent.
-          // Leaving it blank or creating a dummy button?
-          // Usually Admin views follow the pattern. Let's add it but maybe for "Manual Loan".
-          // Or just omit if not requested. But the structure "search -> space -> list" is good.
-          // I will omit the "Add" button as typically Peminjaman starts from User.
-          // If user insists on *exactly* similar, I'd add it.
-          // For now, I'll stick to the list.
-
-          // Actually, let's keep the spacing consistent.
-          SizedBox(height: 8),
-
-          // Loan List
-          ...loans
-              .map(
-                (loan) => LoanCard(
-                  loan: loan,
-                  onEdit: () => _showEditDialog(context, loan),
-                  onDelete: () => _showDeleteDialog(context, loan),
+          // Add Button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => _showAddDialog(context),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text(
+                'Tambah Peminjaman',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
-              )
-              .toList(),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Warna.ungu,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // List
+          Expanded(
+            child: Obx(() {
+              if (controller.isLoading.value) {
+                return Center(
+                  child: CircularProgressIndicator(color: Warna.ungu),
+                );
+              }
+
+              if (controller.filteredPeminjamanList.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.inbox_outlined,
+                        size: 64,
+                        color: Warna.putih.withOpacity(0.3),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Belum ada data peminjaman',
+                        style: TextStyle(
+                          color: Warna.putih.withOpacity(0.5),
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                itemCount: controller.filteredPeminjamanList.length,
+                itemBuilder: (context, index) {
+                  final peminjaman = controller.filteredPeminjamanList[index];
+                  return LoanCard(
+                    peminjaman: peminjaman,
+                    onEdit: () => _showEditDialog(context, peminjaman),
+                    onDelete: () => _showDeleteDialog(context, peminjaman),
+                  );
+                },
+              );
+            }),
+          ),
         ],
       ),
     );
   }
 
-  void _showEditDialog(BuildContext context, Map<String, dynamic> loan) {
+  void _showAddDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => EditLoanDialog(loan: loan),
+      builder: (context) => AddPeminjamanDialog(controller: controller),
     );
   }
 
-  void _showDeleteDialog(BuildContext context, Map<String, dynamic> loan) {
+  void _showEditDialog(BuildContext context, peminjaman) {
     showDialog(
       context: context,
-      builder: (context) => DeleteLoanDialog(loan: loan),
+      builder: (context) =>
+          EditLoanDialog(peminjaman: peminjaman, controller: controller),
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, peminjaman) {
+    showDialog(
+      context: context,
+      builder: (context) =>
+          DeleteLoanDialog(peminjaman: peminjaman, controller: controller),
     );
   }
 }

@@ -1,14 +1,15 @@
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/modules/admin/models/pengembalian_model.dart';
 import 'package:flutter/material.dart';
 
 class ReturnCard extends StatelessWidget {
-  final Map<String, dynamic> item;
+  final Pengembalian pengembalian;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   const ReturnCard({
     super.key,
-    required this.item,
+    required this.pengembalian,
     required this.onEdit,
     required this.onDelete,
   });
@@ -16,8 +17,8 @@ class ReturnCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
       decoration: BoxDecoration(
         border: Border.all(color: Warna.putih.withOpacity(0.2)),
         color: Warna.hitamTransparan,
@@ -29,73 +30,93 @@ class ReturnCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Warna.ungu.withOpacity(0.2),
+                color: Colors.blue.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(Icons.assignment_return, color: Warna.ungu, size: 24),
+              child: const Icon(
+                Icons.assignment_return,
+                color: Colors.blue,
+                size: 24,
+              ),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item['id'],
+                    pengembalian.kodePeminjaman,
                     style: TextStyle(
                       color: Warna.putih,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 2),
+                  Text(
+                    pengembalian.namaPeminjam,
+                    style: TextStyle(
+                      color: Warna.putih.withOpacity(0.7),
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
                       Text(
-                        item['date'],
+                        pengembalian.tanggalKembaliFormatted,
                         style: TextStyle(
                           color: Warna.putih.withOpacity(0.5),
                           fontSize: 12,
                         ),
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
+                      if (pengembalian.terlambatHari > 0)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'Terlambat ${pengembalian.terlambatHari} hari',
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                      const SizedBox(width: 8),
                       Container(
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 6,
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
                           color: _getStatusColor(
-                            item['status'],
+                            pengembalian.status,
                           ).withOpacity(0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          item['status'],
+                          pengembalian.status.displayName,
                           style: TextStyle(
-                            color: _getStatusColor(item['status']),
+                            color: _getStatusColor(pengembalian.status),
                             fontSize: 10,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  if (item['fine'] != null && item['fine'] > 0) ...[
-                    SizedBox(height: 4),
-                    Text(
-                      'Denda: Rp ${item['fine']}',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
@@ -103,7 +124,7 @@ class ReturnCard extends StatelessWidget {
                 GestureDetector(
                   onTap: onEdit,
                   child: Container(
-                    padding: EdgeInsets.all(6),
+                    padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       color: Warna.abuAbu,
                       borderRadius: BorderRadius.circular(6),
@@ -112,11 +133,11 @@ class ReturnCard extends StatelessWidget {
                     child: Icon(Icons.edit, color: Warna.putih, size: 16),
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 GestureDetector(
                   onTap: onDelete,
                   child: Container(
-                    padding: EdgeInsets.all(6),
+                    padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       color: Warna.abuAbu,
                       borderRadius: BorderRadius.circular(6),
@@ -133,14 +154,12 @@ class ReturnCard extends StatelessWidget {
     );
   }
 
-  Color _getStatusColor(String status) {
+  Color _getStatusColor(StatusPengembalian status) {
     switch (status) {
-      case 'Menunggu':
+      case StatusPengembalian.menunggu:
         return Warna.kuning;
-      case 'Selesai':
+      case StatusPengembalian.selesai:
         return Colors.green;
-      default:
-        return Colors.grey;
     }
   }
 }
