@@ -1,3 +1,5 @@
+import 'package:jari/app/modules/admin/models/alat_model.dart';
+import 'package:jari/app/modules/admin/models/detail_peminjaman_model.dart';
 import 'package:jari/app/modules/admin/models/peminjaman_model.dart';
 import 'package:jari/app/modules/admin/models/pengguna_model.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,9 @@ class PeminjamanController extends GetxController {
   // List of peminjam (untuk dropdown)
   final RxList<Pengguna> peminjamList = <Pengguna>[].obs;
 
+  // List of alat (untuk dropdown selection)
+  final RxList<Alat> alatList = <Alat>[].obs;
+
   // Loading state
   final RxBool isLoading = false.obs;
 
@@ -25,6 +30,7 @@ class PeminjamanController extends GetxController {
     super.onInit();
     fetchPeminjaman();
     fetchPeminjamList();
+    fetchAlatList();
   }
 
   /// Fetch all peminjaman from Supabase with relations
@@ -71,6 +77,43 @@ class PeminjamanController extends GetxController {
     }
   }
 
+  /// Fetch list of available alat
+  Future<void> fetchAlatList() async {
+    try {
+      final response = await _supabase
+          .from('alat')
+          .select()
+          .eq('aktif', true)
+          .gt('stok_tersedia', 0) // Hanya ambil yang ada stok
+          .order('nama_alat');
+
+      alatList.value = (response as List)
+          .map((json) => Alat.fromJson(json))
+          .toList();
+    } catch (e) {
+      debugPrint('Error fetching alat list: $e');
+    }
+  }
+
+  /// Fetch detail peminjaman for a specific loan
+  Future<List<DetailPeminjaman>> fetchDetailPeminjaman(
+    String peminjamanId,
+  ) async {
+    try {
+      final response = await _supabase
+          .from('detail_peminjaman')
+          .select('*, alat:alat_id(*)')
+          .eq('peminjaman_id', peminjamanId);
+
+      return (response as List)
+          .map((json) => DetailPeminjaman.fromJson(json))
+          .toList();
+    } catch (e) {
+      debugPrint('Error fetching detail peminjaman: $e');
+      return [];
+    }
+  }
+
   /// Search peminjaman by kode or nama peminjam
   void searchPeminjaman(String query) {
     searchQuery.value = query;
@@ -98,22 +141,38 @@ class PeminjamanController extends GetxController {
     required String peminjamId,
     required DateTime tanggalPinjam,
     required DateTime tanggalJatuhTempo,
+    required List<AlatSelection> selectedAlat,
   }) async {
     try {
       isLoading.value = true;
 
-      // kode_peminjaman tidak perlu dikirim,
-      // akan di-generate oleh trigger 'generate_kode_peminjaman' di Supabase
-      await _supabase.from('peminjaman').insert({
-        'peminjam_id': peminjamId,
-        'tanggal_pinjam': tanggalPinjam.toIso8601String().split('T').first,
-        'tanggal_jatuh_tempo': tanggalJatuhTempo
-            .toIso8601String()
-            .split('T')
-            .first,
-        'status': 'menunggu',
-        'total_denda': 0,
-      });
+      // 1. Insert ke tabel peminjaman
+      final peminjamanResponse = await _supabase
+          .from('peminjaman')
+          .insert({
+            'peminjam_id': peminjamId,
+            'tanggal_pinjam': tanggalPinjam.toIso8601String().split('T').first,
+            'tanggal_jatuh_tempo': tanggalJatuhTempo
+                .toIso8601String()
+                .split('T')
+                .first,
+            'status': 'menunggu',
+          })
+          .select()
+          .single();
+
+      final peminjamanIdNew = peminjamanResponse['id'] as String;
+
+      // 2. Insert ke detail_peminjaman untuk setiap alat
+      for (var selection in selectedAlat) {
+        await _supabase.from('detail_peminjaman').insert({
+          'peminjaman_id': peminjamanIdNew,
+          'alat_id': selection.alat.id,
+          'jumlah': selection.jumlah,
+        });
+
+        // Note: Stok updates handed by DB trigger or manual if needed later
+      }
 
       await fetchPeminjaman();
       _showSuccess('Peminjaman berhasil ditambahkan');
@@ -123,6 +182,8 @@ class PeminjamanController extends GetxController {
       return false;
     } finally {
       isLoading.value = false;
+      // Refresh alat list karena stok mungkin berubah
+      fetchAlatList();
     }
   }
 
@@ -132,7 +193,6 @@ class PeminjamanController extends GetxController {
     StatusPeminjaman? status,
     DateTime? tanggalJatuhTempo,
     String? catatanPenolakan,
-    double? totalDenda,
     String? petugasId,
   }) async {
     try {
@@ -154,13 +214,11 @@ class PeminjamanController extends GetxController {
       if (catatanPenolakan != null) {
         updateData['catatan_penolakan'] = catatanPenolakan;
       }
-      if (totalDenda != null) {
-        updateData['total_denda'] = totalDenda;
-      }
       if (petugasId != null) {
         updateData['petugas_id'] = petugasId;
       }
 
+      // Update data utama peminjaman
       await _supabase.from('peminjaman').update(updateData).eq('id', id);
 
       await fetchPeminjaman();
@@ -174,11 +232,71 @@ class PeminjamanController extends GetxController {
     }
   }
 
+  /// Update detail item peminjaman (tambah/hapus/edit jumlah)
+  Future<bool> updateLoanItems(
+    String peminjamanId,
+    List<AlatSelection> newItems,
+  ) async {
+    try {
+      isLoading.value = true;
+
+      // 1. Ambil existing items
+      final existingItems = await fetchDetailPeminjaman(peminjamanId);
+
+      // 2. Tentukan items yang harus dihapus (ada di existing tapi tidak di new)
+      final itemsToDelete = existingItems.where((existing) {
+        return !newItems.any((newI) => newI.alat.id == existing.alatId);
+      }).toList();
+
+      // 3. Tentukan items yang harus ditambah atau diupdate
+      for (var item in newItems) {
+        final existingItem = existingItems.firstWhereOrNull(
+          (e) => e.alatId == item.alat.id,
+        );
+
+        if (existingItem == null) {
+          // INSERT NEW
+          await _supabase.from('detail_peminjaman').insert({
+            'peminjaman_id': peminjamanId,
+            'alat_id': item.alat.id,
+            'jumlah': item.jumlah,
+          });
+        } else if (existingItem.jumlah != item.jumlah) {
+          // UPDATE JUMLAH
+          await _supabase
+              .from('detail_peminjaman')
+              .update({'jumlah': item.jumlah})
+              .eq('id', existingItem.id);
+        }
+      }
+
+      // 4. Eksekusi hapus
+      for (var item in itemsToDelete) {
+        await _supabase.from('detail_peminjaman').delete().eq('id', item.id);
+      }
+
+      return true;
+    } catch (e) {
+      _showError('Gagal update item peminjaman: $e');
+      return false;
+    } finally {
+      isLoading.value = false;
+      fetchAlatList(); // refresh stok
+    }
+  }
+
   /// Delete peminjaman
   Future<bool> deletePeminjaman(String id) async {
     try {
       isLoading.value = true;
 
+      // Hapus detail terlebih dahulu (jika tidak cascade delete)
+      await _supabase
+          .from('detail_peminjaman')
+          .delete()
+          .eq('peminjaman_id', id);
+
+      // Hapus header peminjaman
       await _supabase.from('peminjaman').delete().eq('id', id);
 
       await fetchPeminjaman();

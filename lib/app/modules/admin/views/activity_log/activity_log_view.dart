@@ -22,7 +22,7 @@ class ActivityLogView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Log Aktivitas',
+                'Aktivitas Pengguna',
                 style: TextStyle(
                   color: Warna.putih,
                   fontSize: 20,
@@ -68,17 +68,14 @@ class ActivityLogView extends StatelessWidget {
                 );
               }
 
-              return RefreshIndicator(
-                onRefresh: () => controller.refreshLogs(),
-                child: ListView.separated(
-                  itemCount: controller.logList.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final log = controller.logList[index];
-                    return _buildLogItem(log);
-                  },
-                ),
+              return ListView.separated(
+                itemCount: controller.logList.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final log = controller.logList[index];
+                  return _buildLogItem(log);
+                },
               );
             }),
           ),

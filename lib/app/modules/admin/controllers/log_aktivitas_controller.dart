@@ -30,7 +30,7 @@ class LogAktivitasController extends GetxController {
             pengguna:pengguna_id(id, nama)
           ''')
           .order('dibuat_pada', ascending: false)
-          .limit(100); // Limit to last 100 logs
+          .limit(30); // Limit to last 30 logs
 
       logList.value = (response as List)
           .map((json) => LogAktivitas.fromJson(json))

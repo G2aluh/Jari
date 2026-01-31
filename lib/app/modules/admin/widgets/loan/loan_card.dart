@@ -137,10 +137,16 @@ class LoanCard extends StatelessWidget {
         return Warna.kuning;
       case StatusPeminjaman.disetujui:
         return Colors.green;
+      case StatusPeminjaman.dipinjam:
+        return Warna.ungu;
       case StatusPeminjaman.ditolak:
         return Colors.red;
       case StatusPeminjaman.selesai:
         return Colors.blue;
+      case StatusPeminjaman.terlambat:
+        return Colors.redAccent;
+      case StatusPeminjaman.batal:
+        return Colors.grey;
     }
   }
 }

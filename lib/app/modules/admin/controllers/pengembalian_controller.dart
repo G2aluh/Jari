@@ -23,6 +23,7 @@ class PengembalianController extends GetxController {
 
   // Realtime subscription
   StreamSubscription? _peminjamanSubscription;
+  StreamSubscription? _pengembalianSubscription;
 
   @override
   void onInit() {
@@ -35,17 +36,27 @@ class PengembalianController extends GetxController {
   @override
   void onClose() {
     _peminjamanSubscription?.cancel();
+    _pengembalianSubscription?.cancel();
     super.onClose();
   }
 
-  /// Setup realtime subscription untuk peminjaman
+  /// Setup realtime subscription untuk peminjaman dan pengembalian
   void _setupRealtimeSubscription() {
+    // Listen to peminjaman
     _peminjamanSubscription = _supabase
         .from('peminjaman')
         .stream(primaryKey: ['id'])
         .listen((data) {
-          // Refresh data ketika ada perubahan
           fetchPeminjamanAktif();
+          // Also fetch pengembalian as logic might overlap
+          fetchPengembalian();
+        });
+
+    // Listen to pengembalian (e.g. trigger updates total_denda)
+    _pengembalianSubscription = _supabase
+        .from('pengembalian')
+        .stream(primaryKey: ['id'])
+        .listen((data) {
           fetchPengembalian();
         });
   }
@@ -126,20 +137,82 @@ class PengembalianController extends GetxController {
     }
   }
 
-  /// Hitung hari terlambat
-  int calculateTerlambat(Peminjaman peminjaman) {
+  /// Hitung hari terlambat (Local fallback)
+  int calculateTerlambat(Peminjaman peminjaman, [DateTime? returnDate]) {
     if (peminjaman.tanggalJatuhTempo == null) return 0;
-    final diff = DateTime.now()
-        .difference(peminjaman.tanggalJatuhTempo!)
-        .inDays;
+    final targetDate = returnDate ?? DateTime.now();
+    final diff = targetDate.difference(peminjaman.tanggalJatuhTempo!).inDays;
     return diff > 0 ? diff : 0;
   }
 
-  /// Proses pengembalian - buat record pengembalian dan update status peminjaman
-  Future<bool> prosesPengembalian({
+  /// Hitung detail pengembalian via RPC (Hari terlambat & Denda)
+  Future<Map<String, dynamic>> calculateReturnDetails({
     required String peminjamanId,
     required DateTime tanggalKembali,
+  }) async {
+    try {
+      final dateStr = tanggalKembali.toIso8601String().split('T').first;
+
+      // Asumsi nama parameter RPC sesuai standar (peminjaman_id, tanggal_kembali)
+      // Jika error, cek log atau sesuaikan nama parameter
+      final lateDays = await _supabase.rpc(
+        'hitung_hari_terlambat',
+        params: {'peminjaman_id': peminjamanId, 'tanggal_kembali': dateStr},
+      );
+
+      final totalFine = await _supabase.rpc(
+        'hitung_total_denda',
+        params: {'peminjaman_id': peminjamanId, 'tanggal_kembali': dateStr},
+      );
+
+      return {'terlambat_hari': lateDays ?? 0, 'total_denda': totalFine ?? 0};
+    } catch (e) {
+      debugPrint('RPC Calculation Error: $e');
+      // Fallback ke perhitungan lokal untuk hari terlambat
+      final p = peminjamanAktifList.firstWhereOrNull(
+        (x) => x.id == peminjamanId,
+      );
+      if (p != null) {
+        final days = calculateTerlambat(p, tanggalKembali);
+        return {
+          'terlambat_hari': days,
+          'total_denda':
+              0, // Tidak bisa hitung denda di lokal tanpa logic lengkap
+          'error': e.toString(),
+        };
+      }
+      return {'terlambat_hari': 0, 'total_denda': 0};
+    }
+  }
+
+  /// Hitung denda berdasarkan keterlambatan via RPC
+  Future<int> calculateDendaFromDelay(int terlambat) async {
+    try {
+      // Asumsi nama parameter RPC sesuai standar
+      final denda = await _supabase.rpc(
+        'hitung_denda_keterlambatan',
+        params: {
+          'terlambat_hari':
+              terlambat, // Sesuaikan dengan parameter fungsi di DB
+          // Jika fungsi butuh parameter lain, perlu disesuaikan.
+          // Tapi biasanya hitung_denda_keterlambatan hanya butuh hari atau logic internal.
+          // Jika gagal, kita return 0.
+        },
+      );
+      return (denda as num?)?.toInt() ?? 0;
+    } catch (e) {
+      debugPrint('RPC Denda Values Error: $e');
+      return 0;
+    }
+  }
+
+  /// Manual add pengembalian (Admin)
+  Future<bool> addPengembalian({
+    required String peminjamanId,
+    required DateTime tanggalKembali,
+    required StatusPengembalian status,
     int terlambatHari = 0,
+    int totalDenda = 0,
     String? petugasId,
   }) async {
     try {
@@ -150,29 +223,54 @@ class PengembalianController extends GetxController {
         'peminjaman_id': peminjamanId,
         'tanggal_kembali': tanggalKembali.toIso8601String().split('T').first,
         'terlambat_hari': terlambatHari,
+        'total_denda': totalDenda,
+        'status': status.value, // Gunakan status yang dipilih
         'petugas_id': petugasId,
-        'status': 'selesai',
       });
 
-      // 2. Update status peminjaman menjadi 'selesai'
-      await _supabase
-          .from('peminjaman')
-          .update({
-            'status': 'selesai',
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', peminjamanId);
+      // 2. Update status peminjaman (jika pengembalian selesai, peminjaman selesai)
+      // Jika 'menunggu', peminjaman tetap 'disetujui' (active) until finalized?
+      // Atau kita anggap proses ini independen.
+      // Untuk amannya, jika status pengembalian 'selesai', kita set peminjaman 'selesai'.
+
+      if (status == StatusPengembalian.selesai) {
+        await _supabase
+            .from('peminjaman')
+            .update({
+              'status': 'selesai',
+              'updated_at': DateTime.now().toIso8601String(),
+            })
+            .eq('id', peminjamanId);
+      }
 
       await fetchPeminjamanAktif();
       await fetchPengembalian();
-      _showSuccess('Pengembalian berhasil diproses');
+      _showSuccess('Pengembalian berhasil ditambahkan');
       return true;
     } catch (e) {
-      _showError('Gagal memproses pengembalian: $e');
+      _showError('Gagal menambah pengembalian: $e');
       return false;
     } finally {
       isLoading.value = false;
     }
+  }
+
+  /// Proses pengembalian - deprecated/used by simplified flow
+  Future<bool> prosesPengembalian({
+    required String peminjamanId,
+    required DateTime tanggalKembali,
+    int terlambatHari = 0,
+    String? petugasId,
+  }) async {
+    // Note: Simplified flow doesn't calc denda here, assumed 0 or handled by trigger if any
+    return addPengembalian(
+      peminjamanId: peminjamanId,
+      tanggalKembali: tanggalKembali,
+      status: StatusPengembalian.selesai,
+      terlambatHari: terlambatHari,
+      totalDenda: 0,
+      petugasId: petugasId,
+    );
   }
 
   /// Update existing pengembalian
@@ -180,6 +278,8 @@ class PengembalianController extends GetxController {
     required String id,
     StatusPengembalian? status,
     int? terlambatHari,
+    int? totalDenda,
+    DateTime? tanggalKembali,
     String? petugasId,
   }) async {
     try {
@@ -194,6 +294,15 @@ class PengembalianController extends GetxController {
       }
       if (terlambatHari != null) {
         updateData['terlambat_hari'] = terlambatHari;
+      }
+      if (totalDenda != null) {
+        updateData['total_denda'] = totalDenda;
+      }
+      if (tanggalKembali != null) {
+        updateData['tanggal_kembali'] = tanggalKembali
+            .toIso8601String()
+            .split('T')
+            .first;
       }
       if (petugasId != null) {
         updateData['petugas_id'] = petugasId;

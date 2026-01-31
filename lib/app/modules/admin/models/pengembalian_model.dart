@@ -41,6 +41,7 @@ class Pengembalian {
   final String? petugasId;
   final DateTime tanggalKembali;
   final int terlambatHari;
+  final int denda;
   final StatusPengembalian status;
   final DateTime? dibuatPada;
   final DateTime? updatedAt;
@@ -55,6 +56,7 @@ class Pengembalian {
     this.petugasId,
     required this.tanggalKembali,
     this.terlambatHari = 0,
+    this.denda = 0,
     this.status = StatusPengembalian.menunggu,
     this.dibuatPada,
     this.updatedAt,
@@ -69,7 +71,8 @@ class Pengembalian {
       peminjamanId: json['peminjaman_id'] as String,
       petugasId: json['petugas_id'] as String?,
       tanggalKembali: DateTime.parse(json['tanggal_kembali'] as String),
-      terlambatHari: (json['terlambat_hari'] as int?) ?? 0,
+      terlambatHari: int.tryParse(json['terlambat_hari'].toString()) ?? 0,
+      denda: int.tryParse(json['total_denda'].toString()) ?? 0,
       status: StatusPengembalianExtension.fromString(json['status'] as String?),
       dibuatPada: json['dibuat_pada'] != null
           ? DateTime.tryParse(json['dibuat_pada'] as String)
@@ -95,6 +98,7 @@ class Pengembalian {
       'petugas_id': petugasId,
       'tanggal_kembali': tanggalKembali.toIso8601String().split('T').first,
       'terlambat_hari': terlambatHari,
+      'total_denda': denda,
       'status': status.value,
     };
   }
@@ -102,6 +106,10 @@ class Pengembalian {
   /// Format tanggal untuk display
   String get tanggalKembaliFormatted {
     return '${tanggalKembali.day.toString().padLeft(2, '0')}/${tanggalKembali.month.toString().padLeft(2, '0')}/${tanggalKembali.year}';
+  }
+
+  String get dendaFormatted {
+    return 'Rp ${denda.toStringAsFixed(0)}'; // Basic formatting
   }
 
   /// Kode peminjaman untuk display
@@ -117,6 +125,7 @@ class Pengembalian {
     String? petugasId,
     DateTime? tanggalKembali,
     int? terlambatHari,
+    int? denda,
     StatusPengembalian? status,
     DateTime? dibuatPada,
     DateTime? updatedAt,
@@ -129,6 +138,7 @@ class Pengembalian {
       petugasId: petugasId ?? this.petugasId,
       tanggalKembali: tanggalKembali ?? this.tanggalKembali,
       terlambatHari: terlambatHari ?? this.terlambatHari,
+      denda: denda ?? this.denda,
       status: status ?? this.status,
       dibuatPada: dibuatPada ?? this.dibuatPada,
       updatedAt: updatedAt ?? this.updatedAt,

@@ -1,6 +1,8 @@
 import 'package:jari/app/core/theme/app_colors.dart';
 import 'package:jari/app/modules/admin/controllers/pengembalian_controller.dart';
-import 'package:jari/app/modules/admin/models/peminjaman_model.dart';
+import 'package:jari/app/modules/admin/models/pengembalian_model.dart';
+import 'package:jari/app/modules/admin/widgets/return/add_return_dialog.dart';
+import 'package:jari/app/modules/admin/widgets/return/edit_return_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -42,9 +44,34 @@ class ReturnManagementView extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
 
-          // List - Menampilkan peminjaman yang perlu dikembalikan
+          // Add Button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () =>
+                  Get.dialog(AddReturnDialog(controller: controller)),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text(
+                'Tambah Pengembalian',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Warna.ungu,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // List Pengembalian
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
@@ -53,19 +80,19 @@ class ReturnManagementView extends StatelessWidget {
                 );
               }
 
-              if (controller.filteredPeminjamanList.isEmpty) {
+              if (controller.pengembalianList.isEmpty) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        Icons.check_circle_outline,
+                        Icons.history_edu,
                         size: 64,
-                        color: Colors.green.withOpacity(0.3),
+                        color: Warna.putih.withOpacity(0.2),
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Tidak ada peminjaman yang perlu dikembalikan',
+                        'Belum ada data pengembalian',
                         style: TextStyle(
                           color: Warna.putih.withOpacity(0.5),
                           fontSize: 16,
@@ -78,12 +105,174 @@ class ReturnManagementView extends StatelessWidget {
               }
 
               return ListView.builder(
-                itemCount: controller.filteredPeminjamanList.length,
+                itemCount: controller.pengembalianList.length,
                 itemBuilder: (context, index) {
-                  final peminjaman = controller.filteredPeminjamanList[index];
-                  return _PeminjamanReturnCard(
-                    peminjaman: peminjaman,
-                    controller: controller,
+                  final pengembalian = controller.pengembalianList[index];
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Warna.putih.withOpacity(0.2)),
+                      color: Warna.hitamTransparan,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Warna.ungu.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.assignment_return,
+                              color: Warna.ungu,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  pengembalian.kodePeminjaman,
+                                  style: TextStyle(
+                                    color: Warna.putih,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  pengembalian.namaPeminjam,
+                                  style: TextStyle(
+                                    color: Warna.putih.withOpacity(0.7),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.calendar_today,
+                                      size: 12,
+                                      color: Warna.putih.withOpacity(0.5),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      pengembalian.tanggalKembaliFormatted,
+                                      style: TextStyle(
+                                        color: Warna.putih.withOpacity(0.5),
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            (pengembalian.status ==
+                                                        StatusPengembalian
+                                                            .selesai
+                                                    ? Colors.green
+                                                    : Colors.orange)
+                                                .withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        pengembalian.status.displayName,
+                                        style: TextStyle(
+                                          color:
+                                              pengembalian.status ==
+                                                  StatusPengembalian.selesai
+                                              ? Colors.green
+                                              : Colors.orange,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (pengembalian.terlambatHari > 0) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Terlambat ${pengembalian.terlambatHari} Hari',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              GestureDetector(
+                                onTap: () => Get.dialog(
+                                  EditReturnDialog(
+                                    pengembalian: pengembalian,
+                                    controller: controller,
+                                  ),
+                                ),
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: Warna.abuAbu,
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                      color: Warna.putih.withOpacity(0.2),
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.edit,
+                                    color: Warna.putih,
+                                    size: 16,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              GestureDetector(
+                                onTap: () =>
+                                    _confirmDelete(context, pengembalian.id),
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: Warna.abuAbu,
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                      color: Warna.putih.withOpacity(0.2),
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.delete,
+                                    color: Warna.putih,
+                                    size: 16,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 },
               );
@@ -93,342 +282,38 @@ class ReturnManagementView extends StatelessWidget {
       ),
     );
   }
-}
 
-/// Card untuk menampilkan peminjaman aktif yang perlu dikembalikan
-class _PeminjamanReturnCard extends StatelessWidget {
-  final Peminjaman peminjaman;
-  final PengembalianController controller;
-
-  const _PeminjamanReturnCard({
-    required this.peminjaman,
-    required this.controller,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final terlambat = controller.calculateTerlambat(peminjaman);
-    final isLate = terlambat > 0;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: isLate
-              ? Colors.red.withOpacity(0.5)
-              : Warna.putih.withOpacity(0.2),
-        ),
-        color: Warna.hitamTransparan,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header Row
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: isLate
-                      ? Colors.red.withOpacity(0.2)
-                      : Warna.ungu.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.assignment,
-                  color: isLate ? Colors.red : Warna.ungu,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      peminjaman.kodePeminjaman ?? 'No Code',
-                      style: TextStyle(
-                        color: Warna.putih,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      peminjaman.namaPeminjam,
-                      style: TextStyle(
-                        color: Warna.putih.withOpacity(0.7),
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (isLate)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    'Terlambat $terlambat hari',
-                    style: const TextStyle(
-                      color: Colors.red,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          // Info Row
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Warna.abuAbu.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _infoItem(
-                    'Tanggal Pinjam',
-                    peminjaman.tanggalPinjamFormatted,
-                    Icons.calendar_today,
-                  ),
-                ),
-                Container(
-                  width: 1,
-                  height: 30,
-                  color: Warna.putih.withOpacity(0.2),
-                ),
-                Expanded(
-                  child: _infoItem(
-                    'Jatuh Tempo',
-                    peminjaman.tanggalJatuhTempoFormatted,
-                    Icons.event,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Action Button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => _showProsesPengembalianDialog(context),
-              icon: const Icon(Icons.check, color: Colors.white),
-              label: const Text(
-                'Proses Pengembalian',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isLate ? Colors.red : Colors.green,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _infoItem(String label, String value, IconData icon) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, color: Warna.putih.withOpacity(0.5), size: 16),
-        const SizedBox(width: 8),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                color: Warna.putih.withOpacity(0.5),
-                fontSize: 10,
-              ),
-            ),
-            Text(
-              value,
-              style: TextStyle(
-                color: Warna.putih,
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  void _showProsesPengembalianDialog(BuildContext context) {
-    final terlambat = controller.calculateTerlambat(peminjaman);
-
+  void _confirmDelete(BuildContext context, String id) {
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: Container(
-          width: 380,
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Warna.hitamBackground,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Warna.putih.withOpacity(0.1)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Icon
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.assignment_return,
-                  color: Colors.green,
-                  size: 40,
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Title
-              Text(
-                'Konfirmasi Pengembalian',
-                style: TextStyle(
-                  color: Warna.putih,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Info
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Warna.abuAbu.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  children: [
-                    _dialogInfoRow('Kode', peminjaman.kodePeminjaman ?? '-'),
-                    _dialogInfoRow('Peminjam', peminjaman.namaPeminjam),
-                    _dialogInfoRow(
-                      'Tanggal Kembali',
-                      _formatDate(DateTime.now()),
-                    ),
-                    if (terlambat > 0)
-                      _dialogInfoRow(
-                        'Keterlambatan',
-                        '$terlambat hari',
-                        isWarning: true,
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(color: Warna.putih.withOpacity(0.2)),
-                        ),
-                      ),
-                      child: Text(
-                        'Batal',
-                        style: TextStyle(color: Warna.putih),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        Navigator.pop(context);
-                        await controller.prosesPengembalian(
-                          peminjamanId: peminjaman.id,
-                          tanggalKembali: DateTime.now(),
-                          terlambatHari: terlambat,
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Konfirmasi',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+      builder: (context) => AlertDialog(
+        backgroundColor: Warna.hitamBackground,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: Warna.putih.withOpacity(0.2)),
         ),
-      ),
-    );
-  }
-
-  Widget _dialogInfoRow(String label, String value, {bool isWarning = false}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(color: Warna.putih.withOpacity(0.6), fontSize: 13),
+        title: Text(
+          'Hapus Pengembalian?',
+          style: TextStyle(color: Warna.putih),
+        ),
+        content: Text(
+          'Data pengembalian akan dihapus permanen.',
+          style: TextStyle(color: Warna.putih.withOpacity(0.7)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Batal', style: TextStyle(color: Warna.putih)),
           ),
-          Text(
-            value,
-            style: TextStyle(
-              color: isWarning ? Colors.red : Warna.putih,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              controller.deletePengembalian(id);
+            },
+            child: Text('Hapus', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 }
