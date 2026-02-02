@@ -195,30 +195,33 @@ class _RiwayatPeminjamanViewState extends State<RiwayatPeminjamanView> {
                 style: TextStyle(color: Warna.putih.withOpacity(0.7)),
               ),
               Text(
-                loan.tanggalKembaliFormatted,
+                loan.tanggalDikembalikanFormatted,
                 style: AppTextStyles.stokText.copyWith(color: Warna.putih),
               ),
             ],
           ),
+          // Show fine if exists
+          if (loan.totalDenda > 0) ...[
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Denda",
+                  style: TextStyle(color: Colors.red.withOpacity(0.8)),
+                ),
+                Text(
+                  loan.totalDendaFormatted,
+                  style: AppTextStyles.stokText.copyWith(color: Colors.red),
+                ),
+              ],
+            ),
+          ],
           // Show rejection reason if exists
           if (loan.catatanPenolakan != null &&
               loan.catatanPenolakan!.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Alasan Penolakan: ",
-                  style: TextStyle(color: Colors.orange.withOpacity(0.8)),
-                ),
-                Expanded(
-                  child: Text(
-                    loan.catatanPenolakan!,
-                    style: TextStyle(color: Colors.orange),
-                  ),
-                ),
-              ],
-            ),
+          
           ],
           SizedBox(height: 16),
           Row(

@@ -49,14 +49,17 @@ class AppPages {
     GetPage(
       name: Routes.riwayatPeminjam,
       page: () => const RiwayatPeminjamanView(),
+      binding: PeminjamBinding(),
     ),
     GetPage(
       name: Routes.detailRiwayatPeminjam,
       page: () => const DetailRiwayatPeminjamanView(),
+      binding: PeminjamBinding(),
     ),
     GetPage(
       name: Routes.returnEquipment,
       page: () => const ReturnEquipmentView(),
+      binding: PeminjamBinding(),
     ),
 
     // Admin Dashboard

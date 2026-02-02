@@ -155,7 +155,7 @@ class ReturnMonitoringView extends StatelessWidget {
                       Color statusColor;
 
                       if (hasPendingReturn) {
-                        status = 'Menunggu Konfirmasi';
+                        status = 'Menunggu';
                         statusColor = Colors.orange;
                       } else if (isLate) {
                         status = 'Terlambat';

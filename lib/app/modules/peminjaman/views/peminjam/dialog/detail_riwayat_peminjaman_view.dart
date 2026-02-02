@@ -32,12 +32,6 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
       );
     }
 
-    // Get pengembalian data if available
-    final pengembalianList = loan.toJson()['pengembalian'] as List<dynamic>?;
-    final hasPengembalian =
-        pengembalianList != null && pengembalianList.isNotEmpty;
-    final pengembalian = hasPengembalian ? pengembalianList.first : null;
-
     return Scaffold(
       backgroundColor: Warna.hitamBackground,
       appBar: AppBar(
@@ -101,15 +95,10 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
             SizedBox(height: 16),
             _buildReadOnlyField(
               "Tanggal Kembali",
-              loan.tanggalKembaliFormatted,
+              loan.tanggalDikembalikanFormatted,
             ),
             SizedBox(height: 16),
-            _buildReadOnlyField(
-              "Denda",
-              hasPengembalian
-                  ? "Rp ${pengembalian['total_denda'] ?? 0}"
-                  : "Rp 0",
-            ),
+            _buildReadOnlyField("Denda", loan.totalDendaFormatted),
             if (loan.catatanPenolakan != null &&
                 loan.catatanPenolakan!.isNotEmpty) ...[
               SizedBox(height: 16),

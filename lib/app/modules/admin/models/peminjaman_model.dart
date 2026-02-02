@@ -1,6 +1,8 @@
 import 'package:jari/app/modules/admin/models/detail_peminjaman_model.dart';
 import 'package:jari/app/modules/admin/models/pengguna_model.dart';
 
+import 'package:jari/app/modules/admin/models/pengembalian_model.dart';
+
 /// Enum untuk status peminjaman
 enum StatusPeminjaman {
   menunggu,
@@ -91,6 +93,7 @@ class Peminjaman {
   final Pengguna? peminjam;
   final Pengguna? petugas;
   final List<DetailPeminjaman>? detailPeminjaman;
+  final Pengembalian? pengembalianData;
 
   Peminjaman({
     required this.id,
@@ -107,10 +110,25 @@ class Peminjaman {
     this.peminjam,
     this.petugas,
     this.detailPeminjaman,
+    this.pengembalianData,
   });
 
   /// Factory method untuk parsing data dari Supabase
   factory Peminjaman.fromJson(Map<String, dynamic> json) {
+    // Parse nested pengembalian data
+    Pengembalian? pengembalianData;
+    if (json['pengembalian'] != null) {
+      // Handle if it's a list (common in Supabase relations) or map
+      if (json['pengembalian'] is List &&
+          (json['pengembalian'] as List).isNotEmpty) {
+        pengembalianData = Pengembalian.fromJson(
+          (json['pengembalian'] as List).first,
+        );
+      } else if (json['pengembalian'] is Map) {
+        pengembalianData = Pengembalian.fromJson(json['pengembalian']);
+      }
+    }
+
     return Peminjaman(
       id: json['id'] as String,
       kodePeminjaman: json['kode_peminjaman'] as String?,
@@ -149,6 +167,7 @@ class Peminjaman {
                 )
                 .toList()
           : null,
+      pengembalianData: pengembalianData,
     );
   }
 
@@ -187,6 +206,17 @@ class Peminjaman {
   /// Nama peminjam untuk display
 
   String get namaPeminjam => peminjam?.nama ?? 'Unknown';
+
+  /// Helper untuk data pengembalian
+  DateTime? get tanggalDikembalikan => pengembalianData?.tanggalKembali;
+
+  String get tanggalDikembalikanFormatted {
+    if (tanggalDikembalikan == null) return '-';
+    return '${tanggalDikembalikan!.day.toString().padLeft(2, '0')}/${tanggalDikembalikan!.month.toString().padLeft(2, '0')}/${tanggalDikembalikan!.year}';
+  }
+
+  int get totalDenda => pengembalianData?.denda ?? 0;
+  String get totalDendaFormatted => "Rp $totalDenda";
 
   /// Copy with method
   Peminjaman copyWith({

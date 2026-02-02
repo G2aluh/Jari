@@ -200,7 +200,7 @@ class _ReturnEquipmentViewState extends State<ReturnEquipmentView> {
         String displayStatus = status;
         if (hasPendingReturn) {
           displayStatus = pengembalianStatus == 'menunggu'
-              ? 'Menunggu Konfirmasi'
+              ? 'Menunggu'
               : 'Selesai';
         }
 
@@ -334,7 +334,6 @@ class _ReturnEquipmentViewState extends State<ReturnEquipmentView> {
                         : "Kembalikan Barang",
                     style: TextStyle(
                       color: Warna.putih,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -385,7 +384,7 @@ class _ReturnEquipmentViewState extends State<ReturnEquipmentView> {
         return Colors.blue;
       case 'Terlambat':
         return Colors.red;
-      case 'Menunggu Konfirmasi':
+      case 'Menunggu':
         return Colors.orange;
       case 'Selesai':
         return Colors.green;
@@ -400,7 +399,7 @@ class _ReturnEquipmentViewState extends State<ReturnEquipmentView> {
         return Colors.blue;
       case 'Terlambat':
         return Colors.red;
-      case 'Menunggu Konfirmasi':
+      case 'Menunggu':
         return Colors.orange;
       case 'Selesai':
         return Colors.green;

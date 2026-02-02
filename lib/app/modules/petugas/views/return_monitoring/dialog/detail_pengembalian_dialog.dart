@@ -90,6 +90,16 @@ class DetailPengembalianDialog extends StatelessWidget {
             _buildReadOnlyField(
               "Tanggal Kembali",
               pengembalian?.tanggalKembaliFormatted ?? "-",
+              suffix: (pengembalian != null && pengembalian!.terlambatHari > 0)
+                  ? Text(
+                      "Terlambat ${pengembalian!.terlambatHari} Hari",
+                      style: TextStyle(
+                        color: Colors.red.withOpacity(0.7),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    )
+                  : null,
             ),
             SizedBox(height: 12),
             _buildReadOnlyField(
@@ -106,9 +116,9 @@ class DetailPengembalianDialog extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 16),
                       shadowColor: Colors.transparent,
                       elevation: 0,
-                      backgroundColor: hasPendingReturn
-                          ? Colors.red
-                          : Warna.abuAbu,
+                      backgroundColor: Colors.red,
+                      disabledBackgroundColor: Colors.grey,
+                      disabledForegroundColor: Colors.white,
                       foregroundColor: Warna.putih,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -137,9 +147,9 @@ class DetailPengembalianDialog extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 16),
                       shadowColor: Colors.transparent,
                       elevation: 0,
-                      backgroundColor: hasPendingReturn
-                          ? Colors.green
-                          : Warna.abuAbu,
+                      backgroundColor: Colors.green,
+                      disabledBackgroundColor: Colors.grey,
+                      disabledForegroundColor: Colors.white,
                       foregroundColor: Warna.putih,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -194,7 +204,7 @@ class DetailPengembalianDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildReadOnlyField(String label, String value) {
+  Widget _buildReadOnlyField(String label, String value, {Widget? suffix}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -207,13 +217,19 @@ class DetailPengembalianDialog extends StatelessWidget {
             color: Warna.abuAbu,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Text(
-            value,
-            style: TextStyle(
-              color: Warna.putih,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  color: Warna.putih,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              if (suffix != null) suffix,
+            ],
           ),
         ),
       ],

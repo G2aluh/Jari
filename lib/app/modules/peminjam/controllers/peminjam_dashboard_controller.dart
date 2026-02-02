@@ -359,7 +359,7 @@ class PeminjamDashboardController extends GetxController {
               jumlah,
               alat(id, kode_alat, nama_alat, alat_url)
             ),
-            pengembalian(id, status, tanggal_kembali, terlambat_hari, total_denda)
+            pengembalian(id, peminjaman_id, status, tanggal_kembali, terlambat_hari, total_denda)
           ''')
           .eq('peminjam_id', userId)
           .eq('status', 'disetujui')
@@ -433,7 +433,7 @@ class PeminjamDashboardController extends GetxController {
       // Create pengembalian record
       await supabase.from('pengembalian').insert({
         'peminjaman_id': peminjamanId,
-        'tanggal_kembali': today.toIso8601String().split('T').first,
+        'tanggal_kembali': DateTime.now().toIso8601String(),
         'terlambat_hari': terlambatHari,
         'total_denda': totalDenda,
         'status': 'menunggu',
@@ -546,7 +546,7 @@ class PeminjamDashboardController extends GetxController {
               jumlah,
               alat(id, kode_alat, nama_alat, alat_url)
             ),
-            pengembalian(id, status, tanggal_kembali, terlambat_hari, total_denda)
+            pengembalian(id, peminjaman_id, status, tanggal_kembali, terlambat_hari, total_denda)
           ''')
           .eq('peminjam_id', userId)
           .order('dibuat_pada', ascending: false);

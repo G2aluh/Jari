@@ -232,7 +232,7 @@ class PetugasDashboardController extends GetxController {
               jumlah,
               alat(id, kode_alat, nama_alat, alat_url)
             ),
-            pengembalian(id, status, tanggal_kembali, terlambat_hari, total_denda)
+            pengembalian(id, peminjaman_id, status, tanggal_kembali, terlambat_hari, total_denda)
           ''')
           .eq('status', 'disetujui')
           .order('dibuat_pada', ascending: false);

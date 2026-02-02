@@ -43,75 +43,96 @@ class CategoryList extends StatelessWidget {
               itemCount: controller.kategoriListDb.length + 1, // +1 untuk Semua
               separatorBuilder: (_, __) => const SizedBox(width: 16),
               itemBuilder: (context, index) {
-                // =========================
-                // ITEM "SEMUA"
-                // =========================
-                if (index == 0) {
+                return Obx(() {
+                  // =========================
+                  // ITEM "SEMUA"
+                  // =========================
+                  if (index == 0) {
+                    final isSelected =
+                        controller.selectedKategoriId.value.isEmpty;
+                    return GestureDetector(
+                      onTap: () {
+                        controller.filterByKategori('');
+                      },
+                      child: Container(
+                        width: 90,
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: isSelected
+                              ? Warna.ungu
+                              : Warna.hitamTransparan,
+                          border: Border.all(
+                            color: isSelected
+                                ? Colors.transparent
+                                : Warna.putih.withOpacity(0.2),
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.apps, color: Warna.putih),
+                            SizedBox(height: 8),
+                            Text(
+                              'Semua',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Warna.putih,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  // =========================
+                  // ITEM KATEGORI (PASTI INDEX > 0)
+                  // =========================
+                  final Map<String, dynamic> kategori =
+                      controller.kategoriListDb[index - 1];
+                  final isSelected =
+                      controller.selectedKategoriId.value == kategori['id'];
+
                   return GestureDetector(
                     onTap: () {
-                      controller.filterByKategori('');
+                      controller.filterByKategori(kategori['id']);
                     },
                     child: Container(
                       width: 90,
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: Colors.grey.shade300,
+                        color: isSelected ? Warna.ungu : Warna.hitamTransparan,
+                        border: Border.all(
+                          color: isSelected
+                              ? Colors.transparent
+                              : Warna.putih.withOpacity(0.2),
+                        ),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.apps),
-                          SizedBox(height: 8),
+                        children: [
+                          Icon(
+                            buildIconFromDb(kategori),
+                            size: 28,
+                            color: Warna.putih,
+                          ),
+                          const SizedBox(height: 8),
                           Text(
-                            'Semua',
+                            kategori['nama_kategori'],
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 12),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Warna.putih,
+                            ),
                           ),
                         ],
                       ),
                     ),
                   );
-                }
-
-                // =========================
-                // ITEM KATEGORI (PASTI INDEX > 0)
-                // =========================
-                final Map<String, dynamic> kategori =
-                    controller.kategoriListDb[index - 1];
-
-                return GestureDetector(
-                  onTap: () {
-                    controller.filterByKategori(kategori['id']);
-                  },
-                  child: Container(
-                    width: 90,
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Warna.hitamTransparan,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          buildIconFromDb(kategori),
-                          size: 28,
-                          color: Warna.putih,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          kategori['nama_kategori'],
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Warna.putih,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                });
               },
             ),
           ),
