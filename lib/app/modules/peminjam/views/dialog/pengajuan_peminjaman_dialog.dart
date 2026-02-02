@@ -1,15 +1,22 @@
+import 'package:flutter/material.dart';
 import 'package:jari/app/core/theme/app_colors.dart';
 import 'package:jari/app/modules/peminjam/widgets/common/stock_container.dart';
-import 'package:flutter/material.dart';
 
 class RentalSelectionDialog extends StatefulWidget {
   final Set<int> rentedItems;
   final List<Map<String, dynamic>> alatList;
+  final void Function(
+    DateTime tanggalKembali,
+    String keterangan,
+    Map<String, int> quantities,
+  )
+  onSubmit;
 
   const RentalSelectionDialog({
     super.key,
     required this.rentedItems,
     required this.alatList,
+    required this.onSubmit,
   });
 
   @override
@@ -20,6 +27,8 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
   final Map<String, int> _quantities = {};
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _keteranganController = TextEditingController();
+
+  DateTime? _selectedTanggalKembali;
 
   @override
   void initState() {
@@ -59,22 +68,22 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
     final List<Widget> rentalItems = [];
 
     for (final index in widget.rentedItems) {
-      if (index >= 0 && index < widget.alatList.length) {
-        final alat = widget.alatList[index];
-        final key = 'item_$index';
-        final quantity = _quantities[key] ?? 1;
+      if (index < 0 || index >= widget.alatList.length) continue;
 
-        rentalItems.add(
-          _buildRentalItemCard(
-            name: alat['nama_alat'] ?? '',
-            image: alat['alat_url'] ?? '',
-            stock: alat['stok_tersedia'].toString(),
-            quantity: quantity,
-            onIncrement: () => _incrementQuantity(key),
-            onDecrement: () => _decrementQuantity(key),
-          ),
-        );
-      }
+      final alat = widget.alatList[index];
+      final key = 'item_$index';
+      final quantity = _quantities[key] ?? 1;
+
+      rentalItems.add(
+        _buildRentalItemCard(
+          name: alat['nama_alat'] ?? '',
+          image: alat['alat_url'] ?? '',
+          stock: alat['stok_tersedia'].toString(),
+          quantity: quantity,
+          onIncrement: () => _incrementQuantity(key),
+          onDecrement: () => _decrementQuantity(key),
+        ),
+      );
     }
 
     return Dialog(
@@ -88,7 +97,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // HEADER
+            // ================= HEADER =================
             Container(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
               decoration: BoxDecoration(
@@ -123,7 +132,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
               ),
             ),
 
-            // CONTENT
+            // ================= CONTENT =================
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.all(20),
@@ -134,7 +143,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                   ),
                   const SizedBox(height: 12),
 
-                  // TANGGAL
+                  // TANGGAL KEMBALI
                   TextFormField(
                     controller: _dateController,
                     readOnly: true,
@@ -156,6 +165,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                       );
 
                       if (picked != null) {
+                        _selectedTanggalKembali = picked;
                         _dateController.text =
                             "${picked.day.toString().padLeft(2, '0')}/"
                             "${picked.month.toString().padLeft(2, '0')}/"
@@ -201,8 +211,8 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                   const SizedBox(height: 12),
 
                   ...rentalItems.isEmpty
-                      ? [
-                          const Center(
+                      ? const [
+                          Center(
                             child: Padding(
                               padding: EdgeInsets.all(20),
                               child: Text('Belum ada barang dipilih'),
@@ -214,32 +224,37 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
               ),
             ),
 
-            // ACTION
+            // ================= ACTION =================
             Padding(
               padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shadowColor: Colors.transparent,
-                        backgroundColor: Warna.ungu,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Ajukan Peminjaman',
-                        style: TextStyle(color: Warna.putih),
-                      ),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_selectedTanggalKembali == null) return;
+
+                    widget.onSubmit(
+                      _selectedTanggalKembali!,
+                      _keteranganController.text,
+                      _quantities,
+                    );
+
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shadowColor: Colors.transparent,
+                    backgroundColor: Warna.ungu,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                ],
+                  child: const Text(
+                    'Ajukan Peminjaman',
+                    style: TextStyle(color: Warna.putih),
+                  ),
+                ),
               ),
             ),
           ],
@@ -275,18 +290,11 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                 color: Warna.putih,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: image.isNotEmpty
-                  ? Image.network(
-                      image,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(
-                          Icons.broken_image,
-                          color: Colors.grey,
-                        );
-                      },
-                    )
-                  : const Icon(Icons.image_not_supported, color: Colors.grey),
+              child: Image.network(
+                image,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(

@@ -68,6 +68,75 @@ class PeminjamDashboardController extends GetxController {
     kategoriListDb.assignAll(List<Map<String, dynamic>>.from(result));
   }
 
+  Future<void> submitPeminjaman({
+    required DateTime tanggalJatuhTempo,
+    required Map<String, int> quantities,
+    required String keterangan,
+  }) async {
+    try {
+      final userId = supabase.auth.currentUser!.id;
+
+      // =========================
+      // 1. INSERT PEMINJAMAN
+      // =========================
+      final peminjaman = await supabase
+          .from('peminjaman')
+          .insert({
+            'peminjam_id': userId,
+            'tanggal_pinjam': DateTime.now().toIso8601String(),
+            'tanggal_jatuh_tempo': tanggalJatuhTempo.toIso8601String(),
+            'status': 'menunggu',
+            'keterangan': keterangan.isNotEmpty ? keterangan : null,
+          })
+          .select()
+          .single();
+
+      final peminjamanId = peminjaman['id'];
+
+      // =========================
+      // 2. INSERT DETAIL PEMINJAMAN
+      // =========================
+      final List<Map<String, dynamic>> detailData = [];
+
+      quantities.forEach((key, jumlah) {
+        final index = int.parse(key.replaceAll('item_', ''));
+        final alat = alatList[index];
+
+        detailData.add({
+          'peminjaman_id': peminjamanId,
+          'alat_id': alat['id'],
+          'jumlah': jumlah,
+        });
+      });
+
+      await supabase.from('detail_peminjaman').insert(detailData);
+
+      // =========================
+      // 3. RESET STATE UI
+      // =========================
+      rentedItems.clear();
+      showBadge.value = false;
+
+      Get.snackbar(
+        'Berhasil',
+        'Peminjaman berhasil diajukan',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Gagal',
+        e.toString(),
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+      );
+    }
+  }
+
   // ===============================
   // FETCH DATA ALAT (STEP 1.1)
   // ===============================
@@ -164,6 +233,13 @@ class PeminjamDashboardController extends GetxController {
           return RentalSelectionDialog(
             rentedItems: rentedItems,
             alatList: alatList.toList(),
+            onSubmit: (tanggal, keterangan, quantities) {
+              submitPeminjaman(
+                tanggalJatuhTempo: tanggal,
+                quantities: quantities,
+                keterangan: keterangan,
+              );
+            },
           );
         },
       );
