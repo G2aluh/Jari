@@ -1,6 +1,6 @@
 import 'package:jari/app/core/theme/app_colors.dart';
 import 'package:jari/app/core/theme/app_text_styles.dart';
-import 'package:jari/app/modules/peminjam/controllers/peminjam_dashboard_controller.dart';
+import 'package:jari/app/modules/peminjam/controllers/peminjam_history_controller.dart';
 import 'package:jari/app/modules/admin/models/peminjaman_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
@@ -14,7 +14,7 @@ class RiwayatPeminjamanView extends StatefulWidget {
 }
 
 class _RiwayatPeminjamanViewState extends State<RiwayatPeminjamanView> {
-  final controller = Get.find<PeminjamDashboardController>();
+  final controller = Get.find<PeminjamHistoryController>();
 
   @override
   void initState() {
@@ -61,16 +61,17 @@ class _RiwayatPeminjamanViewState extends State<RiwayatPeminjamanView> {
             );
           }
 
-          final riwayatList = controller.loanHistory;
+          final riwayatList = controller.filteredLoanHistory;
 
           return ListView(
             children: [
               SizedBox(height: 16),
               // Search Bar
               TextField(
+                controller: controller.searchHistoryController,
                 style: TextStyle(color: Warna.putih),
                 decoration: InputDecoration(
-                  hintText: 'Cari riwayat...',
+                  hintText: 'Cari riwayat (Nama/ID)...',
                   hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
                   prefixIcon: Icon(
                     IconlyLight.search,
@@ -221,7 +222,7 @@ class _RiwayatPeminjamanViewState extends State<RiwayatPeminjamanView> {
           if (loan.catatanPenolakan != null &&
               loan.catatanPenolakan!.isNotEmpty) ...[
             const SizedBox(height: 8),
-          
+            // Rejection reason display was empty in previous file, keeping it minimal or standard
           ],
           SizedBox(height: 16),
           Row(

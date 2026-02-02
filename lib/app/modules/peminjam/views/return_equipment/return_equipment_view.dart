@@ -1,5 +1,5 @@
 import 'package:jari/app/core/theme/app_colors.dart';
-import 'package:jari/app/modules/peminjam/controllers/peminjam_dashboard_controller.dart';
+import 'package:jari/app/modules/peminjam/controllers/peminjam_return_controller.dart';
 import 'package:jari/app/modules/admin/models/peminjaman_model.dart';
 
 import 'package:flutter/material.dart';
@@ -14,7 +14,7 @@ class ReturnEquipmentView extends StatefulWidget {
 }
 
 class _ReturnEquipmentViewState extends State<ReturnEquipmentView> {
-  final controller = Get.find<PeminjamDashboardController>();
+  final controller = Get.find<PeminjamReturnController>();
 
   @override
   void initState() {
@@ -59,13 +59,14 @@ class _ReturnEquipmentViewState extends State<ReturnEquipmentView> {
                   );
                 }
 
-                final returnList = controller.activeLoansForReturn;
+                final returnList = controller.filteredActiveLoansForReturn;
 
                 return ListView(
                   children: [
                     SizedBox(height: 16),
                     // Search Bar
                     TextField(
+                      controller: controller.searchReturnController,
                       style: TextStyle(color: Warna.putih),
                       decoration: InputDecoration(
                         hintText: 'Cari pengembalian...',
@@ -332,9 +333,7 @@ class _ReturnEquipmentViewState extends State<ReturnEquipmentView> {
                     hasPendingReturn
                         ? "Menunggu Konfirmasi"
                         : "Kembalikan Barang",
-                    style: TextStyle(
-                      color: Warna.putih,
-                    ),
+                    style: TextStyle(color: Warna.putih),
                   ),
                 ),
               ),
