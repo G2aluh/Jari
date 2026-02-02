@@ -179,7 +179,13 @@ class Peminjaman {
     return '${tanggalJatuhTempo!.day.toString().padLeft(2, '0')}/${tanggalJatuhTempo!.month.toString().padLeft(2, '0')}/${tanggalJatuhTempo!.year}';
   }
 
+  String get tanggalKembaliFormatted {
+    if (tanggalKembali == null) return '-';
+    return '${tanggalKembali!.day.toString().padLeft(2, '0')}/${tanggalKembali!.month.toString().padLeft(2, '0')}/${tanggalKembali!.year}';
+  }
+
   /// Nama peminjam untuk display
+
   String get namaPeminjam => peminjam?.nama ?? 'Unknown';
 
   /// Copy with method

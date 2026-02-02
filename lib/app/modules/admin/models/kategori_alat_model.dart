@@ -30,7 +30,7 @@ class KategoriAlat {
       id: json['id'] as String,
       namaKategori: nama,
       deskripsi: json['deskripsi'] as String? ?? json['description'] as String?,
-      iconCode: json['icon_code'] as int? ?? 0,
+      iconCode: int.tryParse(json['icon_code']?.toString() ?? '0') ?? 0,
       iconFamily: json['icon_family'] as String? ?? 'MaterialIcons',
       iconPackage: json['icon_package'] as String?,
       dibuatPada: json['dibuat_pada'] != null

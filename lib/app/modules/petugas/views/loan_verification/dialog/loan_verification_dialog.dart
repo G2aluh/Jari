@@ -1,16 +1,26 @@
 import 'package:jari/app/core/theme/app_colors.dart';
 import 'package:jari/app/core/theme/app_text_styles.dart';
+import 'package:jari/app/modules/admin/models/peminjaman_model.dart';
+import 'package:jari/app/modules/petugas/controllers/petugas_dashboard_controller.dart';
 import 'package:flutter/material.dart';
 
 class KonfirmasiPeminjamanDialog extends StatelessWidget {
-  const KonfirmasiPeminjamanDialog({super.key});
+  final Peminjaman loan;
+  final PetugasDashboardController controller;
+
+  const KonfirmasiPeminjamanDialog({
+    super.key,
+    required this.loan,
+    required this.controller,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Warna.hitamBackground,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16),
-      side: BorderSide(color: Warna.putih.withOpacity(0.2)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Warna.putih.withOpacity(0.2)),
       ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -34,7 +44,7 @@ class KonfirmasiPeminjamanDialog extends StatelessWidget {
               ],
             ),
             SizedBox(height: 16),
-             SizedBox(
+            SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -47,21 +57,32 @@ class KonfirmasiPeminjamanDialog extends StatelessWidget {
                 ),
                 onPressed: () => _showDaftarAlatDialog(context),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                        Text("Daftar Alat"),
-                        Icon(Icons.arrow_forward, color: Warna.putih),
+                      Text("Daftar Alat"),
+                      Icon(Icons.arrow_forward, color: Warna.putih),
                     ],
                   ),
                 ),
               ),
             ),
             SizedBox(height: 12),
-            _buildReadOnlyField("Peminjam", "Peminjam 1"),
+            _buildReadOnlyField("Peminjam", loan.namaPeminjam),
             SizedBox(height: 12),
-            _buildReadOnlyField("Tanggal Jatuh Tempo", "16 Jan 2026"),
+            _buildReadOnlyField(
+              "Tanggal Jatuh Tempo",
+              loan.tanggalJatuhTempoFormatted,
+            ),
+            if (loan.catatanPenolakan != null &&
+                loan.catatanPenolakan!.isNotEmpty) ...[
+              SizedBox(height: 12),
+              _buildReadOnlyField("Keterangan", loan.catatanPenolakan!),
+            ],
             SizedBox(height: 16),
             Row(
               children: [
@@ -79,8 +100,8 @@ class KonfirmasiPeminjamanDialog extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      // Handle damage assessment selection
-                      Navigator.pop(context); // Close dialog for now
+                      // Handle print
+                      Navigator.pop(context);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -106,8 +127,8 @@ class KonfirmasiPeminjamanDialog extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      // Handle damage assessment selection
-                      Navigator.pop(context); // Close dialog for now
+                      controller.approveLoan(loan.id);
+                      Navigator.pop(context);
                     },
                     child: Text("Konfirmasi"),
                   ),
@@ -147,6 +168,8 @@ class KonfirmasiPeminjamanDialog extends StatelessWidget {
   }
 
   void _showDaftarAlatDialog(BuildContext context) {
+    final details = loan.detailPeminjaman ?? [];
+
     showDialog(
       context: context,
       builder: (context) {
@@ -155,23 +178,35 @@ class KonfirmasiPeminjamanDialog extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-         icon: Row(
+          icon: Row(
             children: [
               Icon(Icons.info, color: Warna.putih, size: 20),
               SizedBox(width: 4),
-              Text("Daftar Alat Dipinjam", style: TextStyle(fontSize: 14, color: Warna.putih)),
+              Text(
+                "Daftar Alat Dipinjam",
+                style: TextStyle(fontSize: 14, color: Warna.putih),
+              ),
             ],
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildAlatItem("Mesin Jahit", "1"),
-              Divider(color: Warna.putih.withOpacity(0.2)),
-              _buildAlatItem("Benang", "5"),
-              Divider(color: Warna.putih.withOpacity(0.2)),
-              _buildAlatItem("Gunting", "2"),
-            ],
-          ),
+          content: details.isEmpty
+              ? Text("Tidak ada alat", style: TextStyle(color: Warna.putih))
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: details
+                      .map(
+                        (detail) => Column(
+                          children: [
+                            _buildAlatItem(
+                              detail.namaAlat,
+                              detail.jumlah.toString(),
+                            ),
+                            if (details.indexOf(detail) < details.length - 1)
+                              Divider(color: Warna.putih.withOpacity(0.2)),
+                          ],
+                        ),
+                      )
+                      .toList(),
+                ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),

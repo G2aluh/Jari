@@ -1,17 +1,22 @@
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/modules/admin/models/peminjaman_model.dart';
+import 'package:jari/app/modules/admin/models/pengembalian_model.dart';
+import 'package:jari/app/modules/petugas/controllers/petugas_dashboard_controller.dart';
 import 'package:jari/app/modules/petugas/views/return_monitoring/dialog/detail_pengembalian_dialog.dart';
 import 'package:flutter/material.dart';
 
 class ReturnItem extends StatelessWidget {
-  final String name;
-  final String date;
+  final Peminjaman loan;
+  final Pengembalian? pengembalian;
+  final PetugasDashboardController controller;
   final String status;
   final Color statusColor;
 
   const ReturnItem({
     super.key,
-    required this.name,
-    required this.date,
+    required this.loan,
+    this.pengembalian,
+    required this.controller,
     required this.status,
     required this.statusColor,
   });
@@ -28,13 +33,20 @@ class ReturnItem extends StatelessWidget {
         onTap: () {
           showDialog(
             context: context,
-            builder: (context) => const DetailPengembalianDialog(),
+            builder: (context) => DetailPengembalianDialog(
+              loan: loan,
+              pengembalian: pengembalian,
+              controller: controller,
+            ),
           );
         },
         contentPadding: EdgeInsets.all(16),
-        title: Text(name, style: TextStyle(color: Warna.putih)),
+        title: Text(
+          loan.kodePeminjaman ?? loan.id.substring(0, 8),
+          style: TextStyle(color: Warna.putih),
+        ),
         subtitle: Text(
-          'Harus kembali: $date',
+          'Harus kembali: ${loan.tanggalJatuhTempoFormatted}',
           style: TextStyle(color: Warna.putih.withOpacity(0.7)),
         ),
         trailing: Container(

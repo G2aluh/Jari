@@ -66,7 +66,7 @@ class DetailPeminjaman {
       id: json['id'] as String,
       peminjamanId: json['peminjaman_id'] as String,
       alatId: json['alat_id'] as String,
-      jumlah: json['jumlah'] as int,
+      jumlah: int.tryParse(json['jumlah']?.toString() ?? '0') ?? 0,
       kondisiKembali: json['kondisi_kembali'] != null
           ? KondisiAlatExtension.fromString(json['kondisi_kembali'] as String?)
           : null,

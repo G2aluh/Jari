@@ -1,12 +1,43 @@
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/modules/admin/models/peminjaman_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:get/get.dart';
 
 class DetailRiwayatPeminjamanView extends StatelessWidget {
   const DetailRiwayatPeminjamanView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Get the loan data from arguments
+    final Peminjaman? loan = Get.arguments as Peminjaman?;
+
+    if (loan == null) {
+      return Scaffold(
+        backgroundColor: Warna.hitamBackground,
+        appBar: AppBar(
+          backgroundColor: Warna.hitamBackground,
+          foregroundColor: Warna.putih,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Warna.putih),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+        body: Center(
+          child: Text(
+            "Data tidak ditemukan",
+            style: TextStyle(color: Warna.putih),
+          ),
+        ),
+      );
+    }
+
+    // Get pengembalian data if available
+    final pengembalianList = loan.toJson()['pengembalian'] as List<dynamic>?;
+    final hasPengembalian =
+        pengembalianList != null && pengembalianList.isNotEmpty;
+    final pengembalian = hasPengembalian ? pengembalianList.first : null;
+
     return Scaffold(
       backgroundColor: Warna.hitamBackground,
       appBar: AppBar(
@@ -44,7 +75,7 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
                     side: BorderSide(color: Warna.putih.withOpacity(0.2)),
                   ),
                 ),
-                onPressed: () => _showDaftarAlatDialog(context),
+                onPressed: () => _showDaftarAlatDialog(context, loan),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -58,24 +89,57 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
               ),
             ),
             SizedBox(height: 16),
-            _buildReadOnlyField("Keterangan", "Peminjaman untuk kegiatan A"),
+            _buildReadOnlyField(
+              "Kode Peminjaman",
+              loan.kodePeminjaman ?? loan.id.substring(0, 8),
+            ),
             SizedBox(height: 16),
-            _buildReadOnlyField("Tanggal Jatuh Tempo", "15/01/2026"),
+            _buildReadOnlyField(
+              "Tanggal Jatuh Tempo",
+              loan.tanggalJatuhTempoFormatted,
+            ),
             SizedBox(height: 16),
-            _buildReadOnlyField("Tanggal Kembali", "-"),
+            _buildReadOnlyField(
+              "Tanggal Kembali",
+              loan.tanggalKembaliFormatted,
+            ),
             SizedBox(height: 16),
-            _buildReadOnlyField("Denda", "Rp 0"),
+            _buildReadOnlyField(
+              "Denda",
+              hasPengembalian
+                  ? "Rp ${pengembalian['total_denda'] ?? 0}"
+                  : "Rp 0",
+            ),
+            if (loan.catatanPenolakan != null &&
+                loan.catatanPenolakan!.isNotEmpty) ...[
+              SizedBox(height: 16),
+              _buildReadOnlyField(
+                "Catatan/Alasan Penolakan",
+                loan.catatanPenolakan!,
+                isWarning: true,
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  Widget _buildReadOnlyField(String label, String value) {
+  Widget _buildReadOnlyField(
+    String label,
+    String value, {
+    bool isWarning = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(color: Warna.putih, fontSize: 14)),
+        Text(
+          label,
+          style: TextStyle(
+            color: isWarning ? Colors.orange : Warna.putih,
+            fontSize: 14,
+          ),
+        ),
         SizedBox(height: 8),
         Container(
           width: double.infinity,
@@ -83,12 +147,16 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
           decoration: BoxDecoration(
             color: Warna.hitamTransparan,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Warna.putih.withOpacity(0.2)),
+            border: Border.all(
+              color: isWarning
+                  ? Colors.orange.withOpacity(0.5)
+                  : Warna.putih.withOpacity(0.2),
+            ),
           ),
           child: Text(
             value,
             style: TextStyle(
-              color: Warna.putih,
+              color: isWarning ? Colors.orange : Warna.putih,
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
@@ -98,7 +166,9 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
     );
   }
 
-  void _showDaftarAlatDialog(BuildContext context) {
+  void _showDaftarAlatDialog(BuildContext context, Peminjaman loan) {
+    final details = loan.detailPeminjaman ?? [];
+
     showDialog(
       context: context,
       builder: (context) {
@@ -118,16 +188,25 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
               ),
             ],
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildAlatItem("Mesin Jahit", "1"),
-              Divider(),
-              _buildAlatItem("Benang", "5"),
-              Divider(),
-              _buildAlatItem("Gunting", "2"),
-            ],
-          ),
+          content: details.isEmpty
+              ? Text("Tidak ada alat", style: TextStyle(color: Warna.putih))
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: details
+                      .map(
+                        (detail) => Column(
+                          children: [
+                            _buildAlatItem(
+                              detail.namaAlat,
+                              detail.jumlah.toString(),
+                            ),
+                            if (details.indexOf(detail) < details.length - 1)
+                              Divider(color: Warna.putih.withOpacity(0.2)),
+                          ],
+                        ),
+                      )
+                      .toList(),
+                ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),

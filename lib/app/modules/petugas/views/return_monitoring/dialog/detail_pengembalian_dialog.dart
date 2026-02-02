@@ -1,11 +1,29 @@
 import 'package:jari/app/core/theme/app_colors.dart';
 import 'package:jari/app/core/theme/app_text_styles.dart';
+import 'package:jari/app/modules/admin/models/peminjaman_model.dart';
+import 'package:jari/app/modules/admin/models/pengembalian_model.dart';
+import 'package:jari/app/modules/petugas/controllers/petugas_dashboard_controller.dart';
+import 'package:jari/app/modules/petugas/views/return_monitoring/dialog/rejection_return_dialog.dart';
 import 'package:flutter/material.dart';
+
 class DetailPengembalianDialog extends StatelessWidget {
-  const DetailPengembalianDialog({super.key});
+  final Peminjaman loan;
+  final Pengembalian? pengembalian;
+  final PetugasDashboardController controller;
+
+  const DetailPengembalianDialog({
+    super.key,
+    required this.loan,
+    this.pengembalian,
+    required this.controller,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final hasPendingReturn =
+        pengembalian != null &&
+        pengembalian!.status == StatusPengembalian.menunggu;
+
     return Dialog(
       backgroundColor: Warna.hitamBackground,
       shape: RoundedRectangleBorder(
@@ -62,54 +80,24 @@ class DetailPengembalianDialog extends StatelessWidget {
               ),
             ),
             SizedBox(height: 12),
-            _buildReadOnlyField("Peminjam", "Peminjam 1"),
+            _buildReadOnlyField("Peminjam", loan.namaPeminjam),
             SizedBox(height: 12),
-            _buildReadOnlyField("Tanggal Jatuh Tempo", "16 Jan 2026"),
-            SizedBox(height: 12),
-            _buildReadOnlyField("Tanggal Kembali", "15 Jan 2026"),
-            SizedBox(height: 12),
-            _buildReadOnlyField("Total  Denda", "Rp. 0"),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                // Text(
-                //   "Kondisi Kerusakan",
-                //   style: TextStyle(color: Colors.grey[400], fontSize: 14),
-                // ),
-              ],
+            _buildReadOnlyField(
+              "Tanggal Jatuh Tempo",
+              loan.tanggalJatuhTempoFormatted,
             ),
-            // SingleChildScrollView(
-            //   scrollDirection: Axis.horizontal,
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //     children: [
-            //       _buildDamageButton(
-            //         context,
-            //         "Baik",
-            //         Warna.abuAbu.withOpacity(0.6),
-            //       ),
-            //       SizedBox(width: 8),
-            //       _buildDamageButton(
-            //         context,
-            //         "Ringan",
-            //         Warna.abuAbu.withOpacity(0.3),
-            //       ),
-            //       SizedBox(width: 8),
-            //       _buildDamageButton(
-            //         context,
-            //         "Sedang",
-            //         Warna.abuAbu.withOpacity(0.3),
-            //       ),
-            //       SizedBox(width: 8),
-            //       _buildDamageButton(
-            //         context,
-            //         "Parah",
-            //         Warna.abuAbu.withOpacity(0.3),
-            //       ),
-            //     ],
-            //   ),
-            // ),
+            SizedBox(height: 12),
+            _buildReadOnlyField(
+              "Tanggal Kembali",
+              pengembalian?.tanggalKembaliFormatted ?? "-",
+            ),
+            SizedBox(height: 12),
+            _buildReadOnlyField(
+              "Total Denda",
+              pengembalian != null ? "Rp ${pengembalian!.denda}" : "Rp 0",
+            ),
             SizedBox(height: 16),
+            // Konfirmasi dan Tolak buttons - only enabled when there is a pending return
             Row(
               children: [
                 Expanded(
@@ -118,16 +106,27 @@ class DetailPengembalianDialog extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 16),
                       shadowColor: Colors.transparent,
                       elevation: 0,
-                      backgroundColor: Colors.red,
+                      backgroundColor: hasPendingReturn
+                          ? Colors.red
+                          : Warna.abuAbu,
                       foregroundColor: Warna.putih,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () {
-                      // Handle damage assessment selection
-                      Navigator.pop(context); // Close dialog for now
-                    },
+                    onPressed: hasPendingReturn
+                        ? () {
+                            Navigator.pop(context);
+                            showDialog(
+                              context: context,
+                              builder: (context) => RejectionReturnDialog(
+                                pengembalian: pengembalian!,
+                                loan: loan,
+                                controller: controller,
+                              ),
+                            );
+                          }
+                        : null,
                     child: Text("Tolak"),
                   ),
                 ),
@@ -138,16 +137,20 @@ class DetailPengembalianDialog extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 16),
                       shadowColor: Colors.transparent,
                       elevation: 0,
-                      backgroundColor: Colors.green,
+                      backgroundColor: hasPendingReturn
+                          ? Colors.green
+                          : Warna.abuAbu,
                       foregroundColor: Warna.putih,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () {
-                      // Handle damage assessment selection
-                      Navigator.pop(context); // Close dialog for now
-                    },
+                    onPressed: hasPendingReturn
+                        ? () {
+                            controller.confirmReturn(pengembalian!.id, loan.id);
+                            Navigator.pop(context);
+                          }
+                        : null,
                     child: Text("Konfirmasi"),
                   ),
                 ),
@@ -170,8 +173,8 @@ class DetailPengembalianDialog extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      // Handle damage assessment selection
-                      Navigator.pop(context); // Close dialog for now
+                      // Handle print
+                      Navigator.pop(context);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -217,25 +220,9 @@ class DetailPengembalianDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildDamageButton(BuildContext context, String label, Color color) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        shadowColor: Colors.transparent,
-        elevation: 0,
-        backgroundColor: color,
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      ),
-      onPressed: () {
-        // Handle damage assessment selection
-        Navigator.pop(context); // Close dialog for now
-      },
-      child: Text(label),
-    );
-  }
-
   void _showDaftarAlatDialog(BuildContext context) {
+    final details = loan.detailPeminjaman ?? [];
+
     showDialog(
       context: context,
       builder: (context) {
@@ -254,16 +241,25 @@ class DetailPengembalianDialog extends StatelessWidget {
               ),
             ],
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildAlatItem("Mesin Jahit", "1"),
-              Divider(color: Warna.putih.withOpacity(0.2)),
-              _buildAlatItem("Benang", "5"),
-              Divider(color: Warna.putih.withOpacity(0.2)),
-              _buildAlatItem("Gunting", "2"),
-            ],
-          ),
+          content: details.isEmpty
+              ? Text("Tidak ada alat", style: TextStyle(color: Warna.putih))
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: details
+                      .map(
+                        (detail) => Column(
+                          children: [
+                            _buildAlatItem(
+                              detail.namaAlat,
+                              detail.jumlah.toString(),
+                            ),
+                            if (details.indexOf(detail) < details.length - 1)
+                              Divider(color: Warna.putih.withOpacity(0.2)),
+                          ],
+                        ),
+                      )
+                      .toList(),
+                ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),

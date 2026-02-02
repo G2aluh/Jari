@@ -32,8 +32,8 @@ class Alat {
       kodeAlat: json['kode_alat'] as String,
       namaAlat: json['nama_alat'] as String,
       kategoriId: json['kategori_id'] as String?,
-      stokTotal: json['stok_total'] as int,
-      stokTersedia: json['stok_tersedia'] as int,
+      stokTotal: int.tryParse(json['stok_total']?.toString() ?? '0') ?? 0,
+      stokTersedia: int.tryParse(json['stok_tersedia']?.toString() ?? '0') ?? 0,
       aktif: json['aktif'] as bool? ?? true,
       alatUrl: json['alat_url'] as String?,
       dibuatPada: json['dibuat_pada'] != null

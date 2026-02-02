@@ -1,53 +1,29 @@
 import 'package:jari/app/core/theme/app_colors.dart';
 import 'package:jari/app/core/theme/app_text_styles.dart';
+import 'package:jari/app/modules/peminjam/controllers/peminjam_dashboard_controller.dart';
+import 'package:jari/app/modules/admin/models/peminjaman_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:get/get.dart';
 
-class RiwayatPeminjamanView extends StatelessWidget {
+class RiwayatPeminjamanView extends StatefulWidget {
   const RiwayatPeminjamanView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Dummy Data
-    final List<Map<String, dynamic>> riwayatList = [
-      {
-        'no': 'PJM-20260114-0001',
-        'tglPeminjaman': '12/01/2026',
-        'status': 'Dipinjam',
-        'tglKembali': '-',
-      },
-      {
-        'no': 'PJM-20260114-0002',
-        'tglPeminjaman': '10/01/2026',
-        'status': 'Selesai',
-        'tglKembali': '13/01/2026',
-      },
-      {
-        'no': 'PJM-20260114-0003',
-        'tglPeminjaman': '05/01/2026',
-        'status': 'Ditolak',
-        'tglKembali': '-',
-      },
-      {
-        'no': 'PJM-20260114-0004',
-        'tglPeminjaman': '02/01/2026',
-        'status': 'Menunggu',
-        'tglKembali': '-',
-      },
-      {
-        'no': 'PJM-20260114-0005',
-        'tglPeminjaman': '02/01/2026',
-        'status': 'Terlambat',
-        'tglKembali': '-',
-      },
-      {
-        'no': 'PJM-20260114-0006',
-        'tglPeminjaman': '02/01/2026',
-        'status': 'Terlambat',
-        'tglKembali': '-',
-      },
-    ];
+  State<RiwayatPeminjamanView> createState() => _RiwayatPeminjamanViewState();
+}
 
+class _RiwayatPeminjamanViewState extends State<RiwayatPeminjamanView> {
+  final controller = Get.find<PeminjamDashboardController>();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.fetchLoanHistory();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Warna.hitamBackground,
       appBar: AppBar(
@@ -64,173 +40,218 @@ class RiwayatPeminjamanView extends StatelessWidget {
           onPressed: () {},
         ),
         centerTitle: true,
-
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Warna.putih),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: ListView(
-          children: [
-            SizedBox(height: 16),
-            // Search Bar
-            TextField(
-              style: TextStyle(color: Warna.putih),
-              decoration: InputDecoration(
-                hintText: 'Cari riwayat...',
-                hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
-                prefixIcon: Icon(
-                  IconlyLight.search,
-                  color: Warna.putih.withOpacity(0.5),
-                ),
-                filled: true,
-                fillColor: Warna.hitamTransparan,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Warna.putih.withOpacity(0.2)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Warna.putih.withOpacity(0.2)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Warna.ungu),
-                ),
-                contentPadding: EdgeInsets.symmetric(vertical: 12),
+        child: Obx(() {
+          if (controller.isLoadingHistory.value) {
+            return Center(child: CircularProgressIndicator(color: Warna.ungu));
+          }
+
+          if (controller.errorHistory.value.isNotEmpty) {
+            return Center(
+              child: Text(
+                controller.errorHistory.value,
+                style: TextStyle(color: Colors.red),
               ),
-            ),
-            SizedBox(height: 24),
+            );
+          }
 
-            // List Items
-            ...riwayatList.map((data) {
-              return Container(
-                margin: EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
+          final riwayatList = controller.loanHistory;
+
+          return ListView(
+            children: [
+              SizedBox(height: 16),
+              // Search Bar
+              TextField(
+                style: TextStyle(color: Warna.putih),
+                decoration: InputDecoration(
+                  hintText: 'Cari riwayat...',
+                  hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
+                  prefixIcon: Icon(
+                    IconlyLight.search,
+                    color: Warna.putih.withOpacity(0.5),
+                  ),
+                  filled: true,
+                  fillColor: Warna.hitamTransparan,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Warna.putih.withOpacity(0.2)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Warna.putih.withOpacity(0.2)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Warna.ungu),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+              SizedBox(height: 24),
+
+              // Empty State
+              if (riwayatList.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 40),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          IconlyLight.document,
+                          size: 80,
+                          color: Warna.abuAbu.withOpacity(0.5),
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          "Belum ada riwayat peminjaman",
+                          style: TextStyle(color: Warna.abuAbu),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                // List Items
+                ...riwayatList.map((loan) => _buildRiwayatCard(loan)).toList(),
+              SizedBox(height: 24),
+            ],
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildRiwayatCard(Peminjaman loan) {
+    final status = controller.getStatusDisplayText(loan);
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Warna.hitamTransparan,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Warna.putih.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  "No: ${loan.kodePeminjaman ?? loan.id.substring(0, 8)}",
+                  style: TextStyle(
+                    color: Warna.putih,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Warna.hitamTransparan,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Warna.putih.withOpacity(0.2)),
+                  color: _getStatusColor(status).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "No: ${data['no']}",
-                          style: TextStyle(
-                            color: Warna.putih,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _getStatusColor(
-                              data['status'],
-                            ).withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            data['status'],
-                            style: TextStyle(
-                              color: _getTextColor(data['status']),
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 20, thickness: 1, color: Colors.grey),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Tgl Peminjaman",
-                          style: TextStyle(color: Warna.putih.withOpacity(0.7)),
-                        ),
-                        Text(
-                          data['tglPeminjaman'],
-                          style: AppTextStyles.stokText.copyWith(
-                            color: Warna.putih,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Tgl Kembali",
-                          style: TextStyle(color: Warna.putih.withOpacity(0.7)),
-                        ),
-                        Text(
-                          data['tglKembali'],
-                          style: AppTextStyles.stokText.copyWith(
-                            color: Warna.putih,
-                          ),
-                        ),
-                      ],
-                    ),
-                    //LihatDetailButton
-                    SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.all(12),
-                              backgroundColor: Warna.abuAbu.withOpacity(0.3),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                side: BorderSide(
-                                  color: Warna.putih.withOpacity(0.2),
-                                ),
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.of(
-                                context,
-                              ).pushNamed('/detail-riwayat-peminjam');
-                            },
-
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  IconlyBold.document,
-                                  color: Warna.putih,
-                                  size: 18,
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  "Lihat Detail",
-                                  style: TextStyle(color: Warna.putih),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                child: Text(
+                  status,
+                  style: TextStyle(
+                    color: _getTextColor(status),
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              );
-            }).toList(),
-            SizedBox(height: 24),
+              ),
+            ],
+          ),
+          const Divider(height: 20, thickness: 1, color: Colors.grey),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Tgl Peminjaman",
+                style: TextStyle(color: Warna.putih.withOpacity(0.7)),
+              ),
+              Text(
+                loan.tanggalPinjamFormatted,
+                style: AppTextStyles.stokText.copyWith(color: Warna.putih),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Tgl Kembali",
+                style: TextStyle(color: Warna.putih.withOpacity(0.7)),
+              ),
+              Text(
+                loan.tanggalKembaliFormatted,
+                style: AppTextStyles.stokText.copyWith(color: Warna.putih),
+              ),
+            ],
+          ),
+          // Show rejection reason if exists
+          if (loan.catatanPenolakan != null &&
+              loan.catatanPenolakan!.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Alasan Penolakan: ",
+                  style: TextStyle(color: Colors.orange.withOpacity(0.8)),
+                ),
+                Expanded(
+                  child: Text(
+                    loan.catatanPenolakan!,
+                    style: TextStyle(color: Colors.orange),
+                  ),
+                ),
+              ],
+            ),
           ],
-        ),
+          SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.all(12),
+                    backgroundColor: Warna.abuAbu.withOpacity(0.3),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: BorderSide(color: Warna.putih.withOpacity(0.2)),
+                    ),
+                  ),
+                  onPressed: () {
+                    Get.toNamed('/detail-riwayat-peminjam', arguments: loan);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(IconlyBold.document, color: Warna.putih, size: 18),
+                      SizedBox(width: 8),
+                      Text(
+                        "Lihat Detail",
+                        style: TextStyle(color: Warna.putih),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -243,10 +264,12 @@ class RiwayatPeminjamanView extends StatelessWidget {
         return Colors.green.withOpacity(0.2);
       case 'Ditolak':
         return Colors.redAccent.withOpacity(0.2);
-      case 'Dipinjam':
+      case 'Disetujui':
         return Colors.greenAccent.withOpacity(0.2);
       case 'Terlambat':
         return Colors.red.withOpacity(0.2);
+      case 'Batal':
+        return Colors.grey.withOpacity(0.2);
       default:
         return Warna.ungu.withOpacity(0.2);
     }
@@ -260,10 +283,12 @@ class RiwayatPeminjamanView extends StatelessWidget {
         return Colors.green;
       case 'Ditolak':
         return Colors.redAccent;
-      case 'Dipinjam':
+      case 'Disetujui':
         return Colors.greenAccent;
       case 'Terlambat':
         return Colors.red;
+      case 'Batal':
+        return Colors.grey;
       default:
         return Warna.ungu;
     }
