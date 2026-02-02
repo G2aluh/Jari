@@ -1,17 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:jari/app/modules/alat/views/peminjam/alat_list_peminjam_view.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:jari/app/modules/peminjam/views/dialog/pengajuan_peminjaman_dialog.dart';
 
 class PeminjamDashboardController extends GetxController {
-  // State
+  // ===============================
+  // SUPABASE
+  // ===============================
+  final SupabaseClient supabase = Supabase.instance.client;
+
+  // ===============================
+  // STATE DATA ALAT (DATABASE)
+  // ===============================
+  final RxList<Map<String, dynamic>> alatList = <Map<String, dynamic>>[].obs;
+  final RxBool isLoadingAlat = false.obs;
+  final RxString errorAlat = ''.obs;
+  final RxList<Map<String, dynamic>> kategoriListDb =
+      <Map<String, dynamic>>[].obs;
+
+  // ===============================
+  // UI STATE (EXISTING)
+  // ===============================
   var showBadge = false.obs;
   var isSearchActive = false.obs;
   final TextEditingController searchController = TextEditingController();
+  final RxString selectedKategoriId = ''.obs; // '' = semua
+  final RxList<Map<String, dynamic>> allAlat = <Map<String, dynamic>>[].obs;
+
+  String get selectedKategoriNama {
+    if (selectedKategoriId.value.isEmpty) {
+      return '';
+    }
+
+    final kategori = kategoriListDb.firstWhereOrNull(
+      (k) => k['id'] == selectedKategoriId.value,
+    );
+
+    return kategori?['nama_kategori'] ?? '';
+  }
 
   var rentedItems = <int>{}.obs;
   var rentedNewItem = <String>{}.obs;
+
+  // ===============================
+  // LIFECYCLE
+  // ===============================
+  @override
+  void onInit() {
+    super.onInit();
+    fetchKategori();
+    fetchAlat();
+  }
 
   @override
   void onClose() {
@@ -19,6 +59,78 @@ class PeminjamDashboardController extends GetxController {
     super.onClose();
   }
 
+  Future<void> fetchKategori() async {
+    final result = await supabase
+        .from('kategori_alat')
+        .select('id, nama_kategori, icon_code, icon_family, icon_package')
+        .order('nama_kategori');
+
+    kategoriListDb.assignAll(List<Map<String, dynamic>>.from(result));
+  }
+
+  // ===============================
+  // FETCH DATA ALAT (STEP 1.1)
+  // ===============================
+  Future<void> fetchAlat() async {
+    try {
+      isLoadingAlat.value = true;
+      errorAlat.value = '';
+
+      final result = await supabase
+          .from('alat')
+          .select('''
+          id,
+          kode_alat,
+          nama_alat,
+          stok_tersedia,
+          alat_url,
+          kategori_id,
+          dibuat_pada
+        ''')
+          .eq('aktif', true)
+          .gt('stok_tersedia', 0)
+          .order('dibuat_pada', ascending: false);
+
+      allAlat.assignAll(List<Map<String, dynamic>>.from(result));
+
+      // DEFAULT: tampil semua
+      alatList.assignAll(allAlat);
+    } catch (e) {
+      errorAlat.value = e.toString();
+    } finally {
+      isLoadingAlat.value = false;
+    }
+  }
+
+  // ===============================
+  // SEARCH
+  // ===============================
+  void toggleSearch() {
+    if (isSearchActive.value) {
+      isSearchActive.value = false;
+      searchController.clear();
+    } else {
+      isSearchActive.value = true;
+    }
+  }
+
+  void filterByKategori(String kategoriId) {
+    selectedKategoriId.value = kategoriId;
+
+    if (kategoriId.isEmpty) {
+      // tampilkan semua
+      alatList.assignAll(allAlat);
+    } else {
+      // filter untuk EquipmentList SAJA
+      alatList.assignAll(
+        allAlat.where((alat) => alat['kategori_id'] == kategoriId).toList(),
+      );
+    }
+  }
+
+  // ===============================
+  // RENT SELECTION
+  // ===============================
   void toggleRent(int index) {
     if (rentedItems.contains(index)) {
       rentedItems.remove(index);
@@ -37,76 +149,60 @@ class PeminjamDashboardController extends GetxController {
     _updateBadgeVisibility();
   }
 
-  void toggleSearch() {
-    if (isSearchActive.value) {
-      isSearchActive.value = false;
-      searchController.clear();
-    } else {
-      isSearchActive.value = true;
-    }
-  }
-
   void _updateBadgeVisibility() {
-    showBadge.value = rentedItems.isNotEmpty || rentedNewItem.isNotEmpty;
+    showBadge.value = rentedItems.isNotEmpty;
   }
 
+  // ===============================
+  // DIALOG PEMINJAMAN
+  // ===============================
   void showRentalSelectionDialog(BuildContext context) {
     if (showBadge.value) {
       showDialog(
         context: context,
-        builder: (BuildContext context) {
+        builder: (context) {
           return RentalSelectionDialog(
             rentedItems: rentedItems,
-            rentedNewItem: rentedNewItem,
-            alatList: alatList,
-            alatProdukBaruList: alatProdukBaruList,
+            alatList: alatList.toList(),
           );
         },
       );
     } else {
-      // Fluttertoast.showToast(
-      //   msg: "Pilih barang untuk disewa terlebih dahulu",
-      //   toastLength: Toast.LENGTH_LONG,
-      //   gravity: ToastGravity.BOTTOM,
-      //   backgroundColor: Colors.red,
-      //   timeInSecForIosWeb: 2,
-      //   textColor: Colors.white,
-      //   fontSize: 16.0,
-      // );
-
-      //snackbar
       Get.snackbar(
         "Peringatan",
-        "Pilih barang untuk disewa terlebih dahulu",
+        "Pilih barang untuk dipinjam terlebih dahulu",
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
-        duration: Duration(seconds: 2),
         colorText: Colors.white,
+        duration: const Duration(seconds: 2),
         borderRadius: 10,
-        margin: EdgeInsets.all(10),
+        margin: const EdgeInsets.all(10),
       );
     }
   }
 
+  // ===============================
+  // DIALOG RIWAYAT & PENGEMBALIAN
+  // ===============================
   void showHistorySelectionDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Pilih Menu",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildSelectionItem(
               icon: Icons.history,
               title: "Riwayat Peminjaman",
@@ -115,7 +211,7 @@ class PeminjamDashboardController extends GetxController {
                 Get.toNamed('/riwayat-peminjam');
               },
             ),
-            Divider(),
+            const Divider(),
             _buildSelectionItem(
               icon: Icons.assignment_return,
               title: "Pengembalian Alat",
@@ -137,17 +233,22 @@ class PeminjamDashboardController extends GetxController {
   }) {
     return ListTile(
       leading: Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: Colors.purple.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(icon, color: Colors.purple),
       ),
-      title: Text(title, style: TextStyle(fontWeight: FontWeight.w500)),
-      trailing: Icon(Icons.chevron_right, color: Colors.grey),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
       onTap: onTap,
       contentPadding: EdgeInsets.zero,
     );
+  }
+
+  Map<String, dynamic>? get alatTerbaru {
+    if (allAlat.isEmpty) return null;
+    return allAlat.first; // selalu alat terbaru global
   }
 }

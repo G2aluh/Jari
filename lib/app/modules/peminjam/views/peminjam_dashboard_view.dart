@@ -15,7 +15,7 @@ class PeminjamDashboardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Inject Controller
-    final controller = Get.put(PeminjamDashboardController());
+    final controller = Get.find<PeminjamDashboardController>();
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -25,7 +25,7 @@ class PeminjamDashboardView extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: const CategoryList(),
+            child: CategoryList(controller: controller),
           ),
           Container(
             margin: EdgeInsets.only(top: 10),
@@ -36,12 +36,18 @@ class PeminjamDashboardView extends StatelessWidget {
               color: Warna.putih,
               borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
-            child: Column(
-              children: [
-                EquipmentList(controller: controller),
-                NewEquipmentSection(controller: controller),
-              ],
-            ),
+            child: Obx(() {
+              if (controller.isLoadingAlat.value) {
+                return _buildLoadingState();
+              }
+
+              return Column(
+                children: [
+                  EquipmentList(controller: controller),
+                  NewEquipmentSection(controller: controller),
+                ],
+              );
+            }),
           ),
         ],
       ),
@@ -63,11 +69,7 @@ class PeminjamDashboardView extends StatelessWidget {
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Badge(
-              alignment: Alignment(1, -1.5),
-              backgroundColor: Warna.ungu,
-              child: Icon(IconlyBold.timeCircle),
-            ),
+            icon: Icon(IconlyBold.timeCircle),
             label: "Riwayat",
           ),
         ],
@@ -88,6 +90,10 @@ class PeminjamDashboardView extends StatelessWidget {
                   backgroundColor: Warna.ungu,
                   child: FloatingActionButton(
                     elevation: 0,
+                    hoverElevation: 0,
+                    splashColor: Colors.transparent,
+                    highlightElevation: 0,
+                    hoverColor: Colors.transparent,
                     onPressed: () =>
                         controller.showRentalSelectionDialog(context),
                     backgroundColor: Warna.ungu,
@@ -97,6 +103,7 @@ class PeminjamDashboardView extends StatelessWidget {
                 )
               : FloatingActionButton(
                   elevation: 0,
+                  hoverElevation: 0,
                   onPressed: () =>
                       controller.showRentalSelectionDialog(context),
                   backgroundColor: Warna.ungu,
@@ -107,4 +114,40 @@ class PeminjamDashboardView extends StatelessWidget {
       }),
     );
   }
+}
+
+Widget _buildLoadingState() {
+  return Padding(
+    padding: const EdgeInsets.all(24),
+    child: Column(
+      children: [
+        // loading equipment list
+        SizedBox(
+          height: 220,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: 5,
+            separatorBuilder: (_, __) => const SizedBox(width: 15),
+            itemBuilder: (_, __) => Container(
+              width: 130,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+
+        // loading new equipment
+        Container(
+          height: 90,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ],
+    ),
+  );
 }

@@ -12,5 +12,5 @@ class Warna {
   static const Color abuAbu = Color.fromARGB(255, 61, 61, 61);
   static const Color merah = Color.fromARGB(255, 255, 0, 0);
   static const Color ijo = Colors.green;
-  
+  static const Color unguTransparan = Color(0xFFE4E1FF);
 }

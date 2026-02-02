@@ -13,6 +13,10 @@ class NewEquipmentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final alat = controller.alatTerbaru;
+    if (alat == null) return const SizedBox.shrink();
+
+    final int alatIndex = 0; // alat terbaru
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -57,9 +61,11 @@ class NewEquipmentSection extends StatelessWidget {
                     color: Warna.putih,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Image.asset(
-                    'assets/images/mesinObras.png',
+                  child: Image.network(
+                    alat['alat_url'],
                     fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) =>
+                        const Icon(Icons.broken_image, color: Colors.grey),
                   ),
                 ),
                 Column(
@@ -68,12 +74,12 @@ class NewEquipmentSection extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          "Mesin Obras",
+                          alat['nama_alat'],
                           style: AppTextStyles.namaBarangText,
                         ),
                         SizedBox(width: 4),
                         //Stok Container
-                        StockContainer(stock: "12"),
+                        StockContainer(stock: alat['stok_tersedia'].toString()),
                       ],
                     ),
                     Row(
@@ -90,40 +96,6 @@ class NewEquipmentSection extends StatelessWidget {
             ),
           ),
           SizedBox(height: 8),
-          // SewaProdukBaruButton
-          Padding(
-            padding: const EdgeInsets.only(right: 230),
-            child: Obx(
-              () => ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  shadowColor: Colors.transparent,
-                  elevation: 0,
-                  backgroundColor:
-                      controller.rentedNewItem.contains("Mesin Obras")
-                      ? Colors.grey
-                      : Warna.ungu,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: () => controller.toggleRentNewItem("Mesin Obras"),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      controller.rentedNewItem.contains("Mesin Obras")
-                          ? "Disewa"
-                          : "Sewa",
-                      style: AppTextStyles.stokText,
-                    ),
-                    SizedBox(width: 5),
-                    Icon(IconlyBold.bag, size: 16, color: Warna.putih),
-                  ],
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );

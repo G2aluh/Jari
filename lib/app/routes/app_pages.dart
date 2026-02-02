@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:jari/app/modules/peminjam/peminjam_bindings.dart';
 
 // Auth
 import '../modules/auth/views/login_view.dart';
@@ -40,9 +41,11 @@ class AppPages {
 
     // Peminjam Dashboard
     GetPage(
-      name: Routes.peminjamDashboard,
+      name: '/peminjam-dashboard',
       page: () => const PeminjamDashboardView(),
+      binding: PeminjamBinding(),
     ),
+
     GetPage(
       name: Routes.riwayatPeminjam,
       page: () => const RiwayatPeminjamanView(),
