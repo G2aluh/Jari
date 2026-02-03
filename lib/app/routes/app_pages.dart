@@ -27,6 +27,7 @@ import '../modules/petugas/bindings/petugas_dashboard_binding.dart';
 import '../modules/petugas/views/loan_verification/loan_verification_view.dart';
 import '../modules/petugas/views/return_monitoring/return_monitoring_view.dart';
 import '../modules/petugas/views/report_generation/report_generation_view.dart';
+import '../modules/profile/views/profile_view.dart';
 
 import 'app_routes.dart';
 
@@ -102,5 +103,6 @@ class AppPages {
       name: Routes.reportGeneration,
       page: () => const ReportGenerationView(),
     ),
+    GetPage(name: Routes.profile, page: () => const ProfileView()),
   ];
 }

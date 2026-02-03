@@ -172,6 +172,15 @@ class PeminjamanController extends GetxController {
         });
 
         // Note: Stok updates handed by DB trigger or manual if needed later
+
+        // 3. Update Stok (Decrement) via RPC
+        await _supabase.rpc(
+          'decrement_stock',
+          params: {
+            'p_alat_id': selection.alat.id,
+            'p_jumlah': selection.jumlah,
+          },
+        );
       }
 
       await fetchPeminjaman();
@@ -261,18 +270,46 @@ class PeminjamanController extends GetxController {
             'alat_id': item.alat.id,
             'jumlah': item.jumlah,
           });
+
+          // Decrement Stock
+          await _supabase.rpc(
+            'decrement_stock',
+            params: {'p_alat_id': item.alat.id, 'p_jumlah': item.jumlah},
+          );
         } else if (existingItem.jumlah != item.jumlah) {
           // UPDATE JUMLAH
           await _supabase
               .from('detail_peminjaman')
               .update({'jumlah': item.jumlah})
               .eq('id', existingItem.id);
+
+          // Adjust Stock
+          final diff = item.jumlah - existingItem.jumlah;
+          if (diff > 0) {
+            // Increased quantity -> Decrement stock
+            await _supabase.rpc(
+              'decrement_stock',
+              params: {'p_alat_id': item.alat.id, 'p_jumlah': diff},
+            );
+          } else {
+            // Decreased quantity -> Increment stock
+            await _supabase.rpc(
+              'increment_stock',
+              params: {'p_alat_id': item.alat.id, 'p_jumlah': diff.abs()},
+            );
+          }
         }
       }
 
       // 4. Eksekusi hapus
       for (var item in itemsToDelete) {
         await _supabase.from('detail_peminjaman').delete().eq('id', item.id);
+
+        // Increment Stock (Return)
+        await _supabase.rpc(
+          'increment_stock',
+          params: {'p_alat_id': item.alatId, 'p_jumlah': item.jumlah},
+        );
       }
 
       return true;

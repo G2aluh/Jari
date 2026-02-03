@@ -6,6 +6,7 @@ class Pengguna {
   final bool aktif;
   final DateTime? dibuatPada;
   final String role;
+  final String? urlProfile;
 
   Pengguna({
     required this.id,
@@ -14,6 +15,7 @@ class Pengguna {
     required this.aktif,
     this.dibuatPada,
     required this.role,
+    this.urlProfile,
   });
 
   /// Factory method untuk parsing data dari Supabase
@@ -27,6 +29,7 @@ class Pengguna {
           ? DateTime.tryParse(json['dibuat_pada'] as String)
           : null,
       role: json['role'] as String? ?? 'peminjam',
+      urlProfile: json['url_profile'] as String?,
     );
   }
 
@@ -38,6 +41,7 @@ class Pengguna {
       'email': email,
       'aktif': aktif,
       'role': role,
+      'url_profile': urlProfile,
     };
   }
 
@@ -63,6 +67,7 @@ class Pengguna {
     bool? aktif,
     DateTime? dibuatPada,
     String? role,
+    String? urlProfile,
   }) {
     return Pengguna(
       id: id ?? this.id,
@@ -71,6 +76,7 @@ class Pengguna {
       aktif: aktif ?? this.aktif,
       dibuatPada: dibuatPada ?? this.dibuatPada,
       role: role ?? this.role,
+      urlProfile: urlProfile ?? this.urlProfile,
     );
   }
 }

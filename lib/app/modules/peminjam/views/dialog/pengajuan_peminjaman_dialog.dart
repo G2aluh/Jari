@@ -308,6 +308,9 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
     required VoidCallback onIncrement,
     required VoidCallback onDecrement,
   }) {
+    final int maxStock = int.tryParse(stock) ?? 0;
+    final bool isMaxReached = quantity >= maxStock;
+
     return Card(
       color: Warna.unguTransparan,
       elevation: 0,
@@ -347,8 +350,11 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
             Row(
               children: [
                 IconButton(
-                  onPressed: onDecrement,
-                  icon: const Icon(Icons.remove, color: Warna.hitamBackground),
+                  onPressed: quantity > 1 ? onDecrement : null,
+                  icon: Icon(
+                    Icons.remove,
+                    color: quantity > 1 ? Warna.hitamBackground : Colors.grey,
+                  ),
                 ),
                 Text(
                   quantity.toString(),
@@ -358,8 +364,11 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                   ),
                 ),
                 IconButton(
-                  onPressed: onIncrement,
-                  icon: const Icon(Icons.add, color: Warna.hitamBackground),
+                  onPressed: isMaxReached ? null : onIncrement,
+                  icon: Icon(
+                    Icons.add,
+                    color: isMaxReached ? Colors.grey : Warna.hitamBackground,
+                  ),
                 ),
               ],
             ),

@@ -134,21 +134,8 @@ class PetugasDashboardController extends GetxController {
           })
           .eq('id', peminjamanId);
 
-      // Update stock (reduce stok_tersedia)
-      final details = await supabase
-          .from('detail_peminjaman')
-          .select('alat_id, jumlah')
-          .eq('peminjaman_id', peminjamanId);
-
-      for (final detail in details) {
-        await supabase.rpc(
-          'decrement_stock',
-          params: {
-            'p_alat_id': detail['alat_id'],
-            'p_jumlah': int.tryParse(detail['jumlah'].toString()) ?? 0,
-          },
-        );
-      }
+      // Note: Stock is already decremented upon submission (booking system)
+      // So no need to decrement here.
 
       Get.snackbar(
         'Berhasil',
@@ -189,6 +176,22 @@ class PetugasDashboardController extends GetxController {
             'updated_at': DateTime.now().toIso8601String(),
           })
           .eq('id', peminjamanId);
+
+      // Restore stock via RPC
+      final details = await supabase
+          .from('detail_peminjaman')
+          .select('alat_id, jumlah')
+          .eq('peminjaman_id', peminjamanId);
+
+      for (final detail in details) {
+        await supabase.rpc(
+          'increment_stock',
+          params: {
+            'p_alat_id': detail['alat_id'],
+            'p_jumlah': int.tryParse(detail['jumlah'].toString()) ?? 0,
+          },
+        );
+      }
 
       Get.snackbar(
         'Berhasil',
@@ -305,7 +308,7 @@ class PetugasDashboardController extends GetxController {
           })
           .eq('id', peminjamanId);
 
-      // Restore stock
+      // Restore stock via RPC
       final details = await supabase
           .from('detail_peminjaman')
           .select('alat_id, jumlah')

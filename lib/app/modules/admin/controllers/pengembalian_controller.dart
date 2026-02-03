@@ -241,6 +241,22 @@ class PengembalianController extends GetxController {
               'updated_at': DateTime.now().toIso8601String(),
             })
             .eq('id', peminjamanId);
+
+        // Increment Stock via RPC
+        final details = await _supabase
+            .from('detail_peminjaman')
+            .select('alat_id, jumlah')
+            .eq('peminjaman_id', peminjamanId);
+
+        for (final detail in details) {
+          await _supabase.rpc(
+            'increment_stock',
+            params: {
+              'p_alat_id': detail['alat_id'],
+              'p_jumlah': int.tryParse(detail['jumlah'].toString()) ?? 0,
+            },
+          );
+        }
       }
 
       await fetchPeminjamanAktif();

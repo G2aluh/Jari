@@ -10,4 +10,5 @@ const menuItems = [
   Icon(Icons.assignment_return, color: Warna.putih), // Pengembalian
   Icon(Icons.bar_chart, color: Warna.putih), // Log
   Icon(Icons.settings, color: Warna.putih), // Settings
+  Icon(Icons.account_circle, color: Warna.putih), // Profile
 ];

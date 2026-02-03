@@ -4,6 +4,7 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:jari/app/modules/petugas/views/loan_verification/loan_verification_view.dart';
 import 'package:jari/app/modules/petugas/views/return_monitoring/return_monitoring_view.dart';
 import 'package:jari/app/modules/petugas/views/report_generation/report_generation_view.dart';
+import 'package:jari/app/modules/profile/views/profile_view.dart';
 
 class PetugasDashboardView extends StatefulWidget {
   const PetugasDashboardView({super.key});
@@ -38,6 +39,8 @@ class _PetugasDashboardViewState extends State<PetugasDashboardView> {
         return const ReturnMonitoringView();
       case 2: // Reports
         return const ReportGenerationView();
+      case 3: // Profile
+        return const ProfileView();
       default:
         return const LoanVerificationView(); // Default to verification
     }
@@ -61,6 +64,10 @@ class _PetugasDashboardViewState extends State<PetugasDashboardView> {
           icon: Icon(IconlyLight.document),
           label: 'Laporan',
         ),
+        BottomNavigationBarItem(
+          icon: Icon(IconlyLight.profile),
+          label: 'Profil',
+        ),
       ],
       currentIndex: _currentIndex,
       onNavTap: _onNavTap,
@@ -76,6 +83,8 @@ class _PetugasDashboardViewState extends State<PetugasDashboardView> {
         return 'Monitor Pengembalian';
       case 2:
         return 'Laporan';
+      case 3:
+        return 'Profil Saya';
       default:
         return 'Verifikasi Peminjaman';
     }

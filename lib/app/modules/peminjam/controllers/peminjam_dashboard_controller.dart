@@ -113,6 +113,24 @@ class PeminjamDashboardController extends GetxController {
       await supabase.from('detail_peminjaman').insert(detailData);
 
       // =========================
+      // 4. UPDATE STOCK (DECREMENT)
+      // =========================
+      for (var entry in quantities.entries) {
+        final index = int.parse(entry.key.replaceAll('item_', ''));
+        final alat = alatList[index];
+        final jumlah = entry.value;
+
+        // Update Stock via RPC
+        await supabase.rpc(
+          'decrement_stock',
+          params: {'p_alat_id': alat['id'], 'p_jumlah': jumlah},
+        );
+      }
+
+      // Refresh data
+      await fetchAlat();
+
+      // =========================
       // 3. RESET STATE UI
       // =========================
       rentedItems.clear();
@@ -299,6 +317,15 @@ class PeminjamDashboardController extends GetxController {
               onTap: () {
                 Get.back();
                 Get.toNamed('/riwayat-peminjam');
+              },
+            ),
+            const Divider(),
+            _buildSelectionItem(
+              icon: Icons.person,
+              title: "Profil Saya",
+              onTap: () {
+                Get.back();
+                Get.toNamed('/profile');
               },
             ),
             const Divider(),

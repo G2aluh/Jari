@@ -22,4 +22,5 @@ abstract class Routes {
   static const loanVerification = '/loan-verification';
   static const returnMonitoring = '/return-monitoring';
   static const reportGeneration = '/report-generation';
+  static const profile = '/profile';
 }

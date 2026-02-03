@@ -11,6 +11,7 @@ import 'package:jari/app/modules/admin/views/loan_management/loan_management_vie
 import 'package:jari/app/modules/admin/views/return_management/return_management_view.dart';
 import 'package:jari/app/modules/admin/views/settings/settings_view.dart';
 import 'package:jari/app/modules/admin/views/activity_log/activity_log_view.dart';
+import 'package:jari/app/modules/profile/views/profile_view.dart';
 import 'package:flutter/material.dart';
 
 class AdminDashboardView extends StatefulWidget {
@@ -41,6 +42,8 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
         return const ActivityLogView();
       case 7:
         return const SettingsView();
+      case 8:
+        return const ProfileView();
       default:
         return _buildDashboardPage();
     }
@@ -64,6 +67,8 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
         return 'Log Aktivitas';
       case 7:
         return 'Pengaturan';
+      case 8:
+        return 'Profil Saya';
       default:
         return 'Dashboard Admin';
     }

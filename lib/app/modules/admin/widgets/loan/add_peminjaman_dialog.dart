@@ -455,7 +455,7 @@ class _AddPeminjamanDialogState extends State<AddPeminjamanDialog> {
 
     if (jumlah > _tempSelectedAlat!.stokTersedia) {
       Get.snackbar(
-        'Error',
+        'Stok Tidak Cukup',
         'Stok tidak mencukupi (Tersedia: ${_tempSelectedAlat!.stokTersedia})',
         backgroundColor: Colors.red,
         colorText: Colors.white,

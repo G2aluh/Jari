@@ -31,6 +31,8 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
     text: '1',
   );
   final RxList<AlatSelection> _selectedAlatList = <AlatSelection>[].obs;
+  // Track original quantities to calculate net stock usage
+  final Map<dynamic, int> _originalQuantities = {};
 
   bool _isLoading = false;
   bool _isLoadingDetails = true;
@@ -56,6 +58,7 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
         _selectedAlatList.add(
           AlatSelection(alat: detail.alat!, jumlah: detail.jumlah),
         );
+        _originalQuantities[detail.alat!.id] = detail.jumlah;
       }
     }
 
@@ -468,15 +471,40 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
       return;
     }
 
+    // Validasi Stok (Calculate Net Usage)
+    // Net Needed = (CurrentInList + Adding) - OriginalReserved
+    final existingIndex = _selectedAlatList.indexWhere(
+      (item) => item.alat.id == _tempSelectedAlat!.id,
+    );
+
+    final currentQty = existingIndex != -1
+        ? _selectedAlatList[existingIndex].jumlah
+        : 0;
+    final originalQty = _originalQuantities[_tempSelectedAlat!.id] ?? 0;
+    final proposedTotal = currentQty + jumlah;
+    final neededFromWarehouse = proposedTotal - originalQty;
+
+    // Use stokTersedia from dropdown (Snapshot of current warehouse stock)
+    // Logic: If needed > stock, fail.
+    // If needed <= 0 (returning stock), always OK.
+    if (neededFromWarehouse > _tempSelectedAlat!.stokTersedia) {
+      Get.snackbar(
+        'Stok Tidak Cukup',
+        'Stok tidak mencukupi (Tersedia: ${_tempSelectedAlat!.stokTersedia})',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
+      );
+      return;
+    }
+
     // Note: Di edit mode, kita tidak bisa validasi stok dengan mudah
     // karena mungkin kita sedang edit item yang sudah ada.
     // Jadi validasi stok sebaiknya di DB trigger atau lenient here.
     // Tapi jika item baru, harusnya cek stok.
 
     // Cek apakah alat sudah ada di list
-    final existingIndex = _selectedAlatList.indexWhere(
-      (item) => item.alat.id == _tempSelectedAlat!.id,
-    );
 
     if (existingIndex != -1) {
       _selectedAlatList[existingIndex].jumlah += jumlah;
