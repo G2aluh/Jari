@@ -10,6 +10,16 @@ class SettingsController extends GetxController {
   final Rx<AturanDenda?> aturanDendaHarian = Rx<AturanDenda?>(null);
 
   final RxBool isLoading = false.obs;
+  final Rx<num?> initialDenda = Rx<num?>(null);
+  final RxBool isChanged = false.obs;
+
+  void checkIsChanged(num? currentValue) {
+    if (initialDenda.value == null || currentValue == null) {
+      isChanged.value = false;
+    } else {
+      isChanged.value = currentValue != initialDenda.value;
+    }
+  }
 
   @override
   void onInit() {
@@ -18,7 +28,6 @@ class SettingsController extends GetxController {
   }
 
   void _setupRealtimeSubscription() {
-    // Listen to realtime changes for 'keterlambatan' rule
     aturanDendaHarian.bindStream(
       _supabase
           .from('aturan_denda')
@@ -26,7 +35,15 @@ class SettingsController extends GetxController {
           .eq('jenis', 'keterlambatan')
           .map((event) {
             if (event.isNotEmpty) {
-              return AturanDenda.fromJson(event.first);
+              final data = AturanDenda.fromJson(event.first);
+
+              // ✅ SET NILAI AWAL SEKALI SAJA
+              if (initialDenda.value == null) {
+                initialDenda.value = data.nilaiDenda;
+                isChanged.value = false;
+              }
+
+              return data;
             }
             return null;
           }),

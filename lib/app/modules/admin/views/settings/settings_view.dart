@@ -122,6 +122,10 @@ class _SettingsViewState extends State<SettingsView> {
                       return const Center(child: CircularProgressIndicator());
                     }
                     return TextFormField(
+                      onChanged: (value) {
+                        final parsed = num.tryParse(value);
+                        controller.checkIsChanged(parsed);
+                      },
                       controller: _fineController,
                       style: TextStyle(color: Warna.putih),
                       keyboardType: TextInputType.number,
@@ -165,11 +169,15 @@ class _SettingsViewState extends State<SettingsView> {
                     width: double.infinity,
                     child: Obx(
                       () => ElevatedButton(
-                        onPressed: controller.isLoading.value
+                        onPressed:
+                            controller.isLoading.value ||
+                                !controller.isChanged.value
                             ? null
                             : _saveSettings,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Warna.ungu,
+                          backgroundColor: controller.isChanged.value
+                              ? Warna.ungu
+                              : Warna.abuAbu,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
