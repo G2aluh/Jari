@@ -437,10 +437,7 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                             )
                           : Text(
                               'Simpan',
-                              style: TextStyle(
-                                color: Warna.putih,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: TextStyle(color: Warna.putih),
                             ),
                     ),
                   ),
@@ -466,6 +463,7 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
         backgroundColor: Colors.red,
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
       );
       return;
     }

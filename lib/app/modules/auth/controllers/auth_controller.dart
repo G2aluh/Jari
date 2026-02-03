@@ -42,6 +42,10 @@ class AuthController extends GetxController {
           Get.snackbar(
             "Login Gagal",
             "Data profil tidak ditemukan. Hubungi Admin.",
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+            margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
           );
           await _supabase.auth.signOut();
           return false;
@@ -55,6 +59,8 @@ class AuthController extends GetxController {
             "Akun Anda telah dinonaktifkan. Hubungi Admin.",
             backgroundColor: Colors.red,
             colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+            margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
           );
           await _supabase.auth.signOut();
           return false;
@@ -83,6 +89,8 @@ class AuthController extends GetxController {
         "Email atau password salah",
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
       );
       return false;
     } catch (e) {
@@ -91,6 +99,8 @@ class AuthController extends GetxController {
         "Terjadi kesalahan: $e",
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
       );
       return false;
     }

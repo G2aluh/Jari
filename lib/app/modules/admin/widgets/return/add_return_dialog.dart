@@ -308,13 +308,7 @@ class _AddReturnDialogState extends State<AddReturnDialog> {
                               color: Warna.putih,
                             ),
                           )
-                        : Text(
-                            'Simpan',
-                            style: TextStyle(
-                              color: Warna.putih,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                        : Text('Simpan', style: TextStyle(color: Warna.putih)),
                   ),
                 ),
               ],
@@ -340,7 +334,7 @@ class _AddReturnDialogState extends State<AddReturnDialog> {
         backgroundColor: Colors.red,
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
-        margin: EdgeInsets.only(bottom: 16, left: 16, right: 16),
+        margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
       );
       return;
     }

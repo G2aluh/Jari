@@ -177,6 +177,8 @@ class DetailRiwayatPeminjamanView extends StatelessWidget {
               ),
             ],
           ),
+
+          //Isi konten alat yang dipinjam
           content: details.isEmpty
               ? Text("Tidak ada alat", style: TextStyle(color: Warna.putih))
               : Column(

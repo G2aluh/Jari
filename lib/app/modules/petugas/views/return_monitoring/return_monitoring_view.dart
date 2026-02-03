@@ -42,13 +42,14 @@ class ReturnMonitoringView extends StatelessWidget {
                 children: [
                   // Search Bar
                   TextField(
-                    style: TextStyle(color: Warna.putih),
+                    style: TextStyle(color: Warna.putih, fontSize: 14),
                     decoration: InputDecoration(
                       hintText: 'Cari pengembalian...',
                       hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
                       prefixIcon: Icon(
-                        Icons.search,
+                        IconlyLight.search,
                         color: Warna.putih.withOpacity(0.5),
+                        size: 16,
                       ),
                       filled: true,
                       fillColor: Warna.hitamTransparan,
@@ -128,7 +129,7 @@ class ReturnMonitoringView extends StatelessWidget {
                         child: Column(
                           children: [
                             Icon(
-                              Icons.check_circle_outline,
+                              IconlyBold.tickSquare,
                               size: 80,
                               color: Warna.abuAbu.withOpacity(0.5),
                             ),

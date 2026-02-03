@@ -20,7 +20,10 @@ class StockContainer extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(2.0),
-            child: Text(stock, style: AppTextStyles.stokText),
+            child: Text(
+              stock,
+              style: TextStyle(color: Warna.putih, fontSize: 12),
+            ),
           ),
         ],
       ),

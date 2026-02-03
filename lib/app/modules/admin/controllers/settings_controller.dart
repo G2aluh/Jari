@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:jari/app/modules/admin/models/aturan_denda_model.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -77,7 +78,14 @@ class SettingsController extends GetxController {
 
       return true;
     } catch (e) {
-      Get.snackbar('Error', 'Gagal menyimpan pengaturan: $e');
+      Get.snackbar(
+        'Error',
+        'Gagal menyimpan pengaturan: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
+      );
       return false;
     } finally {
       isLoading.value = false;

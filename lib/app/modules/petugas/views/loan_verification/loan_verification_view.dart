@@ -1,3 +1,4 @@
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:jari/app/core/theme/app_colors.dart';
 import 'package:jari/app/core/theme/app_text_styles.dart';
 import 'package:jari/app/modules/petugas/controllers/petugas_dashboard_controller.dart';
@@ -40,13 +41,14 @@ class LoanVerificationView extends StatelessWidget {
                 children: [
                   // Search Bar
                   TextField(
-                    style: TextStyle(color: Warna.putih),
+                    style: TextStyle(color: Warna.putih, fontSize: 14),
                     decoration: InputDecoration(
                       hintText: 'Cari verifikasi...',
                       hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
                       prefixIcon: Icon(
-                        Icons.search,
+                        IconlyLight.search,
                         color: Warna.putih.withOpacity(0.5),
+                        size: 16,
                       ),
                       filled: true,
                       fillColor: Warna.hitamTransparan,
@@ -82,12 +84,12 @@ class LoanVerificationView extends StatelessWidget {
                   SizedBox(height: 8),
                   if (pendingLoans.isEmpty)
                     Padding(
-                      padding: const EdgeInsets.only(top: 40),
+                      padding: const EdgeInsets.only(top: 50),
                       child: Center(
                         child: Column(
                           children: [
                             Icon(
-                              Icons.check_circle_outline,
+                              IconlyBold.tickSquare,
                               size: 80,
                               color: Warna.abuAbu.withOpacity(0.5),
                             ),

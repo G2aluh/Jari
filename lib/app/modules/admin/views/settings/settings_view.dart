@@ -53,8 +53,8 @@ class _SettingsViewState extends State<SettingsView> {
             "Pengaturan denda berhasil disimpan",
             backgroundColor: Warna.ungu,
             colorText: Colors.white,
-            snackPosition: SnackPosition.TOP,
-            margin: const EdgeInsets.all(20),
+            snackPosition: SnackPosition.BOTTOM,
+            margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
             borderRadius: 10,
           );
         }
@@ -190,7 +190,6 @@ class _SettingsViewState extends State<SettingsView> {
                                 style: TextStyle(
                                   color: Warna.putih,
                                   fontSize: 16,
-                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                       ),

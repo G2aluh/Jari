@@ -261,12 +261,12 @@ class PeminjamDashboardController extends GetxController {
       Get.snackbar(
         "Peringatan",
         "Pilih barang untuk dipinjam terlebih dahulu",
-        snackPosition: SnackPosition.TOP,
+        snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
         borderRadius: 10,
-        margin: const EdgeInsets.all(10),
+        margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
       );
     }
   }

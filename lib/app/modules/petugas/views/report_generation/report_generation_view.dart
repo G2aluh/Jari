@@ -1,3 +1,4 @@
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:jari/app/core/theme/app_colors.dart';
 import 'package:jari/app/modules/petugas/widgets/report_generation/history_item.dart';
 import 'package:jari/app/modules/petugas/widgets/report_generation/report_item.dart';
@@ -15,13 +16,14 @@ class ReportGenerationView extends StatelessWidget {
         children: [
           // Search/Filter (Visual placeholder for consistency)
           TextField(
-            style: TextStyle(color: Warna.putih),
+            style: TextStyle(color: Warna.putih, fontSize: 14),
             decoration: InputDecoration(
               hintText: 'Cari laporan...',
               hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
               prefixIcon: Icon(
-                Icons.search,
+                IconlyLight.search,
                 color: Warna.putih.withOpacity(0.5),
+                size: 16,
               ),
               filled: true,
               fillColor: Warna.hitamTransparan,
@@ -45,7 +47,7 @@ class ReportGenerationView extends StatelessWidget {
             "Jenis Laporan",
             style: TextStyle(
               color: Warna.putih,
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),

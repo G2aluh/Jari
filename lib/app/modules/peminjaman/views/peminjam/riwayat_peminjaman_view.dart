@@ -69,13 +69,14 @@ class _RiwayatPeminjamanViewState extends State<RiwayatPeminjamanView> {
               // Search Bar
               TextField(
                 controller: controller.searchHistoryController,
-                style: TextStyle(color: Warna.putih),
+                style: TextStyle(color: Warna.putih, fontSize: 14),
                 decoration: InputDecoration(
-                  hintText: 'Cari riwayat (Nama/ID)...',
+                  hintText: 'Cari riwayat...',
                   hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
                   prefixIcon: Icon(
                     IconlyLight.search,
                     color: Warna.putih.withOpacity(0.5),
+                    size: 16,
                   ),
                   filled: true,
                   fillColor: Warna.hitamTransparan,
@@ -230,6 +231,8 @@ class _RiwayatPeminjamanViewState extends State<RiwayatPeminjamanView> {
               Expanded(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                    shadowColor: Colors.transparent,
+                    elevation: 0,
                     padding: EdgeInsets.all(12),
                     backgroundColor: Warna.abuAbu.withOpacity(0.3),
                     shape: RoundedRectangleBorder(
@@ -269,7 +272,7 @@ class _RiwayatPeminjamanViewState extends State<RiwayatPeminjamanView> {
       case 'Ditolak':
         return Colors.redAccent.withOpacity(0.2);
       case 'Disetujui':
-        return Colors.greenAccent.withOpacity(0.2);
+        return Colors.blue.withOpacity(0.2);
       case 'Terlambat':
         return Colors.red.withOpacity(0.2);
       case 'Batal':
@@ -288,7 +291,7 @@ class _RiwayatPeminjamanViewState extends State<RiwayatPeminjamanView> {
       case 'Ditolak':
         return Colors.redAccent;
       case 'Disetujui':
-        return Colors.greenAccent;
+        return Colors.blue;
       case 'Terlambat':
         return Colors.red;
       case 'Batal':

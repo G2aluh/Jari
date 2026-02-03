@@ -178,10 +178,25 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
                       },
                       onTap: () async {
                         final picked = await showDatePicker(
+                          confirmText: "Pilih",
+                          cancelText: "Batal",
+                          helpText: "Pilih Tanggal Kembali",
                           context: context,
                           initialDate: DateTime.now(),
                           firstDate: DateTime.now(),
                           lastDate: DateTime(2100),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: const ColorScheme.light(
+                                  primary: Colors.purple, // header & button
+                                  onPrimary: Colors.white,
+                                  onSurface: Colors.black,
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
                         );
 
                         if (picked != null) {
@@ -333,10 +348,19 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
               children: [
                 IconButton(
                   onPressed: onDecrement,
-                  icon: const Icon(Icons.remove),
+                  icon: const Icon(Icons.remove, color: Warna.hitamBackground),
                 ),
-                Text(quantity.toString()),
-                IconButton(onPressed: onIncrement, icon: const Icon(Icons.add)),
+                Text(
+                  quantity.toString(),
+                  style: const TextStyle(
+                    color: Warna.hitamBackground,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  onPressed: onIncrement,
+                  icon: const Icon(Icons.add, color: Warna.hitamBackground),
+                ),
               ],
             ),
           ],

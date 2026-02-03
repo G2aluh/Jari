@@ -448,6 +448,7 @@ class _AddPeminjamanDialogState extends State<AddPeminjamanDialog> {
         backgroundColor: Colors.red,
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
       );
       return;
     }
@@ -459,6 +460,7 @@ class _AddPeminjamanDialogState extends State<AddPeminjamanDialog> {
         backgroundColor: Colors.red,
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
       );
       return;
     }
@@ -479,6 +481,7 @@ class _AddPeminjamanDialogState extends State<AddPeminjamanDialog> {
             backgroundColor: Colors.red,
             colorText: Colors.white,
             snackPosition: SnackPosition.BOTTOM,
+            margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
           );
           return;
         }
@@ -504,6 +507,7 @@ class _AddPeminjamanDialogState extends State<AddPeminjamanDialog> {
         backgroundColor: Colors.red,
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
       );
       return;
     }
@@ -515,6 +519,7 @@ class _AddPeminjamanDialogState extends State<AddPeminjamanDialog> {
         backgroundColor: Colors.red,
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
       );
       return;
     }

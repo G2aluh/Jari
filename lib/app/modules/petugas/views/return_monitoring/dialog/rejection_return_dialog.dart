@@ -59,18 +59,18 @@ class _RejectionReturnDialogState extends State<RejectionReturnDialog> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            "Kode: ${widget.loan.kodePeminjaman ?? widget.loan.id.substring(0, 8)}",
-            style: TextStyle(color: Warna.putih, fontWeight: FontWeight.w500),
-          ),
-          SizedBox(height: 8),
-          Text(
-            "Peminjam: ${widget.loan.namaPeminjam}",
-            style: TextStyle(color: Warna.putih.withOpacity(0.7)),
-          ),
+          // Text(
+          //   "Kode: ${widget.loan.kodePeminjaman ?? widget.loan.id.substring(0, 8)}",
+          //   style: TextStyle(color: Warna.putih, fontWeight: FontWeight.w500),
+          // ),
+          // SizedBox(height: 8),
+          // Text(
+          //   "Peminjam: ${widget.loan.namaPeminjam}",
+          //   style: TextStyle(color: Warna.putih.withOpacity(0.7)),
+          // ),
           SizedBox(height: 16),
           Text(
-            "Masukkan alasan penolakan pengembalian",
+            "Masukkan alasan penolakan",
             style: TextStyle(color: Warna.putih.withOpacity(0.7)),
           ),
           SizedBox(height: 8),
@@ -81,7 +81,7 @@ class _RejectionReturnDialogState extends State<RejectionReturnDialog> {
             decoration: InputDecoration(
               filled: true,
               fillColor: Warna.abuAbu,
-              hintText: "Contoh: Kondisi barang tidak sesuai",
+              hintText: "Contoh: Barang tidak sesuai",
               hintStyle: TextStyle(color: Colors.grey),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),

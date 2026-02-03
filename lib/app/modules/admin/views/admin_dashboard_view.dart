@@ -1,4 +1,7 @@
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/modules/admin/controllers/admin_dashboard_controller.dart';
 import 'package:jari/app/modules/admin/widgets/admin_appbar.dart';
 import 'package:jari/app/widgets/base_dashboard_layout.dart';
 import 'package:jari/app/modules/admin/views/user_management/user_management_view.dart';
@@ -84,6 +87,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
   }
 
   Widget _buildDashboardPage() {
+    final controller = Get.put(AdminDashboardController());
     return SingleChildScrollView(
       padding: EdgeInsets.all(24),
       child: Column(
@@ -91,7 +95,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
         children: [
           _buildSummaryCard(
             title: 'Total Transaksi',
-            value: '128',
+            value: controller.totalTransaksi.value.toString(),
             icon: Icons.receipt_long,
             color: Colors.blue,
           ),
@@ -101,7 +105,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
               Expanded(
                 child: _buildSummaryCard(
                   title: 'Menunggu',
-                  value: '12',
+                  value: controller.menunggu.value.toString(),
                   icon: Icons.hourglass_empty,
                   color: Warna.kuning,
                 ),
@@ -110,7 +114,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
               Expanded(
                 child: _buildSummaryCard(
                   title: 'Ditolak',
-                  value: '5',
+                  value: controller.ditolak.value.toString(),
                   icon: Icons.cancel,
                   color: Colors.red,
                 ),
@@ -123,7 +127,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
               Expanded(
                 child: _buildSummaryCard(
                   title: 'Total Alat',
-                  value: '350',
+                  value: controller.totalAlat.value.toString(),
                   icon: Icons.inventory_2,
                   color: Warna.ungu,
                 ),
@@ -132,7 +136,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
               Expanded(
                 child: _buildSummaryCard(
                   title: 'Total Kategori',
-                  value: '8',
+                  value: controller.totalKategori.value.toString(),
                   icon: Icons.category,
                   color: Colors.teal,
                 ),

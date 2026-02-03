@@ -67,15 +67,17 @@ class _ReturnEquipmentViewState extends State<ReturnEquipmentView> {
                     // Search Bar
                     TextField(
                       controller: controller.searchReturnController,
-                      style: TextStyle(color: Warna.putih),
+                      style: TextStyle(color: Warna.putih, fontSize: 14),
                       decoration: InputDecoration(
                         hintText: 'Cari pengembalian...',
                         hintStyle: TextStyle(
                           color: Warna.putih.withOpacity(0.5),
+                          fontSize: 14,
                         ),
                         prefixIcon: Icon(
                           IconlyLight.search,
                           color: Warna.putih.withOpacity(0.5),
+                          size: 16,
                         ),
                         filled: true,
                         fillColor: Warna.hitamTransparan,
@@ -157,7 +159,7 @@ class _ReturnEquipmentViewState extends State<ReturnEquipmentView> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.assignment_turned_in_outlined,
+                                IconlyLight.document,
                                 size: 80,
                                 color: Warna.abuAbu.withOpacity(0.5),
                               ),
@@ -244,18 +246,18 @@ class _ReturnEquipmentViewState extends State<ReturnEquipmentView> {
                                 ),
                               ),
                             ),
-                            // Note icon for rejection reason
-                            if (hasRejection)
-                              IconButton(
-                                icon: Icon(Icons.note, color: Colors.orange),
-                                onPressed: () => _showRejectionReasonDialog(
-                                  loan.catatanPenolakan!,
-                                ),
-                                padding: EdgeInsets.zero,
-                                constraints: BoxConstraints(),
-                              ),
                           ],
                         ),
+                        // Note icon for rejection reason
+                        if (hasRejection)
+                          IconButton(
+                            icon: Icon(Icons.note, color: Warna.kuning),
+                            onPressed: () => _showRejectionReasonDialog(
+                              loan.catatanPenolakan!,
+                            ),
+                            padding: EdgeInsets.zero,
+                            constraints: BoxConstraints(),
+                          ),
                       ],
                     ),
                   ),
@@ -355,7 +357,7 @@ class _ReturnEquipmentViewState extends State<ReturnEquipmentView> {
         ),
         title: Row(
           children: [
-            Icon(Icons.warning, color: Colors.orange),
+            Icon(Icons.warning_rounded, color: Colors.orange, size: 20),
             SizedBox(width: 8),
             Text(
               "Alasan Penolakan",

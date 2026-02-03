@@ -1,3 +1,4 @@
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:jari/app/core/theme/app_colors.dart';
 import 'package:jari/app/core/theme/app_text_styles.dart';
 import 'package:jari/app/modules/auth/controllers/auth_controller.dart';
@@ -79,7 +80,10 @@ class _LoginViewState extends State<LoginView> {
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(color: Warna.ungu, width: 2),
                         ),
-                        prefixIcon: Icon(Icons.email, color: Warna.putih),
+                        prefixIcon: Icon(
+                          IconlyBold.message,
+                          color: Warna.putih,
+                        ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -115,13 +119,13 @@ class _LoginViewState extends State<LoginView> {
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(color: Warna.ungu, width: 2),
                         ),
-                        prefixIcon: Icon(Icons.lock, color: Warna.putih),
+                        prefixIcon: Icon(IconlyBold.lock, color: Warna.putih),
 
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obsecuredPassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                                ? IconlyBold.hide
+                                : IconlyBold.show,
                             color: Warna.putih,
                           ),
                           onPressed: () {
@@ -173,6 +177,12 @@ class _LoginViewState extends State<LoginView> {
                                         'Role tidak dikenali',
                                         backgroundColor: Colors.red,
                                         colorText: Colors.white,
+                                        snackPosition: SnackPosition.BOTTOM,
+                                        margin: const EdgeInsets.only(
+                                          bottom: 12,
+                                          left: 12,
+                                          right: 12,
+                                        ),
                                       );
                                   }
                                 } else {
@@ -193,7 +203,6 @@ class _LoginViewState extends State<LoginView> {
                               'Masuk',
                               style: TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight.bold,
                                 color: Warna.putih,
                               ),
                             ),
