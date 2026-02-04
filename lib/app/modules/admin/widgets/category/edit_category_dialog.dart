@@ -1,4 +1,5 @@
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/admin/controllers/category_controller.dart';
 import 'package:jari/app/modules/admin/models/kategori_alat_model.dart';
 import 'package:flutter/material.dart';
@@ -24,12 +25,10 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
   late IconData selectedIcon;
   bool isLoading = false;
 
-  // Original values
   late String originalName;
   late String originalDeskripsi;
   late int originalIconCode;
 
-  // List of available icons
   final List<IconData> availableIcons = [
     Icons.cut,
     Icons.build,
@@ -65,7 +64,6 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
       text: widget.category.deskripsi ?? '',
     );
 
-    // Get icon from category
     if (widget.category.iconCode > 0) {
       selectedIcon = IconData(
         widget.category.iconCode,
@@ -122,12 +120,22 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
     }
   }
 
-  InputDecoration _inputDecoration(String label, IconData icon) {
+  InputDecoration _inputDecoration(String label, IconData icon, bool isTablet) {
     return InputDecoration(
       labelText: label,
-      labelStyle: TextStyle(color: Warna.putih.withOpacity(0.7)),
-      prefixIcon: Icon(icon, color: Warna.putih.withOpacity(0.5)),
-      errorStyle: TextStyle(color: Colors.red[300]),
+      labelStyle: TextStyle(
+        color: Warna.putih.withOpacity(0.7),
+        fontSize: isTablet ? 16 : 14,
+      ),
+      prefixIcon: Icon(
+        icon,
+        color: Warna.putih.withOpacity(0.5),
+        size: isTablet ? 24 : 20,
+      ),
+      errorStyle: TextStyle(
+        color: Colors.red[300],
+        fontSize: isTablet ? 14 : 12,
+      ),
       enabledBorder: UnderlineInputBorder(
         borderSide: BorderSide(color: Warna.putih.withOpacity(0.5)),
       ),
@@ -146,129 +154,203 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
   @override
   Widget build(BuildContext context) {
     final canSave = hasChanges && !isLoading;
+    final isTablet = Responsive.isTablet(context);
 
-    return AlertDialog(
+    // Responsive sizing
+    final dialogWidth = isTablet ? 450.0 : 320.0;
+    final titleSize = isTablet ? 22.0 : 18.0;
+    final inputFontSize = isTablet ? 16.0 : 14.0;
+    final buttonFontSize = isTablet ? 16.0 : 14.0;
+    final spacing = isTablet ? 24.0 : 16.0;
+    final borderRadius = isTablet ? 20.0 : 16.0;
+    final contentPadding = isTablet ? 28.0 : 24.0;
+    final iconPreviewSize = isTablet ? 50.0 : 40.0;
+    final iconContainerPadding = isTablet ? 24.0 : 20.0;
+
+    return Dialog(
       backgroundColor: Warna.hitamBackground,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(borderRadius),
         side: BorderSide(color: Warna.putih.withOpacity(0.2)),
       ),
-      title: Text('Edit Kategori', style: TextStyle(color: Warna.putih)),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
+      child: Container(
+        width: dialogWidth,
+        padding: EdgeInsets.all(contentPadding),
+        child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Icon Preview and Selection
-              GestureDetector(
-                onTap: () => _showIconSelectionDialog(context),
+              Text(
+                'Edit Kategori',
+                style: TextStyle(
+                  color: Warna.putih,
+                  fontSize: titleSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: spacing),
+              Form(
+                key: _formKey,
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Warna.ungu.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Warna.ungu, width: 2),
+                    // Icon Preview and Selection
+                    GestureDetector(
+                      onTap: () => _showIconSelectionDialog(context, isTablet),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(iconContainerPadding),
+                            decoration: BoxDecoration(
+                              color: Warna.ungu.withOpacity(0.2),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Warna.ungu, width: 2),
+                            ),
+                            child: Icon(
+                              selectedIcon,
+                              size: iconPreviewSize,
+                              color: Warna.ungu,
+                            ),
+                          ),
+                          SizedBox(height: isTablet ? 12 : 8),
+                          Text(
+                            'Ketuk untuk ubah ikon',
+                            style: TextStyle(
+                              color: Warna.putih.withOpacity(0.5),
+                              fontSize: isTablet ? 14 : 12,
+                            ),
+                          ),
+                        ],
                       ),
-                      child: Icon(selectedIcon, size: 40, color: Warna.ungu),
                     ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Ketuk untuk ubah ikon',
+                    SizedBox(height: spacing + 8),
+
+                    // Nama Kategori
+                    TextFormField(
+                      controller: nameController,
                       style: TextStyle(
-                        color: Warna.putih.withOpacity(0.5),
-                        fontSize: 12,
+                        color: Warna.putih,
+                        fontSize: inputFontSize,
+                      ),
+                      decoration: _inputDecoration(
+                        'Nama Kategori',
+                        Icons.category,
+                        isTablet,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Nama kategori tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: spacing),
+
+                    // Deskripsi
+                    TextFormField(
+                      controller: deskripsiController,
+                      style: TextStyle(
+                        color: Warna.putih,
+                        fontSize: inputFontSize,
+                      ),
+                      maxLines: 2,
+                      decoration: _inputDecoration(
+                        'Deskripsi (opsional)',
+                        Icons.description,
+                        isTablet,
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 24),
-
-              // Nama Kategori
-              TextFormField(
-                controller: nameController,
-                style: TextStyle(color: Warna.putih),
-                decoration: _inputDecoration('Nama Kategori', Icons.category),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Nama kategori tidak boleh kosong';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16),
-
-              // Deskripsi
-              TextFormField(
-                controller: deskripsiController,
-                style: TextStyle(color: Warna.putih),
-                maxLines: 2,
-                decoration: _inputDecoration(
-                  'Deskripsi (opsional)',
-                  Icons.description,
-                ),
+              SizedBox(height: spacing + 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: isLoading ? null : () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isTablet ? 20 : 16,
+                        vertical: isTablet ? 12 : 8,
+                      ),
+                    ),
+                    child: Text(
+                      'Batal',
+                      style: TextStyle(
+                        color: Warna.putih.withOpacity(0.7),
+                        fontSize: buttonFontSize,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: isTablet ? 16 : 8),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: canSave ? Warna.ungu : Warna.abuAbu,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isTablet ? 24 : 16,
+                        vertical: isTablet ? 14 : 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(isTablet ? 12 : 8),
+                      ),
+                    ),
+                    onPressed: canSave ? _handleSave : null,
+                    child: isLoading
+                        ? SizedBox(
+                            width: isTablet ? 24 : 20,
+                            height: isTablet ? 24 : 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Warna.putih,
+                            ),
+                          )
+                        : Text(
+                            'Simpan',
+                            style: TextStyle(
+                              color: canSave
+                                  ? Warna.putih
+                                  : Warna.putih.withOpacity(0.5),
+                              fontSize: buttonFontSize,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: isLoading ? null : () => Navigator.pop(context),
-          child: Text(
-            'Batal',
-            style: TextStyle(color: Warna.putih.withOpacity(0.7)),
-          ),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: canSave ? Warna.ungu : Warna.abuAbu,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          onPressed: canSave ? _handleSave : null,
-          child: isLoading
-              ? SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Warna.putih,
-                  ),
-                )
-              : Text(
-                  'Simpan',
-                  style: TextStyle(
-                    color: canSave ? Warna.putih : Warna.putih.withOpacity(0.5),
-                  ),
-                ),
-        ),
-      ],
     );
   }
 
-  void _showIconSelectionDialog(BuildContext context) {
+  void _showIconSelectionDialog(BuildContext context, bool isTablet) {
+    final gridCols = isTablet ? 6 : 5;
+    final gridSpacing = isTablet ? 14.0 : 10.0;
+    final iconSize = isTablet ? 28.0 : 24.0;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Warna.hitamBackground,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
           side: BorderSide(color: Warna.putih.withOpacity(0.2)),
         ),
-        title: Text('Pilih Ikon', style: TextStyle(color: Warna.putih)),
+        title: Text(
+          'Pilih Ikon',
+          style: TextStyle(color: Warna.putih, fontSize: isTablet ? 20 : 16),
+        ),
         content: SizedBox(
           width: double.maxFinite,
           child: GridView.builder(
             shrinkWrap: true,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 5,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
+              crossAxisCount: gridCols,
+              crossAxisSpacing: gridSpacing,
+              mainAxisSpacing: gridSpacing,
             ),
             itemCount: availableIcons.length,
             itemBuilder: (context, index) {
@@ -284,10 +366,14 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                     color: selectedIcon == availableIcons[index]
                         ? Warna.ungu
                         : Warna.abuAbu,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(isTablet ? 12 : 8),
                     border: Border.all(color: Warna.putih.withOpacity(0.2)),
                   ),
-                  child: Icon(availableIcons[index], color: Warna.putih),
+                  child: Icon(
+                    availableIcons[index],
+                    color: Warna.putih,
+                    size: iconSize,
+                  ),
                 ),
               );
             },

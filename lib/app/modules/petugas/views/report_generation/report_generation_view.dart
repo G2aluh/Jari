@@ -3,6 +3,7 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:get/get.dart';
 
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/petugas/views/report_generation/controller/report_controller.dart';
 
 class ReportGenerationView extends StatelessWidget {
@@ -12,165 +13,216 @@ class ReportGenerationView extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(ReportGenerationController());
 
-    return Container(
-      padding: const EdgeInsets.only(bottom: 24, left: 24, right: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const SizedBox(height: 16),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isTablet = constraints.maxWidth >= Responsive.mobileMaxWidth;
+        final hPadding = isTablet ? 40.0 : 24.0;
+        final vPadding = isTablet ? 32.0 : 16.0;
+        final maxWidth = isTablet ? 650.0 : double.infinity;
+        final spacing = isTablet ? 24.0 : 16.0;
 
-          // =====================
-          // SELECT JENIS LAPORAN
-          // =====================
-          Obx(() {
-            return DropdownButtonFormField<String>(
-              value: controller.selectedType.value,
-              dropdownColor: Warna.hitamBackground,
-              style: const TextStyle(color: Warna.putih),
-              decoration: _inputDecoration(
-                hint: 'Jenis laporan',
-                icon: IconlyLight.filter,
+        return Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: hPadding,
+                vertical: vPadding,
               ),
-              items: const [
-                DropdownMenuItem(
-                  value: 'harian',
-                  child: Text(
-                    'Laporan Harian',
-                    style: TextStyle(fontFamily: 'Urbanist'),
-                  ),
-                ),
-                DropdownMenuItem(
-                  value: 'mingguan',
-                  child: Text('Laporan Mingguan'),
-                ),
-                DropdownMenuItem(
-                  value: 'bulanan',
-                  child: Text('Laporan Bulanan'),
-                ),
-              ],
-              onChanged: (value) {
-                controller.selectedType.value = value!;
-                controller.applyPreset(); // ✅ preset otomatis
-                controller.previewDataCount(); // ✅ preview jumlah data
-              },
-            );
-          }),
-          const SizedBox(height: 16),
-
-          // =====================
-          // FORM TANGGAL (VERTIKAL)
-          // =====================
-          Obx(() {
-            return Column(
-              children: [
-                _DateField(
-                  label: 'Tanggal Awal',
-                  date: controller.startDate.value,
-                  onPick: (date) {
-                    controller.startDate.value = date;
-                    controller.previewDataCount();
-                  },
-                ),
-                if (controller.selectedType.value != 'harian') ...[
-                  const SizedBox(height: 12),
-                  _DateField(
-                    label: 'Tanggal Akhir',
-                    date: controller.endDate.value,
-                    onPick: (date) {
-                      controller.endDate.value = date;
-                      controller.previewDataCount();
-                    },
-                  ),
-                ],
-              ],
-            );
-          }),
-
-          const SizedBox(height: 16),
-
-          // =====================
-          // PREVIEW JUMLAH DATA
-          // =====================
-          Obx(() {
-            if (controller.previewCount.value == 0) {
-              return Text(
-                'Tidak ada data pada periode ini',
-                style: TextStyle(
-                  color: Warna.putih.withOpacity(0.6),
-                  fontSize: 13,
-                ),
-              );
-            }
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Total Data',
-                  style: TextStyle(
-                    color: Warna.putih.withOpacity(0.7),
-                    fontSize: 13,
-                    fontFamily: 'Urbanist',
-                  ),
-                ),
-                const SizedBox(height: 6),
-                SizedBox(
-                  width: double.infinity,
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Warna.hitamTransparan,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Warna.putih.withOpacity(0.2)),
-                    ),
-                    child: Text(
-                      '${controller.previewCount.value}',
-                      style: const TextStyle(color: Warna.putih, fontSize: 16),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          }),
-
-          const SizedBox(height: 24),
-
-          // =====================
-          // BUTTON CETAK
-          // =====================
-          Obx(() {
-            final canPrint =
-                controller.previewCount.value > 0 &&
-                !controller.isGenerating.value;
-
-            return ElevatedButton.icon(
-              onPressed: canPrint ? controller.generateReport : null,
-              icon: controller.isGenerating.value
-                  ? const SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // =====================
+                  // SELECT JENIS LAPORAN
+                  // =====================
+                  Obx(() {
+                    return DropdownButtonFormField<String>(
+                      value: controller.selectedType.value,
+                      dropdownColor: Warna.hitamBackground,
+                      style: TextStyle(
                         color: Warna.putih,
+                        fontSize: isTablet ? 18 : 14,
                       ),
-                    )
-                  : const Icon(Icons.print, color: Warna.putih),
-              label: Text(
-                controller.isGenerating.value ? 'Mencetak...' : 'Cetak Laporan',
-                style: TextStyle(color: Warna.putih),
+                      decoration: _inputDecoration(
+                        hint: 'Jenis laporan',
+                        icon: IconlyLight.filter,
+                        isTablet: isTablet,
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: 'harian',
+                          child: Text(
+                            'Laporan Harian',
+                            style: TextStyle(
+                              fontFamily: 'Urbanist',
+                              fontSize: isTablet ? 18 : 14,
+                            ),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'mingguan',
+                          child: Text(
+                            'Laporan Mingguan',
+                            style: TextStyle(fontSize: isTablet ? 18 : 14),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'bulanan',
+                          child: Text(
+                            'Laporan Bulanan',
+                            style: TextStyle(fontSize: isTablet ? 18 : 14),
+                          ),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        controller.selectedType.value = value!;
+                        controller.applyPreset();
+                        controller.previewDataCount();
+                      },
+                    );
+                  }),
+                  SizedBox(height: spacing),
+
+                  // =====================
+                  // FORM TANGGAL
+                  // =====================
+                  Obx(() {
+                    return Column(
+                      children: [
+                        _DateField(
+                          label: 'Tanggal Awal',
+                          date: controller.startDate.value,
+                          isTablet: isTablet,
+                          onPick: (date) {
+                            controller.startDate.value = date;
+                            controller.previewDataCount();
+                          },
+                        ),
+                        if (controller.selectedType.value != 'harian') ...[
+                          SizedBox(height: isTablet ? 20 : 12),
+                          _DateField(
+                            label: 'Tanggal Akhir',
+                            date: controller.endDate.value,
+                            isTablet: isTablet,
+                            onPick: (date) {
+                              controller.endDate.value = date;
+                              controller.previewDataCount();
+                            },
+                          ),
+                        ],
+                      ],
+                    );
+                  }),
+
+                  SizedBox(height: spacing),
+
+                  // =====================
+                  // PREVIEW JUMLAH DATA
+                  // =====================
+                  Obx(() {
+                    if (controller.previewCount.value == 0) {
+                      return Text(
+                        'Tidak ada data pada periode ini',
+                        style: TextStyle(
+                          color: Warna.putih.withOpacity(0.6),
+                          fontSize: isTablet ? 16 : 13,
+                        ),
+                      );
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Total Data',
+                          style: TextStyle(
+                            color: Warna.putih.withOpacity(0.7),
+                            fontSize: isTablet ? 15 : 13,
+                            fontFamily: 'Urbanist',
+                          ),
+                        ),
+                        SizedBox(height: isTablet ? 8 : 6),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Container(
+                            padding: EdgeInsets.all(isTablet ? 14 : 12),
+                            decoration: BoxDecoration(
+                              color: Warna.hitamTransparan,
+                              borderRadius: BorderRadius.circular(
+                                isTablet ? 16 : 12,
+                              ),
+                              border: Border.all(
+                                color: Warna.putih.withOpacity(0.2),
+                              ),
+                            ),
+                            child: Text(
+                              '${controller.previewCount.value}',
+                              style: TextStyle(
+                                color: Warna.putih,
+                                fontSize: isTablet ? 18 : 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+
+                  SizedBox(height: isTablet ? 40 : 24),
+
+                  // =====================
+                  // BUTTON CETAK
+                  // =====================
+                  Obx(() {
+                    final canPrint =
+                        controller.previewCount.value > 0 &&
+                        !controller.isGenerating.value;
+
+                    return ElevatedButton.icon(
+                      onPressed: canPrint ? controller.generateReport : null,
+                      icon: controller.isGenerating.value
+                          ? SizedBox(
+                              height: isTablet ? 24 : 18,
+                              width: isTablet ? 24 : 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Warna.putih,
+                              ),
+                            )
+                          : Icon(
+                              Icons.print,
+                              color: Warna.putih,
+                              size: isTablet ? 24 : 20,
+                            ),
+                      label: Text(
+                        controller.isGenerating.value
+                            ? 'Mencetak...'
+                            : 'Cetak Laporan',
+                        style: TextStyle(
+                          color: Warna.putih,
+                          fontSize: isTablet ? 16 : 14,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: isTablet ? 24 : 18,
+                        ),
+                        backgroundColor: Warna.abuAbu.withOpacity(0.5),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 16 : 12,
+                          ),
+                          side: BorderSide(color: Warna.putih.withOpacity(0.5)),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
               ),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                backgroundColor: Warna.abuAbu.withOpacity(0.5),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: Warna.putih.withOpacity(0.5)),
-                ),
-              ),
-            );
-          }),
-        ],
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -180,24 +232,36 @@ class ReportGenerationView extends StatelessWidget {
   InputDecoration _inputDecoration({
     required String hint,
     required IconData icon,
+    required bool isTablet,
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
-      prefixIcon: Icon(icon, color: Warna.putih.withOpacity(0.5), size: 18),
+      hintStyle: TextStyle(
+        color: Warna.putih.withOpacity(0.5),
+        fontSize: isTablet ? 18 : 14,
+      ),
+      prefixIcon: Icon(
+        icon,
+        color: Warna.putih.withOpacity(0.5),
+        size: isTablet ? 24 : 18,
+      ),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: isTablet ? 20 : 16,
+        vertical: isTablet ? 20 : 12,
+      ),
       filled: true,
       fillColor: Warna.hitamTransparan,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
         borderSide: BorderSide(color: Warna.putih.withOpacity(0.2)),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
         borderSide: BorderSide(color: Warna.putih.withOpacity(0.2)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Warna.ungu),
+        borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+        borderSide: const BorderSide(color: Warna.ungu, width: 2),
       ),
     );
   }
@@ -209,11 +273,13 @@ class ReportGenerationView extends StatelessWidget {
 class _DateField extends StatelessWidget {
   final String label;
   final DateTime? date;
+  final bool isTablet;
   final ValueChanged<DateTime> onPick;
 
   const _DateField({
     required this.label,
     required this.date,
+    required this.isTablet,
     required this.onPick,
   });
 
@@ -233,17 +299,26 @@ class _DateField extends StatelessWidget {
         child: TextField(
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: TextStyle(color: Warna.putih.withOpacity(0.7)),
+            labelStyle: TextStyle(
+              color: Warna.putih.withOpacity(0.7),
+              fontSize: isTablet ? 18 : 14,
+            ),
             filled: true,
             fillColor: Warna.hitamTransparan,
-            suffixIcon: const Icon(
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: isTablet ? 20 : 16,
+              vertical: isTablet ? 20 : 12,
+            ),
+            suffixIcon: Icon(
               Icons.calendar_today,
-              size: 16,
+              size: isTablet ? 22 : 16,
               color: Warna.putih,
             ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+            ),
           ),
-          style: const TextStyle(color: Warna.putih),
+          style: TextStyle(color: Warna.putih, fontSize: isTablet ? 18 : 14),
           controller: TextEditingController(
             text: date == null
                 ? ''

@@ -1,4 +1,5 @@
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/peminjam/controllers/peminjam_dashboard_controller.dart';
 import 'package:jari/app/modules/peminjam/widgets/dashboard/category_list.dart';
 import 'package:jari/app/modules/peminjam/widgets/dashboard/dashboard_app_bar.dart';
@@ -14,46 +15,59 @@ class PeminjamDashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Inject Controller
     final controller = Get.find<PeminjamDashboardController>();
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Warna.hitamBackground,
       appBar: DashboardAppBar(controller: controller),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: CategoryList(controller: controller),
-            ),
-          ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isTablet = constraints.maxWidth >= Responsive.mobileMaxWidth;
+          final hPadding = isTablet ? 40.0 : 16.0;
+          final vPadding = isTablet ? 24.0 : 16.0;
 
-          Obx(() {
-            return SliverFillRemaining(
-              hasScrollBody: false,
-              child: Container(
-                margin: const EdgeInsets.only(top: 10),
-                decoration: const BoxDecoration(
-                  color: Warna.putih,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          return CustomScrollView(
+            slivers: [
+              // Category List dengan responsive padding
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: hPadding,
+                    vertical: vPadding,
+                  ),
+                  child: CategoryList(controller: controller),
                 ),
-                child: controller.isLoadingAlat.value
-                    ? _buildLoadingState()
-                    : Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          EquipmentList(controller: controller),
-                          NewEquipmentSection(controller: controller),
-                        ],
-                      ),
               ),
-            );
-          }),
-        ],
-      ),
 
+              // Equipment & New Equipment Section
+              Obx(() {
+                return SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Container(
+                    margin: EdgeInsets.only(top: isTablet ? 16 : 10),
+                    decoration: BoxDecoration(
+                      color: Warna.putih,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(isTablet ? 28 : 20),
+                      ),
+                    ),
+                    child: controller.isLoadingAlat.value
+                        ? _buildLoadingState(context)
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              EquipmentList(controller: controller),
+                              NewEquipmentSection(controller: controller),
+                            ],
+                          ),
+                  ),
+                );
+              }),
+            ],
+          );
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Warna.putih,
         selectedItemColor: Warna.ungu,
@@ -119,35 +133,41 @@ class PeminjamDashboardView extends StatelessWidget {
   }
 }
 
-Widget _buildLoadingState() {
+Widget _buildLoadingState(BuildContext context) {
+  final isTablet = Responsive.isTablet(context);
+  final cardWidth = isTablet ? 180.0 : 130.0;
+  final cardHeight = isTablet ? 280.0 : 220.0;
+  final spacing = isTablet ? 24.0 : 15.0;
+  final padding = isTablet ? 40.0 : 24.0;
+
   return Padding(
-    padding: const EdgeInsets.all(24),
+    padding: EdgeInsets.all(padding),
     child: Column(
       children: [
         // loading equipment list
         SizedBox(
-          height: 220,
+          height: cardHeight,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: 5,
-            separatorBuilder: (_, __) => const SizedBox(width: 15),
+            separatorBuilder: (_, __) => SizedBox(width: spacing),
             itemBuilder: (_, __) => Container(
-              width: 130,
+              width: cardWidth,
               decoration: BoxDecoration(
                 color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(isTablet ? 24 : 20),
               ),
             ),
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: isTablet ? 32 : 24),
 
         // loading new equipment
         Container(
-          height: 90,
+          height: isTablet ? 120 : 90,
           decoration: BoxDecoration(
             color: Colors.grey.shade300,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(isTablet ? 14 : 10),
           ),
         ),
       ],

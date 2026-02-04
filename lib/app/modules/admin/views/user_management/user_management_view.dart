@@ -1,4 +1,5 @@
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/admin/controllers/user_management_controller.dart';
 import 'package:jari/app/modules/admin/widgets/user/activate_user_dialog.dart';
 import 'package:jari/app/modules/admin/widgets/user/add_user_dialog.dart';
@@ -13,61 +14,84 @@ class UserManagementView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize controller
     final controller = Get.put(UserManagementController());
+    final isTablet = Responsive.isTablet(context);
+
+    // Responsive sizing
+    final padding = isTablet ? 32.0 : 24.0;
+    final inputFontSize = isTablet ? 16.0 : 14.0;
+    final buttonFontSize = isTablet ? 16.0 : 14.0;
+    final buttonPadding = isTablet ? 18.0 : 16.0;
+    final iconSize = isTablet ? 24.0 : 20.0;
+    final spacing = isTablet ? 20.0 : 16.0;
+    final borderRadius = isTablet ? 14.0 : 12.0;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.only(bottom: 24, left: 24, right: 24),
+      padding: EdgeInsets.only(bottom: padding, left: padding, right: padding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Search Input
           TextField(
-            style: TextStyle(color: Warna.putih),
+            style: TextStyle(color: Warna.putih, fontSize: inputFontSize),
             onChanged: controller.searchUsers,
             decoration: InputDecoration(
               hintText: 'Cari pengguna...',
-              hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
+              hintStyle: TextStyle(
+                color: Warna.putih.withOpacity(0.5),
+                fontSize: inputFontSize,
+              ),
               prefixIcon: Icon(
                 Icons.search,
                 color: Warna.putih.withOpacity(0.5),
+                size: iconSize,
               ),
               filled: true,
               fillColor: Warna.hitamTransparan,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: isTablet ? 20 : 16,
+                vertical: isTablet ? 18 : 14,
+              ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(borderRadius),
                 borderSide: BorderSide(color: Warna.putih.withOpacity(0.2)),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(borderRadius),
                 borderSide: BorderSide(color: Warna.putih.withOpacity(0.2)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Warna.ungu),
+                borderRadius: BorderRadius.circular(borderRadius),
+                borderSide: BorderSide(color: Warna.ungu, width: 2),
               ),
             ),
           ),
-          SizedBox(height: 16),
+          SizedBox(height: spacing),
 
           // Add User Button
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () => _showAddDialog(context, controller),
-              icon: Icon(Icons.add),
-              label: Text('Tambah Pengguna'),
+              icon: Icon(Icons.add, size: iconSize),
+              label: Text(
+                'Tambah Pengguna',
+                style: TextStyle(
+                  fontSize: buttonFontSize,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Warna.ungu,
                 foregroundColor: Warna.putih,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(borderRadius),
                 ),
-                padding: EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: buttonPadding),
               ),
             ),
           ),
-          SizedBox(height: 24),
+          SizedBox(height: spacing + 8),
 
           // User List
           Obx(() {
@@ -86,7 +110,10 @@ class UserManagementView extends StatelessWidget {
                   padding: EdgeInsets.symmetric(vertical: 50),
                   child: Text(
                     'Tidak ada pengguna ditemukan',
-                    style: TextStyle(color: Warna.putih.withOpacity(0.7)),
+                    style: TextStyle(
+                      color: Warna.putih.withOpacity(0.7),
+                      fontSize: isTablet ? 16 : 14,
+                    ),
                   ),
                 ),
               );
@@ -135,14 +162,12 @@ class UserManagementView extends StatelessWidget {
     dynamic user,
   ) {
     if (user.aktif) {
-      // User aktif → tampilkan dialog nonaktifkan
       showDialog(
         context: context,
         builder: (context) =>
             DeleteUserDialog(user: user, controller: controller),
       );
     } else {
-      // User nonaktif → tampilkan dialog aktifkan
       showDialog(
         context: context,
         builder: (context) =>

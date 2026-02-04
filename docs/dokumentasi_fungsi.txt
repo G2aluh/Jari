@@ -1,0 +1,303 @@
+================================================================================
+                    DOKUMENTASI FUNGSI APLIKASI JARI
+================================================================================
+
+Dokumen ini berisi daftar semua fungsi yang ada di aplikasi JARI beserta
+lokasinya dalam project. Dikelompokkan berdasarkan module dan controller.
+
+
+================================================================================
+                        1. AUTH MODULE
+================================================================================
+
+File: lib/app/modules/auth/controllers/auth_controller.dart
+--------------------------------------------------------------------------------
+| No | Nama Fungsi               | Deskripsi                                     |
+|----|---------------------------|-----------------------------------------------|
+| 1  | login(email, password)    | Login user dengan email dan password          |
+| 2  | logout()                  | Logout user dan redirect ke login             |
+| 3  | showLogoutConfirmation()  | Tampilkan dialog konfirmasi logout            |
+| 4  | hasRole(role)             | Cek apakah user memiliki role tertentu        |
+
+
+================================================================================
+                        2. ADMIN MODULE
+================================================================================
+
+--------------------------------------------------------------------------------
+2.1 AdminDashboardController
+--------------------------------------------------------------------------------
+File: lib/app/modules/admin/controllers/admin_dashboard_controller.dart
+
+| No | Nama Fungsi         | Deskripsi                                           |
+|----|---------------------|-----------------------------------------------------|
+| 1  | onInit()            | Inisialisasi controller, fetch summary              |
+| 2  | onClose()           | Cleanup realtime channel                            |
+| 3  | _listenRealtime()   | Setup realtime subscription untuk dashboard         |
+| 4  | fetchSummary()      | Ambil data summary (total transaksi, alat, dll)     |
+
+
+--------------------------------------------------------------------------------
+2.2 CategoryController
+--------------------------------------------------------------------------------
+File: lib/app/modules/admin/controllers/category_controller.dart
+
+| No | Nama Fungsi                           | Deskripsi                           |
+|----|---------------------------------------|-------------------------------------|
+| 1  | onInit()                              | Inisialisasi, fetch categories      |
+| 2  | fetchCategories()                     | Ambil semua kategori dari Supabase  |
+| 3  | searchCategories(query)               | Cari kategori berdasarkan nama      |
+| 4  | _applyFilter()                        | Terapkan filter pencarian           |
+| 5  | addCategory(namaKategori, ...)        | Tambah kategori baru                |
+| 6  | updateCategory(id, namaKategori, ...) | Update kategori yang ada            |
+| 7  | deleteCategory(id)                    | Hapus kategori                      |
+| 8  | _showSuccess(message)                 | Tampilkan snackbar sukses           |
+| 9  | _showError(message)                   | Tampilkan snackbar error            |
+
+
+--------------------------------------------------------------------------------
+2.3 EquipmentController
+--------------------------------------------------------------------------------
+File: lib/app/modules/admin/controllers/equipment_controller.dart
+
+| No | Nama Fungsi                        | Deskripsi                               |
+|----|------------------------------------|-----------------------------------------|
+| 1  | onInit()                           | Inisialisasi, setup subscriptions       |
+| 2  | onClose()                          | Cleanup realtime channel                |
+| 3  | _setupRealtimeSubscriptions()      | Setup realtime untuk alat & kategori    |
+| 4  | fetchEquipments()                  | Ambil semua alat dengan relasi kategori |
+| 5  | fetchCategories()                  | Ambil kategori untuk dropdown           |
+| 6  | searchEquipments(query)            | Cari alat berdasarkan nama/kode         |
+| 7  | _applyFilter()                     | Terapkan filter pencarian               |
+| 8  | pickImage()                        | Pilih gambar dari gallery               |
+| 9  | uploadImage(imageFile, kodeAlat)   | Upload gambar ke Supabase Storage       |
+| 10 | deleteImage(imageUrl)              | Hapus gambar dari Storage               |
+| 11 | addEquipment(kodeAlat, ...)        | Tambah alat baru                        |
+| 12 | updateEquipment(id, ...)           | Update alat yang ada                    |
+| 13 | deleteEquipment(id)                | Soft delete alat (aktif = false)        |
+| 14 | activateEquipment(id)              | Aktifkan kembali alat                   |
+| 15 | hardDeleteEquipment(id, imageUrl)  | Hapus permanen alat                     |
+| 16 | clearSelectedImage()               | Clear gambar yang dipilih               |
+| 17 | _showSuccess(message)              | Tampilkan snackbar sukses               |
+| 18 | _showError(message)                | Tampilkan snackbar error                |
+
+
+--------------------------------------------------------------------------------
+2.4 PeminjamanController
+--------------------------------------------------------------------------------
+File: lib/app/modules/admin/controllers/peminjaman_controller.dart
+
+| No | Nama Fungsi                          | Deskripsi                              |
+|----|--------------------------------------|----------------------------------------|
+| 1  | onInit()                             | Inisialisasi, fetch data awal          |
+| 2  | fetchPeminjaman()                    | Ambil semua peminjaman dengan relasi   |
+| 3  | fetchPeminjamList()                  | Ambil daftar peminjam untuk dropdown   |
+| 4  | fetchAlatList()                      | Ambil daftar alat tersedia             |
+| 5  | fetchDetailPeminjaman(peminjamanId)  | Ambil detail item peminjaman           |
+| 6  | searchPeminjaman(query)              | Cari peminjaman                        |
+| 7  | _applySearch()                       | Terapkan filter pencarian              |
+| 8  | addPeminjaman(peminjamId, ...)       | Tambah peminjaman baru + detail item   |
+| 9  | updatePeminjaman(id, status, ...)    | Update status/data peminjaman          |
+| 10 | updateLoanItems(peminjamanId, items) | Update detail item peminjaman          |
+| 11 | deletePeminjaman(id)                 | Hapus peminjaman                       |
+| 12 | _showSuccess(message)                | Tampilkan snackbar sukses              |
+| 13 | _showError(message)                  | Tampilkan snackbar error               |
+
+
+--------------------------------------------------------------------------------
+2.5 PengembalianController
+--------------------------------------------------------------------------------
+File: lib/app/modules/admin/controllers/pengembalian_controller.dart
+
+| No | Nama Fungsi                                   | Deskripsi                          |
+|----|-----------------------------------------------|------------------------------------|
+| 1  | onInit()                                      | Inisialisasi, fetch data awal      |
+| 2  | onClose()                                     | Cleanup realtime channel           |
+| 3  | _setupRealtimeSubscription()                  | Setup realtime subscription        |
+| 4  | fetchPeminjamanAktif()                        | Ambil peminjaman yang bisa return  |
+| 5  | fetchPengembalian()                           | Ambil semua data pengembalian      |
+| 6  | searchPengembalian(query)                     | Cari pengembalian                  |
+| 7  | _applySearch()                                | Terapkan filter pencarian          |
+| 8  | calculateTerlambat(peminjaman, returnDate)    | Hitung hari terlambat (lokal)      |
+| 9  | calculateReturnDetails(peminjamanId, tanggal) | Hitung detail via RPC              |
+| 10 | calculateDendaFromDelay(terlambat)            | Hitung denda dari keterlambatan    |
+| 11 | addPengembalian(peminjamanId, ...)            | Tambah pengembalian baru           |
+| 12 | prosesPengembalian(peminjamanId, ...)         | Proses pengembalian (deprecated)   |
+| 13 | updatePengembalian(id, status, ...)           | Update pengembalian                |
+| 14 | deletePengembalian(id)                        | Hapus pengembalian                 |
+| 15 | _showSuccess(message)                         | Tampilkan snackbar sukses          |
+| 16 | _showError(message)                           | Tampilkan snackbar error           |
+
+
+--------------------------------------------------------------------------------
+2.6 UserManagementController
+--------------------------------------------------------------------------------
+File: lib/app/modules/admin/controllers/user_management_controller.dart
+
+| No | Nama Fungsi                        | Deskripsi                               |
+|----|------------------------------------|-----------------------------------------|
+| 1  | onInit()                           | Inisialisasi, fetch users               |
+| 2  | fetchUsers()                       | Ambil semua pengguna dari Supabase      |
+| 3  | searchUsers(query)                 | Cari pengguna berdasarkan nama/email    |
+| 4  | _applySearch()                     | Terapkan filter pencarian               |
+| 5  | addUser(email, password, nama, ..) | Tambah pengguna baru via auth.signUp    |
+| 6  | updateUser(id, nama, role, aktif)  | Update data pengguna                    |
+| 7  | deleteUser(id)                     | Soft delete (aktif = false)             |
+| 8  | activateUser(id)                   | Aktifkan kembali pengguna               |
+| 9  | hardDeleteUser(id)                 | Hapus permanen pengguna                 |
+| 10 | _showSuccess(message)              | Tampilkan snackbar sukses               |
+| 11 | _showError(message)                | Tampilkan snackbar error                |
+
+
+================================================================================
+                        3. PEMINJAM MODULE
+================================================================================
+
+--------------------------------------------------------------------------------
+3.1 PeminjamDashboardController
+--------------------------------------------------------------------------------
+File: lib/app/modules/peminjam/controllers/peminjam_dashboard_controller.dart
+
+| No | Nama Fungsi                       | Deskripsi                              |
+|----|-----------------------------------|----------------------------------------|
+| 1  | onInit()                          | Inisialisasi, fetch data awal          |
+| 2  | onClose()                         | Cleanup controllers                    |
+| 3  | fetchKategori()                   | Ambil daftar kategori                  |
+| 4  | fetchAlat()                       | Ambil daftar alat tersedia             |
+| 5  | submitPeminjaman(tanggal, ...)    | Submit pengajuan peminjaman            |
+| 6  | toggleSearch()                    | Toggle mode pencarian                  |
+| 7  | _applyFilters()                   | Terapkan filter kategori & pencarian   |
+| 8  | filterByKategori(kategoriId)      | Filter alat berdasarkan kategori       |
+| 9  | toggleRent(index)                 | Toggle pilihan sewa alat               |
+| 10 | toggleRentNewItem(itemName)       | Toggle pilihan sewa item baru          |
+| 11 | _updateBadgeVisibility()          | Update visibility badge                |
+| 12 | showRentalSelectionDialog(ctx)    | Tampilkan dialog pilihan sewa          |
+| 13 | showHistorySelectionDialog(ctx)   | Tampilkan dialog history               |
+| 14 | _buildSelectionItem(icon, ...)    | Build item pilihan dialog              |
+
+
+--------------------------------------------------------------------------------
+3.2 PeminjamReturnController
+--------------------------------------------------------------------------------
+File: lib/app/modules/peminjam/controllers/peminjam_return_controller.dart
+
+| No | Nama Fungsi                          | Deskripsi                           |
+|----|--------------------------------------|-------------------------------------|
+| 1  | onInit()                             | Inisialisasi, fetch active loans    |
+| 2  | onClose()                            | Cleanup controllers                 |
+| 3  | fetchActiveLoansForReturn()          | Ambil peminjaman aktif untuk return |
+| 4  | _filterReturn()                      | Filter berdasarkan pencarian        |
+| 5  | submitReturnRequest(peminjamanId)    | Submit pengajuan pengembalian       |
+| 6  | isLoanLate(loan)                     | Cek apakah peminjaman terlambat     |
+| 7  | getPengembalianStatus(peminjamanId)  | Ambil status pengembalian           |
+
+
+================================================================================
+                        4. PETUGAS MODULE
+================================================================================
+
+--------------------------------------------------------------------------------
+4.1 PetugasDashboardController
+--------------------------------------------------------------------------------
+File: lib/app/modules/petugas/controllers/petugas_dashboard_controller.dart
+
+| No | Nama Fungsi                              | Deskripsi                          |
+|----|------------------------------------------|------------------------------------|
+| 1  | onInit()                                 | Inisialisasi, setup realtime       |
+| 2  | onClose()                                | Cleanup realtime channels          |
+| 3  | _setupRealtimeSubscriptions()            | Setup realtime subscriptions       |
+| 4  | fetchPendingLoans()                      | Ambil peminjaman menunggu          |
+| 5  | approveLoan(peminjamanId)                | Setujui peminjaman                 |
+| 6  | rejectLoan(peminjamanId, alasan)         | Tolak peminjaman                   |
+| 7  | fetchActiveLoans()                       | Ambil peminjaman aktif             |
+| 8  | fetchPendingReturns()                    | Ambil pengembalian menunggu        |
+| 9  | confirmReturn(pengembalianId, ...)       | Konfirmasi pengembalian            |
+| 10 | rejectReturn(pengembalianId, ...)        | Tolak pengembalian                 |
+| 11 | getPengembalianForPeminjaman(id)         | Ambil pengembalian untuk peminjaman|
+| 12 | hasPendingReturn(peminjamanId)           | Cek ada pending return             |
+
+
+--------------------------------------------------------------------------------
+4.2 ReportGenerationController
+--------------------------------------------------------------------------------
+File: lib/app/modules/petugas/views/report_generation/controller/report_controller.dart
+
+| No | Nama Fungsi        | Deskripsi                                     |
+|----|--------------------|-----------------------------------------------|
+| 1  | applyPreset()      | Terapkan preset tanggal (harian/mingguan/dll) |
+| 2  | previewDataCount() | Preview jumlah data yang akan di-generate    |
+| 3  | generateReport()   | Generate dan cetak laporan PDF                |
+| 4  | _formatPeriod()    | Format periode untuk header laporan           |
+| 5  | _fmt(d)            | Format tanggal ke DD/MM/YYYY                  |
+| 6  | _toDate(d)         | Format tanggal ke YYYY-MM-DD                  |
+
+
+================================================================================
+                        5. CORE SERVICES
+================================================================================
+
+--------------------------------------------------------------------------------
+5.1 ReportPdfService
+--------------------------------------------------------------------------------
+File: lib/app/core/services/report_pdf_service.dart
+
+| No | Nama Fungsi                | Deskripsi                              |
+|----|----------------------------|----------------------------------------|
+| 1  | generate(title, period,..) | Generate dokumen PDF dan print         |
+| 2  | _header(title, period)     | Buat header laporan                    |
+| 3  | _table(data)               | Buat tabel data                        |
+| 4  | _footer()                  | Buat footer dengan credit              |
+
+
+================================================================================
+                        6. CORE UTILITIES
+================================================================================
+
+File: lib/app/core/utils/responsive.dart
+--------------------------------------------------------------------------------
+Utility untuk responsive design:
+- Responsive.isTablet(context) - Cek apakah device tablet (width >= 600)
+- R.cardWidth(context) - Dapat lebar card berdasarkan screen
+- R.cardHeight(context) - Dapat tinggi card berdasarkan screen
+- R.imageHeight(context) - Dapat tinggi gambar berdasarkan screen
+
+
+File: lib/app/core/theme/app_colors.dart
+--------------------------------------------------------------------------------
+Konstanta warna aplikasi:
+- Warna.ungu (primary color)
+- Warna.putih (white)
+- Warna.hitamBackground (dark background)
+- Warna.hitamTransparan (transparent black)
+- Warna.merah (red)
+- Warna.abuAbu (grey)
+
+
+File: lib/app/core/theme/app_text_styles.dart
+--------------------------------------------------------------------------------
+Konstanta text style aplikasi
+
+
+File: lib/app/core/values/app_constants.dart
+--------------------------------------------------------------------------------
+Konstanta aplikasi
+
+
+================================================================================
+                        RINGKASAN
+================================================================================
+
+Total Controller  : 12
+Total Services    : 2
+Total Fungsi      : 110+
+
+Modules:
+- Auth      : 1 controller,  4 fungsi
+- Admin     : 6 controllers, 63 fungsi
+- Peminjam  : 2 controllers, 21 fungsi
+- Petugas   : 2 controllers, 18 fungsi
+- Core      : 2 services,    4 fungsi
+
+================================================================================
+                    Generated: 04 Februari 2026
+================================================================================

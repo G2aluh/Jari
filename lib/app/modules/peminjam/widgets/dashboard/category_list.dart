@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jari/app/core/theme/app_colors.dart';
 import 'package:jari/app/core/theme/app_text_styles.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/peminjam/controllers/peminjam_dashboard_controller.dart';
 
 class CategoryList extends StatelessWidget {
@@ -11,6 +12,18 @@ class CategoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = Responsive.isTablet(context);
+
+    // Tablet sizing yang lebih besar
+    final itemWidth = isTablet ? 110.0 : 90.0;
+    final itemHeight = isTablet ? 110.0 : 90.0;
+    final iconSize = isTablet ? 36.0 : 28.0;
+    final spacing = isTablet ? 20.0 : 16.0;
+    final fontSize = isTablet ? 14.0 : 12.0;
+    final titleSize = isTablet ? 20.0 : 16.0;
+    final borderRadius = isTablet ? 24.0 : 20.0;
+    final itemPadding = isTablet ? 8.0 : 4.0;
+
     return Obx(() {
       // Optional: loading kategori
       if (controller.kategoriListDb.isEmpty) {
@@ -19,11 +32,14 @@ class CategoryList extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
-              child: Text('Kategori Barang', style: AppTextStyles.primaryText),
+              child: Text(
+                'Kategori Barang',
+                style: AppTextStyles.primaryText.copyWith(fontSize: titleSize),
+              ),
             ),
-            const SizedBox(
-              height: 90,
-              child: Center(child: CircularProgressIndicator()),
+            SizedBox(
+              height: itemHeight,
+              child: const Center(child: CircularProgressIndicator()),
             ),
           ],
         );
@@ -33,15 +49,18 @@ class CategoryList extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Text('Kategori Barang', style: AppTextStyles.primaryText),
+            padding: EdgeInsets.only(bottom: isTablet ? 16.0 : 8.0),
+            child: Text(
+              'Kategori Barang',
+              style: AppTextStyles.primaryText.copyWith(fontSize: titleSize),
+            ),
           ),
           SizedBox(
-            height: 90,
+            height: itemHeight,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: controller.kategoriListDb.length + 1, // +1 untuk Semua
-              separatorBuilder: (_, __) => const SizedBox(width: 16),
+              separatorBuilder: (_, __) => SizedBox(width: spacing),
               itemBuilder: (context, index) {
                 return Obx(() {
                   // =========================
@@ -55,10 +74,10 @@ class CategoryList extends StatelessWidget {
                         controller.filterByKategori('');
                       },
                       child: Container(
-                        width: 90,
-                        padding: const EdgeInsets.all(4),
+                        width: itemWidth,
+                        padding: EdgeInsets.all(itemPadding),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(borderRadius),
                           color: isSelected
                               ? Warna.ungu
                               : Warna.hitamTransparan,
@@ -71,14 +90,19 @@ class CategoryList extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.apps, color: Warna.putih),
-                            SizedBox(height: 8),
+                            Icon(
+                              Icons.apps,
+                              color: Warna.putih,
+                              size: iconSize,
+                            ),
+                            SizedBox(height: isTablet ? 10 : 8),
                             Text(
                               'Semua',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: fontSize,
                                 color: Warna.putih,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
@@ -100,10 +124,10 @@ class CategoryList extends StatelessWidget {
                       controller.filterByKategori(kategori['id']);
                     },
                     child: Container(
-                      width: 90,
-                      padding: const EdgeInsets.all(4),
+                      width: itemWidth,
+                      padding: EdgeInsets.all(itemPadding),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(borderRadius),
                         color: isSelected ? Warna.ungu : Warna.hitamTransparan,
                         border: Border.all(
                           color: isSelected
@@ -116,16 +140,17 @@ class CategoryList extends StatelessWidget {
                         children: [
                           Icon(
                             buildIconFromDb(kategori),
-                            size: 28,
+                            size: iconSize,
                             color: Warna.putih,
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: isTablet ? 10 : 8),
                           Text(
                             kategori['nama_kategori'],
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 12,
+                            style: TextStyle(
+                              fontSize: fontSize,
                               color: Warna.putih,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],

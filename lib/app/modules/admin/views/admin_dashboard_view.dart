@@ -1,6 +1,7 @@
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/admin/controllers/admin_dashboard_controller.dart';
 import 'package:jari/app/modules/admin/widgets/admin_appbar.dart';
 import 'package:jari/app/widgets/base_dashboard_layout.dart';
@@ -93,8 +94,23 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
 
   Widget _buildDashboardPage() {
     final controller = Get.put(AdminDashboardController());
+    final isTablet = Responsive.isTablet(context);
+
+    // Responsive sizing
+    final padding = isTablet ? 32.0 : 24.0;
+    final cardPadding = isTablet ? 24.0 : 20.0;
+    final titleSize = isTablet ? 22.0 : 18.0;
+    final valueSize = isTablet ? 28.0 : 24.0;
+    final labelSize = isTablet ? 16.0 : 14.0;
+    final iconSize = isTablet ? 28.0 : 24.0;
+    final iconPadding = isTablet ? 14.0 : 10.0;
+    final navIconSize = isTablet ? 32.0 : 28.0;
+    final navLabelSize = isTablet ? 14.0 : 12.0;
+    final spacing = isTablet ? 20.0 : 16.0;
+    final gridColumns = isTablet ? 4 : 3;
+
     return SingleChildScrollView(
-      padding: EdgeInsets.all(24),
+      padding: EdgeInsets.all(padding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -103,8 +119,13 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
             value: controller.totalTransaksi.value.toString(),
             icon: Icons.receipt_long,
             color: Colors.blue,
+            cardPadding: cardPadding,
+            valueSize: valueSize,
+            labelSize: labelSize,
+            iconSize: iconSize,
+            iconPadding: iconPadding,
           ),
-          SizedBox(height: 16),
+          SizedBox(height: spacing),
           Row(
             children: [
               Expanded(
@@ -113,20 +134,30 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
                   value: controller.menunggu.value.toString(),
                   icon: Icons.hourglass_empty,
                   color: Warna.kuning,
+                  cardPadding: cardPadding,
+                  valueSize: valueSize,
+                  labelSize: labelSize,
+                  iconSize: iconSize,
+                  iconPadding: iconPadding,
                 ),
               ),
-              SizedBox(width: 16),
+              SizedBox(width: spacing),
               Expanded(
                 child: _buildSummaryCard(
                   title: 'Ditolak',
                   value: controller.ditolak.value.toString(),
                   icon: Icons.cancel,
                   color: Colors.red,
+                  cardPadding: cardPadding,
+                  valueSize: valueSize,
+                  labelSize: labelSize,
+                  iconSize: iconSize,
+                  iconPadding: iconPadding,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 16),
+          SizedBox(height: spacing),
           Row(
             children: [
               Expanded(
@@ -135,63 +166,89 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
                   value: controller.totalAlat.value.toString(),
                   icon: Icons.inventory_2,
                   color: Warna.ungu,
+                  cardPadding: cardPadding,
+                  valueSize: valueSize,
+                  labelSize: labelSize,
+                  iconSize: iconSize,
+                  iconPadding: iconPadding,
                 ),
               ),
-              SizedBox(width: 16),
+              SizedBox(width: spacing),
               Expanded(
                 child: _buildSummaryCard(
                   title: 'Total Kategori',
                   value: controller.totalKategori.value.toString(),
                   icon: Icons.category,
                   color: Colors.teal,
+                  cardPadding: cardPadding,
+                  valueSize: valueSize,
+                  labelSize: labelSize,
+                  iconSize: iconSize,
+                  iconPadding: iconPadding,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 24),
+          SizedBox(height: isTablet ? 32 : 24),
           Text(
             'Navigasi Cepat',
             style: TextStyle(
               color: Warna.putih,
-              fontSize: 18,
+              fontSize: titleSize,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 16),
+          SizedBox(height: spacing),
           GridView.count(
-            crossAxisCount: 3,
+            crossAxisCount: gridColumns,
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
+            mainAxisSpacing: isTablet ? 16 : 12,
+            crossAxisSpacing: isTablet ? 16 : 12,
             childAspectRatio: 1.0,
             children: [
               _buildQuickNavButton(
                 icon: Icons.people,
                 label: 'Pengguna',
                 index: 1,
+                iconSize: navIconSize,
+                labelSize: navLabelSize,
               ),
               _buildQuickNavButton(
                 icon: Icons.inventory_2,
                 label: 'Alat',
                 index: 2,
+                iconSize: navIconSize,
+                labelSize: navLabelSize,
               ),
               _buildQuickNavButton(
                 icon: Icons.category,
                 label: 'Kategori',
                 index: 3,
+                iconSize: navIconSize,
+                labelSize: navLabelSize,
               ),
               _buildQuickNavButton(
                 icon: Icons.assignment,
                 label: 'Peminjaman',
                 index: 4,
+                iconSize: navIconSize,
+                labelSize: navLabelSize,
               ),
               _buildQuickNavButton(
                 icon: Icons.assignment_return,
                 label: 'Pengembalian',
                 index: 5,
+                iconSize: navIconSize,
+                labelSize: navLabelSize,
               ),
-              _buildQuickNavButton(icon: Icons.history, label: 'Log', index: 6),
+              _buildQuickNavButton(
+                icon: Icons.history,
+                label: 'Log',
+                index: 6,
+                iconSize: navIconSize,
+                labelSize: navLabelSize,
+              ),
             ],
           ),
         ],
@@ -204,9 +261,14 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
     required String value,
     required IconData icon,
     required Color color,
+    required double cardPadding,
+    required double valueSize,
+    required double labelSize,
+    required double iconSize,
+    required double iconPadding,
   }) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(cardPadding),
       decoration: BoxDecoration(
         color: Warna.hitamTransparan,
         borderRadius: BorderRadius.circular(16),
@@ -226,18 +288,18 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: EdgeInsets.all(10),
+                padding: EdgeInsets.all(iconPadding),
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: color, size: 24),
+                child: Icon(icon, color: color, size: iconSize),
               ),
               Text(
                 value,
                 style: TextStyle(
                   color: Warna.putih,
-                  fontSize: 24,
+                  fontSize: valueSize,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -248,7 +310,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
             title,
             style: TextStyle(
               color: Warna.putih.withOpacity(0.7),
-              fontSize: 14,
+              fontSize: labelSize,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -261,6 +323,8 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
     required IconData icon,
     required String label,
     required int index,
+    required double iconSize,
+    required double labelSize,
   }) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -281,11 +345,11 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 28, color: Warna.ungu),
+          Icon(icon, size: iconSize, color: Warna.ungu),
           SizedBox(height: 8),
           Text(
             label,
-            style: TextStyle(fontSize: 12),
+            style: TextStyle(fontSize: labelSize),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

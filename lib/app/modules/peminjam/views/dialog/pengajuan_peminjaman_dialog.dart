@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/peminjam/widgets/common/stock_container.dart';
 
 class RentalSelectionDialog extends StatefulWidget {
@@ -81,6 +82,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
 
       rentalItems.add(
         _buildRentalItemCard(
+          context: context,
           name: alat['nama_alat'] ?? '',
           image: alat['alat_url'] ?? '',
           stock: stockTersedia.toString(),
@@ -91,209 +93,230 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
       );
     }
 
+    // Responsive sizing
+    final isTablet = Responsive.isTablet(context);
+    final dialogMaxWidth = isTablet ? 600.0 : double.infinity;
+    final insetPadding = isTablet ? 40.0 : 20.0;
+    final contentPadding = isTablet ? 24.0 : 20.0;
+
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.all(20),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // ================= HEADER =================
-              Container(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                decoration: BoxDecoration(
-                  color: Warna.putih,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(20),
-                  ),
-                  border: Border(
-                    bottom: BorderSide(color: Colors.grey.withOpacity(0.1)),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Daftar Barang Sewa',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+      insetPadding: EdgeInsets.all(insetPadding),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: dialogMaxWidth),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // ================= HEADER =================
+                  Container(
+                    padding: EdgeInsets.fromLTRB(
+                      contentPadding,
+                      contentPadding,
+                      contentPadding,
+                      10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Warna.putih,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                      border: Border(
+                        bottom: BorderSide(color: Colors.grey.withOpacity(0.1)),
                       ),
                     ),
-                    InkWell(
-                      onTap: () => Navigator.pop(context),
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.close, size: 20),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // ================= CONTENT =================
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.all(20),
-                  children: [
-                    const Text(
-                      "Informasi Peminjaman",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // TANGGAL KEMBALI
-                    TextFormField(
-                      controller: _dateController,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey[50],
-                        labelText: 'Tanggal Kembali Rencana',
-                        prefixIcon: const Icon(Icons.calendar_today_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        errorStyle: const TextStyle(color: Colors.red),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Tanggal kembali wajib diisi';
-                        }
-                        return null;
-                      },
-                      onTap: () async {
-                        final picked = await showDatePicker(
-                          confirmText: "Pilih",
-                          cancelText: "Batal",
-                          helpText: "Pilih Tanggal Kembali",
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime(2100),
-                          builder: (context, child) {
-                            return Theme(
-                              data: Theme.of(context).copyWith(
-                                colorScheme: const ColorScheme.light(
-                                  primary: Colors.purple, // header & button
-                                  onPrimary: Colors.white,
-                                  onSurface: Colors.black,
-                                ),
-                              ),
-                              child: child!,
-                            );
-                          },
-                        );
-
-                        if (picked != null) {
-                          _selectedTanggalKembali = picked;
-                          _dateController.text =
-                              "${picked.day.toString().padLeft(2, '0')}/"
-                              "${picked.month.toString().padLeft(2, '0')}/"
-                              "${picked.year}";
-                        }
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // KETERANGAN
-                    TextFormField(
-                      controller: _keteranganController,
-                      maxLines: 2,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey[50],
-                        labelText: 'Keterangan (Opsional)',
-                        prefixIcon: const Icon(Icons.note_alt_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-                    Row(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          "Barang Dipilih",
+                        Text(
+                          'Daftar Barang Sewa',
                           style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                            fontSize: isTablet ? 22 : 20,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const Spacer(),
-                        Text(
-                          "${rentalItems.length} Barang",
-                          style: TextStyle(color: Colors.grey[600]),
+                        InkWell(
+                          onTap: () => Navigator.pop(context),
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.close, size: 20),
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                  ),
 
-                    ...rentalItems.isEmpty
-                        ? const [
-                            Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(20),
-                                child: Text('Belum ada barang dipilih'),
+                  // ================= CONTENT =================
+                  Flexible(
+                    child: ListView(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.all(contentPadding),
+                      children: [
+                        Text(
+                          "Informasi Peminjaman",
+                          style: TextStyle(
+                            fontSize: isTablet ? 17 : 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // TANGGAL KEMBALI
+                        TextFormField(
+                          controller: _dateController,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.grey[50],
+                            labelText: 'Tanggal Kembali Rencana',
+                            prefixIcon: const Icon(
+                              Icons.calendar_today_outlined,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            errorStyle: const TextStyle(color: Colors.red),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Tanggal kembali wajib diisi';
+                            }
+                            return null;
+                          },
+                          onTap: () async {
+                            final picked = await showDatePicker(
+                              confirmText: "Pilih",
+                              cancelText: "Batal",
+                              helpText: "Pilih Tanggal Kembali",
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime(2100),
+                              builder: (context, child) {
+                                return Theme(
+                                  data: Theme.of(context).copyWith(
+                                    colorScheme: const ColorScheme.light(
+                                      primary: Colors.purple,
+                                      onPrimary: Colors.white,
+                                      onSurface: Colors.black,
+                                    ),
+                                  ),
+                                  child: child!,
+                                );
+                              },
+                            );
+
+                            if (picked != null) {
+                              _selectedTanggalKembali = picked;
+                              _dateController.text =
+                                  "${picked.day.toString().padLeft(2, '0')}/"
+                                  "${picked.month.toString().padLeft(2, '0')}/"
+                                  "${picked.year}";
+                            }
+                          },
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // KETERANGAN
+                        TextFormField(
+                          controller: _keteranganController,
+                          maxLines: 2,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.grey[50],
+                            labelText: 'Keterangan (Opsional)',
+                            prefixIcon: const Icon(Icons.note_alt_outlined),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Text(
+                              "Barang Dipilih",
+                              style: TextStyle(
+                                fontSize: isTablet ? 17 : 16,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                          ]
-                        : rentalItems,
-                  ],
-                ),
-              ),
+                            const Spacer(),
+                            Text(
+                              "${rentalItems.length} Barang",
+                              style: TextStyle(color: Colors.grey[600]),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
 
-              // ================= ACTION =================
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (!_formKey.currentState!.validate()) return;
-                      if (_selectedTanggalKembali == null) return;
-
-                      widget.onSubmit(
-                        _selectedTanggalKembali!,
-                        _keteranganController.text,
-                        _quantities,
-                      );
-
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shadowColor: Colors.transparent,
-                      backgroundColor: Warna.ungu,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'Ajukan Peminjaman',
-                      style: TextStyle(color: Warna.putih),
+                        ...rentalItems.isEmpty
+                            ? const [
+                                Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(20),
+                                    child: Text('Belum ada barang dipilih'),
+                                  ),
+                                ),
+                              ]
+                            : rentalItems,
+                      ],
                     ),
                   ),
-                ),
+
+                  // ================= ACTION =================
+                  Padding(
+                    padding: EdgeInsets.all(contentPadding),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (!_formKey.currentState!.validate()) return;
+                          if (_selectedTanggalKembali == null) return;
+
+                          widget.onSubmit(
+                            _selectedTanggalKembali!,
+                            _keteranganController.text,
+                            _quantities,
+                          );
+
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shadowColor: Colors.transparent,
+                          backgroundColor: Warna.ungu,
+                          padding: EdgeInsets.symmetric(
+                            vertical: isTablet ? 18 : 16,
+                          ),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          'Ajukan Peminjaman',
+                          style: TextStyle(color: Warna.putih),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -301,6 +324,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
   }
 
   Widget _buildRentalItemCard({
+    required BuildContext context,
     required String name,
     required String image,
     required String stock,
@@ -310,30 +334,35 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
   }) {
     final int maxStock = int.tryParse(stock) ?? 0;
     final bool isMaxReached = quantity >= maxStock;
+    final isTablet = Responsive.isTablet(context);
+    final imageSize = isTablet ? 70.0 : 60.0;
 
     return Card(
       color: Warna.unguTransparan,
       elevation: 0,
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: EdgeInsets.only(bottom: isTablet ? 12 : 10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
         side: BorderSide(color: Warna.ungu),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(isTablet ? 14 : 12),
         child: Row(
           children: [
             Container(
-              width: 60,
-              height: 60,
+              width: imageSize,
+              height: imageSize,
               decoration: BoxDecoration(
                 color: Warna.putih,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Image.network(
-                image,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  image,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -341,7 +370,7 @@ class _RentalSelectionDialogState extends State<RentalSelectionDialog> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: const TextStyle(fontSize: 16)),
+                  Text(name, style: TextStyle(fontSize: isTablet ? 17 : 16)),
                   const SizedBox(height: 4),
                   StockContainer(stock: stock),
                 ],

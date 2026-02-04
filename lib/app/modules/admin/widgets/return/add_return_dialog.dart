@@ -1,4 +1,5 @@
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/admin/controllers/pengembalian_controller.dart';
 import 'package:jari/app/modules/admin/models/peminjaman_model.dart';
 import 'package:jari/app/modules/admin/models/pengembalian_model.dart';
@@ -27,7 +28,6 @@ class _AddReturnDialogState extends State<AddReturnDialog> {
   @override
   void initState() {
     super.initState();
-    // No initial calculation needed as loan is not selected
   }
 
   Future<void> _calculateDetails() async {
@@ -51,278 +51,341 @@ class _AddReturnDialogState extends State<AddReturnDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = Responsive.isTablet(context);
+
+    // Responsive sizing
+    final dialogWidth = isTablet ? 480.0 : 360.0;
+    final titleSize = isTablet ? 22.0 : 18.0;
+    final labelSize = isTablet ? 16.0 : 14.0;
+    final textSize = isTablet ? 16.0 : 14.0;
+    final buttonFontSize = isTablet ? 16.0 : 14.0;
+    final spacing = isTablet ? 20.0 : 16.0;
+    final borderRadius = isTablet ? 20.0 : 16.0;
+    final contentPadding = isTablet ? 28.0 : 24.0;
+    final iconSize = isTablet ? 24.0 : 20.0;
+    final buttonPadding = isTablet ? 18.0 : 16.0;
+
     return Dialog(
       backgroundColor: Warna.hitamBackground,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(borderRadius),
         side: BorderSide(color: Warna.putih.withOpacity(0.2)),
       ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Tambah Pengembalian',
-                  style: TextStyle(
-                    color: Warna.putih,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+      child: Container(
+        width: dialogWidth,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(contentPadding),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Tambah Pengembalian',
+                    style: TextStyle(
+                      color: Warna.putih,
+                      fontSize: titleSize,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.close, color: Warna.putih.withOpacity(0.5)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // Form Fields
-
-            // 1. Pilih Peminjaman (Kode Peminjaman)
-            _buildLabel('Kode Peminjaman'),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: Warna.hitamTransparan,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Warna.putih.withOpacity(0.2)),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<Peminjaman>(
-                  isExpanded: true,
-                  dropdownColor: Warna.hitamBackground,
-                  hint: Text(
-                    'Pilih Peminjaman',
-                    style: TextStyle(color: Warna.putih.withOpacity(0.5)),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(
+                      Icons.close,
+                      color: Warna.putih.withOpacity(0.5),
+                      size: isTablet ? 28 : 24,
+                    ),
                   ),
-                  value: _selectedPeminjaman,
-                  items: widget.controller.peminjamanAktifList.map((p) {
-                    return DropdownMenuItem<Peminjaman>(
-                      value: p,
-                      child: Text(
-                        '${p.kodePeminjaman} - ${p.namaPeminjam}',
-                        style: TextStyle(color: Warna.putih),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedPeminjaman = value;
-                    });
-                    _calculateDetails();
-                  },
-                ),
+                ],
               ),
-            ),
-            const SizedBox(height: 16),
+              SizedBox(height: spacing + 8),
 
-            // 2. Tanggal Kembali
-            _buildLabel('Tanggal Kembali'),
-            const SizedBox(height: 8),
-            InkWell(
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: _tanggalKembali,
-                  firstDate: DateTime(2020),
-                  lastDate: DateTime(2100),
-                  builder: (context, child) {
-                    return Theme(
-                      data: ThemeData.dark().copyWith(
-                        colorScheme: ColorScheme.dark(
-                          primary: Warna.ungu,
-                          onPrimary: Colors.white,
-                          surface: Warna.hitamBackground,
-                          onSurface: Colors.white,
-                        ),
-                        dialogBackgroundColor: Warna.hitamBackground,
-                      ),
-                      child: child!,
-                    );
-                  },
-                );
-                if (picked != null) {
-                  setState(() => _tanggalKembali = picked);
-                  _calculateDetails();
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(16),
+              // Form Fields
+
+              // 1. Pilih Peminjaman (Kode Peminjaman)
+              _buildLabel('Kode Peminjaman', labelSize),
+              SizedBox(height: isTablet ? 12 : 8),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isTablet ? 16 : 12,
+                  vertical: isTablet ? 6 : 4,
+                ),
                 decoration: BoxDecoration(
                   color: Warna.hitamTransparan,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                   border: Border.all(color: Warna.putih.withOpacity(0.2)),
                 ),
-                child: Row(
-                  children: [
-                    Icon(Icons.calendar_today, color: Warna.ungu, size: 20),
-                    const SizedBox(width: 12),
-                    Text(
-                      '${_tanggalKembali.day}/${_tanggalKembali.month}/${_tanggalKembali.year}',
-                      style: TextStyle(color: Warna.putih),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<Peminjaman>(
+                    isExpanded: true,
+                    dropdownColor: Warna.hitamBackground,
+                    hint: Text(
+                      'Pilih Peminjaman',
+                      style: TextStyle(
+                        color: Warna.putih.withOpacity(0.5),
+                        fontSize: textSize,
+                      ),
                     ),
-                  ],
+                    value: _selectedPeminjaman,
+                    items: widget.controller.peminjamanAktifList.map((p) {
+                      return DropdownMenuItem<Peminjaman>(
+                        value: p,
+                        child: Text(
+                          '${p.kodePeminjaman} - ${p.namaPeminjam}',
+                          style: TextStyle(
+                            color: Warna.putih,
+                            fontSize: textSize,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedPeminjaman = value;
+                      });
+                      _calculateDetails();
+                    },
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
+              SizedBox(height: spacing),
 
-            // Info Kalkulasi (Terlambat & Denda)
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Warna.ungu.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Warna.ungu.withOpacity(0.3)),
-              ),
-              child: _isCalculating
-                  ? const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    )
-                  : Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Keterlambatan:',
-                              style: TextStyle(
-                                color: Warna.putih.withOpacity(0.7),
-                              ),
-                            ),
-                            Text(
-                              '$_terlambatHari Hari',
-                              style: TextStyle(
-                                color: _terlambatHari > 0
-                                    ? Warna.merah.withOpacity(0.7)
-                                    : Warna.putih.withOpacity(0.7),
-                              ),
-                            ),
-                          ],
+              // 2. Tanggal Kembali
+              _buildLabel('Tanggal Kembali', labelSize),
+              SizedBox(height: isTablet ? 12 : 8),
+              InkWell(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _tanggalKembali,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2100),
+                    builder: (context, child) {
+                      return Theme(
+                        data: ThemeData.dark().copyWith(
+                          colorScheme: ColorScheme.dark(
+                            primary: Warna.ungu,
+                            onPrimary: Colors.white,
+                            surface: Warna.hitamBackground,
+                            onSurface: Colors.white,
+                          ),
+                          dialogBackgroundColor: Warna.hitamBackground,
                         ),
-                        if (_totalDenda > 0) ...[
-                          const SizedBox(height: 8),
+                        child: child!,
+                      );
+                    },
+                  );
+                  if (picked != null) {
+                    setState(() => _tanggalKembali = picked);
+                    _calculateDetails();
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.all(isTablet ? 18 : 16),
+                  decoration: BoxDecoration(
+                    color: Warna.hitamTransparan,
+                    borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+                    border: Border.all(color: Warna.putih.withOpacity(0.2)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today,
+                        color: Warna.ungu,
+                        size: iconSize,
+                      ),
+                      SizedBox(width: isTablet ? 16 : 12),
+                      Text(
+                        '${_tanggalKembali.day}/${_tanggalKembali.month}/${_tanggalKembali.year}',
+                        style: TextStyle(
+                          color: Warna.putih,
+                          fontSize: textSize,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: spacing),
+
+              // Info Kalkulasi (Terlambat & Denda)
+              Container(
+                padding: EdgeInsets.all(isTablet ? 16 : 12),
+                decoration: BoxDecoration(
+                  color: Warna.ungu.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+                  border: Border.all(color: Warna.ungu.withOpacity(0.3)),
+                ),
+                child: _isCalculating
+                    ? Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(isTablet ? 12 : 8),
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                    : Column(
+                        children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Estimasi Denda:',
+                                'Keterlambatan:',
                                 style: TextStyle(
                                   color: Warna.putih.withOpacity(0.7),
+                                  fontSize: textSize,
                                 ),
                               ),
                               Text(
-                                'Rp ${_totalDenda.toStringAsFixed(0)}', // Basic formatting
-                                style: const TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
+                                '$_terlambatHari Hari',
+                                style: TextStyle(
+                                  color: _terlambatHari > 0
+                                      ? Warna.merah.withOpacity(0.7)
+                                      : Warna.putih.withOpacity(0.7),
+                                  fontSize: textSize,
                                 ),
                               ),
                             ],
                           ),
-                        ],
-                      ],
-                    ),
-            ),
-            const SizedBox(height: 16),
-
-            // 3. Status
-            _buildLabel('Status'),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: Warna.hitamTransparan,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Warna.putih.withOpacity(0.2)),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<StatusPengembalian>(
-                  isExpanded: true,
-                  dropdownColor: Warna.hitamBackground,
-                  value: _selectedStatus,
-                  items: StatusPengembalian.values.map((status) {
-                    return DropdownMenuItem<StatusPengembalian>(
-                      value: status,
-                      child: Text(
-                        status.displayName,
-                        style: TextStyle(color: Warna.putih),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() => _selectedStatus = value);
-                    }
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Action Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(color: Warna.putih.withOpacity(0.2)),
-                      ),
-                    ),
-                    child: Text('Batal', style: TextStyle(color: Warna.putih)),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Warna.ungu,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Warna.putih,
+                          if (_totalDenda > 0) ...[
+                            SizedBox(height: isTablet ? 12 : 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Estimasi Denda:',
+                                  style: TextStyle(
+                                    color: Warna.putih.withOpacity(0.7),
+                                    fontSize: textSize,
+                                  ),
+                                ),
+                                Text(
+                                  'Rp ${_totalDenda.toStringAsFixed(0)}',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: textSize,
+                                  ),
+                                ),
+                              ],
                             ),
-                          )
-                        : Text('Simpan', style: TextStyle(color: Warna.putih)),
+                          ],
+                        ],
+                      ),
+              ),
+              SizedBox(height: spacing),
+
+              // 3. Status
+              _buildLabel('Status', labelSize),
+              SizedBox(height: isTablet ? 12 : 8),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isTablet ? 16 : 12,
+                  vertical: isTablet ? 6 : 4,
+                ),
+                decoration: BoxDecoration(
+                  color: Warna.hitamTransparan,
+                  borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+                  border: Border.all(color: Warna.putih.withOpacity(0.2)),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<StatusPengembalian>(
+                    isExpanded: true,
+                    dropdownColor: Warna.hitamBackground,
+                    value: _selectedStatus,
+                    items: StatusPengembalian.values.map((status) {
+                      return DropdownMenuItem<StatusPengembalian>(
+                        value: status,
+                        child: Text(
+                          status.displayName,
+                          style: TextStyle(
+                            color: Warna.putih,
+                            fontSize: textSize,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => _selectedStatus = value);
+                      }
+                    },
                   ),
                 ),
-              ],
-            ),
-          ],
+              ),
+              SizedBox(height: spacing + 8),
+
+              // Action Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: buttonPadding),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 16 : 12,
+                          ),
+                          side: BorderSide(color: Warna.putih.withOpacity(0.2)),
+                        ),
+                      ),
+                      child: Text(
+                        'Batal',
+                        style: TextStyle(
+                          color: Warna.putih,
+                          fontSize: buttonFontSize,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: isTablet ? 16 : 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Warna.ungu,
+                        padding: EdgeInsets.symmetric(vertical: buttonPadding),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 16 : 12,
+                          ),
+                        ),
+                      ),
+                      child: _isLoading
+                          ? SizedBox(
+                              width: isTablet ? 24 : 20,
+                              height: isTablet ? 24 : 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Warna.putih,
+                              ),
+                            )
+                          : Text(
+                              'Simpan',
+                              style: TextStyle(
+                                color: Warna.putih,
+                                fontSize: buttonFontSize,
+                              ),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildLabel(String text) {
+  Widget _buildLabel(String text, double fontSize) {
     return Text(
       text,
-      style: TextStyle(color: Warna.putih.withOpacity(0.7), fontSize: 14),
+      style: TextStyle(color: Warna.putih.withOpacity(0.7), fontSize: fontSize),
     );
   }
 
@@ -342,10 +405,6 @@ class _AddReturnDialogState extends State<AddReturnDialog> {
     setState(() => _isLoading = true);
 
     try {
-      // Use the calculated _terlambatHari from RPC
-      // Note: If you changed the date but RPC failed/hasn't finished, _terlambatHari might be stale.
-      // But _isCalculating handles the loading state.
-
       final success = await widget.controller.addPengembalian(
         peminjamanId: _selectedPeminjaman!.id,
         tanggalKembali: _tanggalKembali,

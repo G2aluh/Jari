@@ -1,4 +1,5 @@
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/auth/controllers/auth_controller.dart';
 import 'package:jari/app/widgets/side_drawer_menu.dart';
 import 'package:flutter/material.dart';
@@ -30,11 +31,15 @@ class BaseDashboardLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
+    final isTablet = Responsive.isTablet(context);
+
+    // Responsive drawer width
+    final drawerWidth = isTablet ? 140.0 : 100.0;
 
     return Scaffold(
       drawer: role == 'admin'
           ? SizedBox(
-              width: 100,
+              width: drawerWidth,
               child: SideDrawerMenu(
                 onNavTap: onNavTap,
                 currentIndex: currentIndex,
@@ -45,13 +50,15 @@ class BaseDashboardLayout extends StatelessWidget {
       appBar:
           customAppBar ??
           AppBar(
-            //Search
             elevation: 0,
             backgroundColor: Warna.hitamBackground,
             foregroundColor: Warna.putih,
 
             title: ActionChip(
-              label: Text(title),
+              label: Text(
+                title,
+                style: TextStyle(fontSize: isTablet ? 16 : 14),
+              ),
               labelStyle: TextStyle(color: Warna.putih),
               shape: StadiumBorder(),
               side: BorderSide(width: 0),
@@ -61,11 +68,11 @@ class BaseDashboardLayout extends StatelessWidget {
             centerTitle: true,
             actions: [
               IconButton(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: isTablet ? 20 : 16),
                 onPressed: () {
                   authController.showLogoutConfirmation();
                 },
-                icon: Icon(IconlyLight.logout),
+                icon: Icon(IconlyLight.logout, size: isTablet ? 28 : 24),
               ),
             ],
           ),
@@ -82,6 +89,7 @@ class BaseDashboardLayout extends StatelessWidget {
               currentIndex: currentIndex,
               onTap: onNavTap,
               items: navItems,
+              iconSize: isTablet ? 28 : 24,
             ),
       floatingActionButton: fab,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

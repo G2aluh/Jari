@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/admin/controllers/equipment_controller.dart';
 import 'package:jari/app/modules/admin/models/alat_model.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,6 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
   bool isLoading = false;
   bool isDeleting = false;
 
-  // Original values for change detection
   late String originalKode;
   late String originalNama;
   late String originalStokTotal;
@@ -53,7 +53,6 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
     );
     selectedKategoriId = widget.alat.kategoriId;
 
-    // Store originals
     originalKode = widget.alat.kodeAlat;
     originalNama = widget.alat.namaAlat;
     originalStokTotal = widget.alat.stokTotal.toString();
@@ -121,20 +120,31 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
     }
   }
 
-  void _showDeleteConfirmation() {
+  void _showDeleteConfirmation(bool isTablet) {
+    final titleSize = isTablet ? 20.0 : 16.0;
+    final bodySize = isTablet ? 16.0 : 14.0;
+    final smallSize = isTablet ? 14.0 : 12.0;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Warna.hitamBackground,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
           side: BorderSide(color: Colors.red.withOpacity(0.3)),
         ),
         title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.red),
-            SizedBox(width: 8),
-            Text('Hapus Permanen', style: TextStyle(color: Colors.red)),
+            Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.red,
+              size: isTablet ? 28 : 24,
+            ),
+            SizedBox(width: isTablet ? 12 : 8),
+            Text(
+              'Hapus Permanen',
+              style: TextStyle(color: Colors.red, fontSize: titleSize),
+            ),
           ],
         ),
         content: Column(
@@ -143,20 +153,24 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
           children: [
             Text(
               'Apakah Anda yakin ingin menghapus alat ini secara permanen?',
-              style: TextStyle(color: Warna.putih),
+              style: TextStyle(color: Warna.putih, fontSize: bodySize),
             ),
-            SizedBox(height: 12),
+            SizedBox(height: isTablet ? 16 : 12),
             Container(
-              padding: EdgeInsets.all(12),
+              padding: EdgeInsets.all(isTablet ? 16 : 12),
               decoration: BoxDecoration(
                 color: Colors.red.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(isTablet ? 12 : 8),
                 border: Border.all(color: Colors.red.withOpacity(0.3)),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.build, color: Warna.putih.withOpacity(0.7)),
-                  SizedBox(width: 12),
+                  Icon(
+                    Icons.build,
+                    color: Warna.putih.withOpacity(0.7),
+                    size: isTablet ? 24 : 20,
+                  ),
+                  SizedBox(width: isTablet ? 16 : 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,13 +180,14 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
                           style: TextStyle(
                             color: Warna.putih,
                             fontWeight: FontWeight.bold,
+                            fontSize: bodySize,
                           ),
                         ),
                         Text(
                           widget.alat.kodeAlat,
                           style: TextStyle(
                             color: Warna.putih.withOpacity(0.6),
-                            fontSize: 12,
+                            fontSize: smallSize,
                           ),
                         ),
                       ],
@@ -181,10 +196,10 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
                 ],
               ),
             ),
-            SizedBox(height: 12),
+            SizedBox(height: isTablet ? 16 : 12),
             Text(
               '*Tindakan ini tidak dapat dibatalkan!',
-              style: TextStyle(color: Colors.orange, fontSize: 12),
+              style: TextStyle(color: Colors.orange, fontSize: smallSize),
             ),
           ],
         ),
@@ -193,21 +208,31 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Batal',
-              style: TextStyle(color: Warna.putih.withOpacity(0.7)),
+              style: TextStyle(
+                color: Warna.putih.withOpacity(0.7),
+                fontSize: bodySize,
+              ),
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
+              padding: EdgeInsets.symmetric(
+                horizontal: isTablet ? 20 : 16,
+                vertical: isTablet ? 12 : 8,
+              ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(isTablet ? 12 : 8),
               ),
             ),
             onPressed: () async {
-              Navigator.pop(context); // Close confirmation dialog
+              Navigator.pop(context);
               await _handleDelete();
             },
-            child: Text('Hapus Permanen', style: TextStyle(color: Warna.putih)),
+            child: Text(
+              'Hapus Permanen',
+              style: TextStyle(color: Warna.putih, fontSize: bodySize),
+            ),
           ),
         ],
       ),
@@ -217,7 +242,6 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
   Future<void> _handleDelete() async {
     setState(() => isDeleting = true);
 
-    // Hard delete - hapus permanen dari database dan storage
     try {
       await widget.controller.hardDeleteEquipment(
         widget.alat.id,
@@ -237,15 +261,24 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
     String label,
     IconData icon, {
     bool readOnly = false,
+    required bool isTablet,
   }) {
     final opacity = readOnly ? 0.3 : 0.5;
     return InputDecoration(
       labelText: label,
       labelStyle: TextStyle(
         color: Warna.putih.withOpacity(readOnly ? 0.5 : 0.7),
+        fontSize: isTablet ? 16 : 14,
       ),
-      prefixIcon: Icon(icon, color: Warna.putih.withOpacity(opacity)),
-      errorStyle: TextStyle(color: Colors.red[300]),
+      prefixIcon: Icon(
+        icon,
+        color: Warna.putih.withOpacity(opacity),
+        size: isTablet ? 24 : 20,
+      ),
+      errorStyle: TextStyle(
+        color: Colors.red[300],
+        fontSize: isTablet ? 14 : 12,
+      ),
       enabledBorder: UnderlineInputBorder(
         borderSide: BorderSide(color: Warna.putih.withOpacity(opacity)),
       ),
@@ -261,7 +294,9 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
     );
   }
 
-  Widget _buildImagePreview() {
+  Widget _buildImagePreview(bool isTablet) {
+    final iconSize = isTablet ? 50.0 : 40.0;
+
     if (selectedImageBytes != null) {
       return Image.memory(selectedImageBytes!, fit: BoxFit.cover);
     } else if (widget.alat.alatUrl != null && widget.alat.alatUrl!.isNotEmpty) {
@@ -271,13 +306,14 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
         errorBuilder: (_, __, ___) => Icon(
           Icons.image_not_supported,
           color: Warna.putih.withOpacity(0.5),
+          size: iconSize,
         ),
       );
     } else {
       return Icon(
         Icons.add_a_photo,
         color: Warna.putih.withOpacity(0.5),
-        size: 40,
+        size: iconSize,
       );
     }
   }
@@ -285,15 +321,29 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
   @override
   Widget build(BuildContext context) {
     final canSave = hasChanges && !isLoading && !isDeleting;
+    final isTablet = Responsive.isTablet(context);
+
+    // Responsive sizing
+    final dialogWidth = isTablet
+        ? 520.0
+        : MediaQuery.of(context).size.width * 0.9;
+    final titleSize = isTablet ? 24.0 : 20.0;
+    final inputFontSize = isTablet ? 16.0 : 14.0;
+    final buttonFontSize = isTablet ? 16.0 : 14.0;
+    final spacing = isTablet ? 24.0 : 16.0;
+    final borderRadius = isTablet ? 20.0 : 16.0;
+    final buttonPadding = isTablet ? 18.0 : 14.0;
+    final contentPadding = isTablet ? 28.0 : 20.0;
+    final imageSize = isTablet ? 130.0 : 100.0;
 
     return Dialog(
       backgroundColor: Warna.hitamBackground,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(borderRadius),
         side: BorderSide(color: Warna.putih.withOpacity(0.2)),
       ),
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
+        width: dialogWidth,
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.85,
         ),
@@ -302,7 +352,12 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
           children: [
             // Header with close button
             Padding(
-              padding: EdgeInsets.fromLTRB(20, 16, 8, 0),
+              padding: EdgeInsets.fromLTRB(
+                contentPadding,
+                spacing,
+                isTablet ? 12 : 8,
+                0,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -310,7 +365,7 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
                     'Edit Alat',
                     style: TextStyle(
                       color: Warna.putih,
-                      fontSize: 20,
+                      fontSize: titleSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -319,6 +374,7 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
                     icon: Icon(
                       Icons.close,
                       color: Warna.putih.withOpacity(0.7),
+                      size: isTablet ? 28 : 24,
                     ),
                   ),
                 ],
@@ -328,7 +384,12 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
             // Form Content
             Flexible(
               child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
+                padding: EdgeInsets.fromLTRB(
+                  contentPadding,
+                  spacing,
+                  contentPadding,
+                  0,
+                ),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -338,39 +399,54 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
                       GestureDetector(
                         onTap: _pickImage,
                         child: Container(
-                          width: 100,
-                          height: 100,
+                          width: imageSize,
+                          height: imageSize,
                           decoration: BoxDecoration(
                             color: Warna.abuAbu,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(
+                              isTablet ? 12 : 8,
+                            ),
                             border: Border.all(
                               color: Warna.putih.withOpacity(0.2),
                             ),
                           ),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: _buildImagePreview(),
+                            borderRadius: BorderRadius.circular(
+                              isTablet ? 12 : 8,
+                            ),
+                            child: _buildImagePreview(isTablet),
                           ),
                         ),
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: isTablet ? 12 : 8),
                       TextButton.icon(
                         onPressed: _pickImage,
                         label: Text(
                           "Ganti Gambar",
-                          style: TextStyle(color: Warna.ungu),
+                          style: TextStyle(
+                            color: Warna.ungu,
+                            fontSize: isTablet ? 16 : 14,
+                          ),
                         ),
-                        icon: Icon(Icons.upload, color: Warna.ungu, size: 16),
+                        icon: Icon(
+                          Icons.upload,
+                          color: Warna.ungu,
+                          size: isTablet ? 20 : 16,
+                        ),
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: spacing),
 
                       // Kode Alat
                       TextFormField(
                         controller: kodeController,
-                        style: TextStyle(color: Warna.putih),
+                        style: TextStyle(
+                          color: Warna.putih,
+                          fontSize: inputFontSize,
+                        ),
                         decoration: _inputDecoration(
                           'Kode Alat',
                           Icons.qr_code,
+                          isTablet: isTablet,
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
@@ -379,13 +455,20 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: spacing),
 
                       // Nama Alat
                       TextFormField(
                         controller: namaController,
-                        style: TextStyle(color: Warna.putih),
-                        decoration: _inputDecoration('Nama Alat', Icons.build),
+                        style: TextStyle(
+                          color: Warna.putih,
+                          fontSize: inputFontSize,
+                        ),
+                        decoration: _inputDecoration(
+                          'Nama Alat',
+                          Icons.build,
+                          isTablet: isTablet,
+                        ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return 'Nama alat tidak boleh kosong';
@@ -393,16 +476,20 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: spacing),
 
                       // Stok Total
                       TextFormField(
                         controller: stokTotalController,
                         keyboardType: TextInputType.number,
-                        style: TextStyle(color: Warna.putih),
+                        style: TextStyle(
+                          color: Warna.putih,
+                          fontSize: inputFontSize,
+                        ),
                         decoration: _inputDecoration(
                           'Stok Total',
                           Icons.inventory,
+                          isTablet: isTablet,
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
@@ -414,16 +501,20 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: spacing),
 
                       // Stok Tersedia
                       TextFormField(
                         controller: stokTersediaController,
                         keyboardType: TextInputType.number,
-                        style: TextStyle(color: Warna.putih),
+                        style: TextStyle(
+                          color: Warna.putih,
+                          fontSize: inputFontSize,
+                        ),
                         decoration: _inputDecoration(
                           'Stok Tersedia',
                           Icons.check_circle,
+                          isTablet: isTablet,
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
@@ -444,22 +535,29 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: spacing),
 
                       // Kategori Dropdown
                       Obx(
                         () => DropdownButtonFormField<String>(
                           value: selectedKategoriId,
                           dropdownColor: Warna.abuAbu,
-                          style: TextStyle(color: Warna.putih),
+                          style: TextStyle(
+                            color: Warna.putih,
+                            fontSize: inputFontSize,
+                          ),
                           decoration: _inputDecoration(
                             'Kategori',
                             Icons.category,
+                            isTablet: isTablet,
                           ),
                           items: widget.controller.categories.map((cat) {
                             return DropdownMenuItem(
                               value: cat.id,
-                              child: Text(cat.namaKategori),
+                              child: Text(
+                                cat.namaKategori,
+                                style: TextStyle(fontSize: inputFontSize),
+                              ),
                             );
                           }).toList(),
                           onChanged: (value) {
@@ -475,7 +573,7 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
 
             // Action Buttons
             Padding(
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.all(contentPadding),
               child: Row(
                 children: [
                   // Hapus Button
@@ -485,42 +583,49 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
                         backgroundColor: Colors.red.withOpacity(0.2),
                         foregroundColor: Colors.red,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 12 : 8,
+                          ),
                           side: BorderSide(color: Colors.red.withOpacity(0.5)),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: buttonPadding),
                       ),
                       onPressed: (isLoading || isDeleting)
                           ? null
-                          : _showDeleteConfirmation,
+                          : () => _showDeleteConfirmation(isTablet),
                       child: isDeleting
                           ? SizedBox(
-                              width: 20,
-                              height: 20,
+                              width: isTablet ? 24 : 20,
+                              height: isTablet ? 24 : 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 color: Colors.red,
                               ),
                             )
-                          : Text('Hapus'),
+                          : Text(
+                              'Hapus',
+                              style: TextStyle(fontSize: buttonFontSize),
+                            ),
                     ),
                   ),
-                  SizedBox(width: 12),
+                  SizedBox(width: isTablet ? 16 : 12),
                   // Simpan Button
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: canSave ? Warna.ungu : Warna.abuAbu,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 12 : 8,
+                          ),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: buttonPadding),
                       ),
                       onPressed: canSave ? _handleSave : null,
                       child: isLoading
                           ? SizedBox(
-                              width: 20,
-                              height: 20,
+                              width: isTablet ? 24 : 20,
+                              height: isTablet ? 24 : 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 color: Warna.putih,
@@ -532,6 +637,7 @@ class _EditEquipmentDialogState extends State<EditEquipmentDialog> {
                                 color: canSave
                                     ? Warna.putih
                                     : Warna.putih.withOpacity(0.5),
+                                fontSize: buttonFontSize,
                               ),
                             ),
                     ),

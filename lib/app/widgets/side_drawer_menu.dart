@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/core/values/app_icon_appbar.dart';
 
 class SideDrawerMenu extends StatefulWidget {
@@ -16,6 +17,16 @@ class SideDrawerMenu extends StatefulWidget {
 class _SideDrawerMenuState extends State<SideDrawerMenu> {
   @override
   Widget build(BuildContext context) {
+    final isTablet = Responsive.isTablet(context);
+
+    // Responsive sizing
+    final headerHeight = isTablet ? 140.0 : 100.0;
+    final logoSize = isTablet ? 100.0 : 70.0;
+    final iconSize = isTablet ? 32.0 : 24.0;
+    final itemPadding = isTablet ? 12.0 : 6.0;
+    final itemVerticalPadding = isTablet ? 14.0 : 10.0;
+    final borderRadius = isTablet ? 16.0 : 12.0;
+
     return Drawer(
       elevation: 0,
       child: Container(
@@ -27,14 +38,14 @@ class _SideDrawerMenuState extends State<SideDrawerMenu> {
             // HEADER
             // =====================
             Container(
-              height: 100,
+              height: headerHeight,
               width: double.infinity,
               color: Warna.hitamTransparan,
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: EdgeInsets.symmetric(vertical: isTablet ? 18 : 12),
               child: Center(
                 child: SizedBox(
-                  height: 70,
-                  width: 70,
+                  height: logoSize,
+                  width: logoSize,
                   child: Image.asset('assets/images/logo.png'),
                 ),
               ),
@@ -52,18 +63,18 @@ class _SideDrawerMenuState extends State<SideDrawerMenu> {
                   Navigator.pop(context);
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  padding: EdgeInsets.symmetric(vertical: itemVerticalPadding),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.all(6),
+                    padding: EdgeInsets.all(itemPadding),
                     decoration: BoxDecoration(
                       color: isActive ? Warna.ungu : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(borderRadius),
                     ),
                     child: IconTheme(
                       data: IconThemeData(
                         color: isActive ? Warna.putih : Warna.hitamBackground,
-                        size: 24,
+                        size: iconSize,
                       ),
                       child: menuItems[index],
                     ),

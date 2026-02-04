@@ -1,4 +1,5 @@
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/admin/controllers/user_management_controller.dart';
 import 'package:jari/app/modules/admin/models/pengguna_model.dart';
 import 'package:flutter/material.dart';
@@ -31,10 +32,8 @@ class _EditUserDialogState extends State<EditUserDialog> {
     super.initState();
     nameController = TextEditingController(text: widget.user.nama);
     selectedRole = widget.user.role.toLowerCase();
-    // Simpan nilai asli untuk perbandingan
     originalName = widget.user.nama;
     originalRole = widget.user.role.toLowerCase();
-    // Listener untuk detect perubahan
     nameController.addListener(_checkChanges);
   }
 
@@ -75,20 +74,31 @@ class _EditUserDialogState extends State<EditUserDialog> {
     }
   }
 
-  void _showDeleteConfirmation() {
+  void _showDeleteConfirmation(bool isTablet) {
+    final titleSize = isTablet ? 20.0 : 16.0;
+    final bodySize = isTablet ? 16.0 : 14.0;
+    final smallSize = isTablet ? 14.0 : 12.0;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Warna.hitamBackground,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
           side: BorderSide(color: Colors.red.withOpacity(0.3)),
         ),
         title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.red),
-            SizedBox(width: 8),
-            Text('Hapus Permanen', style: TextStyle(color: Colors.red)),
+            Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.red,
+              size: isTablet ? 28 : 24,
+            ),
+            SizedBox(width: isTablet ? 12 : 8),
+            Text(
+              'Hapus Permanen',
+              style: TextStyle(color: Colors.red, fontSize: titleSize),
+            ),
           ],
         ),
         content: Column(
@@ -97,20 +107,24 @@ class _EditUserDialogState extends State<EditUserDialog> {
           children: [
             Text(
               'Apakah Anda yakin ingin menghapus pengguna ini secara permanen?',
-              style: TextStyle(color: Warna.putih),
+              style: TextStyle(color: Warna.putih, fontSize: bodySize),
             ),
-            SizedBox(height: 12),
+            SizedBox(height: isTablet ? 16 : 12),
             Container(
-              padding: EdgeInsets.all(12),
+              padding: EdgeInsets.all(isTablet ? 16 : 12),
               decoration: BoxDecoration(
                 color: Colors.red.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(isTablet ? 12 : 8),
                 border: Border.all(color: Colors.red.withOpacity(0.3)),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.person, color: Warna.putih.withOpacity(0.7)),
-                  SizedBox(width: 12),
+                  Icon(
+                    Icons.person,
+                    color: Warna.putih.withOpacity(0.7),
+                    size: isTablet ? 24 : 20,
+                  ),
+                  SizedBox(width: isTablet ? 16 : 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,13 +134,14 @@ class _EditUserDialogState extends State<EditUserDialog> {
                           style: TextStyle(
                             color: Warna.putih,
                             fontWeight: FontWeight.bold,
+                            fontSize: bodySize,
                           ),
                         ),
                         Text(
                           widget.user.email,
                           style: TextStyle(
                             color: Warna.putih.withOpacity(0.6),
-                            fontSize: 12,
+                            fontSize: smallSize,
                           ),
                         ),
                       ],
@@ -135,10 +150,10 @@ class _EditUserDialogState extends State<EditUserDialog> {
                 ],
               ),
             ),
-            SizedBox(height: 12),
+            SizedBox(height: isTablet ? 16 : 12),
             Text(
-              '*indakan ini tidak dapat dibatalkan!',
-              style: TextStyle(color: Colors.orange, fontSize: 12),
+              '*Tindakan ini tidak dapat dibatalkan!',
+              style: TextStyle(color: Colors.orange, fontSize: smallSize),
             ),
           ],
         ),
@@ -147,21 +162,31 @@ class _EditUserDialogState extends State<EditUserDialog> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Batal',
-              style: TextStyle(color: Warna.putih.withOpacity(0.7)),
+              style: TextStyle(
+                color: Warna.putih.withOpacity(0.7),
+                fontSize: bodySize,
+              ),
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
+              padding: EdgeInsets.symmetric(
+                horizontal: isTablet ? 20 : 16,
+                vertical: isTablet ? 12 : 8,
+              ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(isTablet ? 12 : 8),
               ),
             ),
             onPressed: () async {
-              Navigator.pop(context); // Close confirmation dialog
+              Navigator.pop(context);
               await _handleDelete();
             },
-            child: Text('Hapus Permanen', style: TextStyle(color: Warna.putih)),
+            child: Text(
+              'Hapus Permanen',
+              style: TextStyle(color: Warna.putih, fontSize: bodySize),
+            ),
           ),
         ],
       ),
@@ -187,15 +212,24 @@ class _EditUserDialogState extends State<EditUserDialog> {
     required String label,
     required IconData icon,
     bool readOnly = false,
+    required bool isTablet,
   }) {
     final opacity = readOnly ? 0.3 : 0.5;
     return InputDecoration(
       labelText: label,
       labelStyle: TextStyle(
         color: Warna.putih.withOpacity(readOnly ? 0.5 : 0.7),
+        fontSize: isTablet ? 16 : 14,
       ),
-      prefixIcon: Icon(icon, color: Warna.putih.withOpacity(opacity)),
-      errorStyle: TextStyle(color: Colors.red[300]),
+      prefixIcon: Icon(
+        icon,
+        color: Warna.putih.withOpacity(opacity),
+        size: isTablet ? 24 : 20,
+      ),
+      errorStyle: TextStyle(
+        color: Colors.red[300],
+        fontSize: isTablet ? 14 : 12,
+      ),
       enabledBorder: UnderlineInputBorder(
         borderSide: BorderSide(color: Warna.putih.withOpacity(opacity)),
       ),
@@ -214,15 +248,28 @@ class _EditUserDialogState extends State<EditUserDialog> {
   @override
   Widget build(BuildContext context) {
     final canSave = hasChanges && !isLoading && !isDeleting;
+    final isTablet = Responsive.isTablet(context);
+
+    // Responsive sizing
+    final dialogWidth = isTablet
+        ? 500.0
+        : MediaQuery.of(context).size.width * 0.9;
+    final titleSize = isTablet ? 24.0 : 20.0;
+    final inputFontSize = isTablet ? 16.0 : 14.0;
+    final buttonFontSize = isTablet ? 16.0 : 14.0;
+    final spacing = isTablet ? 24.0 : 16.0;
+    final borderRadius = isTablet ? 20.0 : 16.0;
+    final buttonPadding = isTablet ? 18.0 : 14.0;
+    final contentPadding = isTablet ? 28.0 : 20.0;
 
     return Dialog(
       backgroundColor: Warna.hitamBackground,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(borderRadius),
         side: BorderSide(color: Warna.putih.withOpacity(0.2)),
       ),
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
+        width: dialogWidth,
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.85,
         ),
@@ -231,7 +278,12 @@ class _EditUserDialogState extends State<EditUserDialog> {
           children: [
             // Header with close button
             Padding(
-              padding: EdgeInsets.fromLTRB(20, 16, 8, 0),
+              padding: EdgeInsets.fromLTRB(
+                contentPadding,
+                spacing,
+                isTablet ? 12 : 8,
+                0,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -239,7 +291,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
                     'Edit Pengguna',
                     style: TextStyle(
                       color: Warna.putih,
-                      fontSize: 20,
+                      fontSize: titleSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -248,6 +300,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
                     icon: Icon(
                       Icons.close,
                       color: Warna.putih.withOpacity(0.7),
+                      size: isTablet ? 28 : 24,
                     ),
                   ),
                 ],
@@ -257,7 +310,12 @@ class _EditUserDialogState extends State<EditUserDialog> {
             // Form Content
             Flexible(
               child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
+                padding: EdgeInsets.fromLTRB(
+                  contentPadding,
+                  spacing,
+                  contentPadding,
+                  0,
+                ),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -266,23 +324,31 @@ class _EditUserDialogState extends State<EditUserDialog> {
                       // Email (read-only)
                       TextFormField(
                         initialValue: widget.user.email,
-                        style: TextStyle(color: Warna.putih.withOpacity(0.5)),
+                        style: TextStyle(
+                          color: Warna.putih.withOpacity(0.5),
+                          fontSize: inputFontSize,
+                        ),
                         readOnly: true,
                         decoration: _inputDecoration(
                           label: 'Email (tidak dapat diubah)',
                           icon: Icons.email,
                           readOnly: true,
+                          isTablet: isTablet,
                         ),
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: spacing),
 
                       // Name field
                       TextFormField(
                         controller: nameController,
-                        style: TextStyle(color: Warna.putih),
+                        style: TextStyle(
+                          color: Warna.putih,
+                          fontSize: inputFontSize,
+                        ),
                         decoration: _inputDecoration(
                           label: 'Nama Lengkap',
                           icon: Icons.person,
+                          isTablet: isTablet,
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
@@ -291,29 +357,42 @@ class _EditUserDialogState extends State<EditUserDialog> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: spacing),
 
                       // Role dropdown
                       DropdownButtonFormField<String>(
                         value: selectedRole,
                         dropdownColor: Warna.abuAbu,
-                        style: TextStyle(color: Warna.putih),
+                        style: TextStyle(
+                          color: Warna.putih,
+                          fontSize: inputFontSize,
+                        ),
                         decoration: _inputDecoration(
                           label: 'Role',
                           icon: Icons.badge,
+                          isTablet: isTablet,
                         ),
                         items: [
                           DropdownMenuItem(
                             value: 'admin',
-                            child: Text('Admin'),
+                            child: Text(
+                              'Admin',
+                              style: TextStyle(fontSize: inputFontSize),
+                            ),
                           ),
                           DropdownMenuItem(
                             value: 'petugas',
-                            child: Text('Petugas'),
+                            child: Text(
+                              'Petugas',
+                              style: TextStyle(fontSize: inputFontSize),
+                            ),
                           ),
                           DropdownMenuItem(
                             value: 'peminjam',
-                            child: Text('Peminjam'),
+                            child: Text(
+                              'Peminjam',
+                              style: TextStyle(fontSize: inputFontSize),
+                            ),
                           ),
                         ],
                         onChanged: (value) {
@@ -330,7 +409,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
 
             // Action Buttons
             Padding(
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.all(contentPadding),
               child: Row(
                 children: [
                   // Hapus Button
@@ -340,42 +419,49 @@ class _EditUserDialogState extends State<EditUserDialog> {
                         backgroundColor: Colors.red.withOpacity(0.2),
                         foregroundColor: Colors.red,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 12 : 8,
+                          ),
                           side: BorderSide(color: Colors.red.withOpacity(0.5)),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: buttonPadding),
                       ),
                       onPressed: (isLoading || isDeleting)
                           ? null
-                          : _showDeleteConfirmation,
+                          : () => _showDeleteConfirmation(isTablet),
                       child: isDeleting
                           ? SizedBox(
-                              width: 20,
-                              height: 20,
+                              width: isTablet ? 24 : 20,
+                              height: isTablet ? 24 : 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 color: Colors.red,
                               ),
                             )
-                          : Text('Hapus'),
+                          : Text(
+                              'Hapus',
+                              style: TextStyle(fontSize: buttonFontSize),
+                            ),
                     ),
                   ),
-                  SizedBox(width: 12),
+                  SizedBox(width: isTablet ? 16 : 12),
                   // Simpan Button
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: canSave ? Warna.ungu : Warna.abuAbu,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 12 : 8,
+                          ),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: buttonPadding),
                       ),
                       onPressed: canSave ? _handleSave : null,
                       child: isLoading
                           ? SizedBox(
-                              width: 20,
-                              height: 20,
+                              width: isTablet ? 24 : 20,
+                              height: isTablet ? 24 : 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 color: Warna.putih,
@@ -387,6 +473,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
                                 color: canSave
                                     ? Warna.putih
                                     : Warna.putih.withOpacity(0.5),
+                                fontSize: buttonFontSize,
                               ),
                             ),
                     ),

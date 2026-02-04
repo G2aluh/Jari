@@ -1,4 +1,5 @@
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/admin/controllers/pengembalian_controller.dart';
 import 'package:jari/app/modules/admin/models/pengembalian_model.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +89,6 @@ class _EditReturnDialogState extends State<EditReturnDialog> {
         _isCalculating = true;
       });
 
-      // Auto-calculate details based on new date
       try {
         final result = await widget.controller.calculateReturnDetails(
           peminjamanId: widget.pengembalian.peminjamanId,
@@ -115,174 +115,216 @@ class _EditReturnDialogState extends State<EditReturnDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = Responsive.isTablet(context);
+
+    // Responsive sizing
+    final dialogWidth = isTablet ? 480.0 : 360.0;
+    final titleSize = isTablet ? 24.0 : 20.0;
+    final labelSize = isTablet ? 16.0 : 14.0;
+    final textSize = isTablet ? 16.0 : 14.0;
+    final buttonFontSize = isTablet ? 16.0 : 14.0;
+    final spacing = isTablet ? 20.0 : 16.0;
+    final borderRadius = isTablet ? 20.0 : 16.0;
+    final contentPadding = isTablet ? 28.0 : 24.0;
+    final buttonPadding = isTablet ? 18.0 : 16.0;
+
     return Dialog(
       backgroundColor: Warna.hitamBackground,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(borderRadius),
         side: BorderSide(color: Warna.putih.withOpacity(0.2)),
       ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Edit Pengembalian',
-                  style: TextStyle(
-                    color: Warna.putih,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+      child: Container(
+        width: dialogWidth,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(contentPadding),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Edit Pengembalian',
+                    style: TextStyle(
+                      color: Warna.putih,
+                      fontSize: titleSize,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.close, color: Warna.putih.withOpacity(0.5)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // Read-only Info
-            _buildReadOnlyField(
-              "Kode Peminjaman",
-              widget.pengembalian.kodePeminjaman,
-            ),
-            const SizedBox(height: 12),
-            _buildReadOnlyField("Peminjam", widget.pengembalian.namaPeminjam),
-            const SizedBox(height: 16),
-
-            // Form Fields
-
-            // 1. Status
-            _buildLabel('Status'),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: Warna.hitamTransparan,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Warna.putih.withOpacity(0.2)),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<StatusPengembalian>(
-                  isExpanded: true,
-                  dropdownColor: Warna.hitamBackground,
-                  value: _selectedStatus,
-                  items: StatusPengembalian.values.map((status) {
-                    return DropdownMenuItem<StatusPengembalian>(
-                      value: status,
-                      child: Text(
-                        status.displayName,
-                        style: TextStyle(color: Warna.putih),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() => _selectedStatus = value);
-                    }
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // 2. Tanggal Kembali (New)
-            _buildLabel('Tanggal Kembali'),
-            const SizedBox(height: 8),
-            GestureDetector(
-              onTap: _pickDate,
-              child: AbsorbPointer(
-                child: TextField(
-                  controller: _dateController,
-                  style: TextStyle(color: Warna.putih),
-                  decoration: InputDecoration(
-                    hintText: 'Pilih Tanggal',
-                    filled: true,
-                    fillColor: Warna.hitamTransparan,
-                    suffixIcon: Icon(Icons.calendar_today, color: Warna.ungu),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Warna.putih.withOpacity(0.2),
-                      ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(
+                      Icons.close,
+                      color: Warna.putih.withOpacity(0.5),
+                      size: isTablet ? 28 : 24,
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Warna.putih.withOpacity(0.2),
-                      ),
-                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: spacing + 8),
+
+              // Read-only Info
+              _buildReadOnlyField(
+                "Kode Peminjaman",
+                widget.pengembalian.kodePeminjaman,
+                labelSize,
+                textSize,
+                isTablet,
+              ),
+              SizedBox(height: isTablet ? 16 : 12),
+              _buildReadOnlyField(
+                "Peminjam",
+                widget.pengembalian.namaPeminjam,
+                labelSize,
+                textSize,
+                isTablet,
+              ),
+              SizedBox(height: spacing),
+
+              // Form Fields
+
+              // 1. Status
+              _buildLabel('Status', labelSize),
+              SizedBox(height: isTablet ? 12 : 8),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isTablet ? 16 : 12,
+                  vertical: isTablet ? 6 : 4,
+                ),
+                decoration: BoxDecoration(
+                  color: Warna.hitamTransparan,
+                  borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+                  border: Border.all(color: Warna.putih.withOpacity(0.2)),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<StatusPengembalian>(
+                    isExpanded: true,
+                    dropdownColor: Warna.hitamBackground,
+                    value: _selectedStatus,
+                    items: StatusPengembalian.values.map((status) {
+                      return DropdownMenuItem<StatusPengembalian>(
+                        value: status,
+                        child: Text(
+                          status.displayName,
+                          style: TextStyle(
+                            color: Warna.putih,
+                            fontSize: textSize,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => _selectedStatus = value);
+                      }
+                    },
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
+              SizedBox(height: spacing),
 
-            // 3. Keterlambatan (Hari) - Read Only & Auto Calc
-            _buildLabel('Keterlambatan (Hari) - Otomatis'),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _terlambatController,
-              keyboardType: TextInputType.number,
-              readOnly: true, // Make it read only
-              style: TextStyle(color: Warna.putih.withOpacity(0.7)),
-              decoration: InputDecoration(
-                hintText: '0',
-                filled: true,
-                fillColor: Warna.abuAbu, // Visual indication
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Warna.putih.withOpacity(0.1)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Warna.putih.withOpacity(0.1)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Warna.putih.withOpacity(0.1)),
+              // 2. Tanggal Kembali (New)
+              _buildLabel('Tanggal Kembali', labelSize),
+              SizedBox(height: isTablet ? 12 : 8),
+              GestureDetector(
+                onTap: _pickDate,
+                child: AbsorbPointer(
+                  child: TextField(
+                    controller: _dateController,
+                    style: TextStyle(color: Warna.putih, fontSize: textSize),
+                    decoration: InputDecoration(
+                      hintText: 'Pilih Tanggal',
+                      filled: true,
+                      fillColor: Warna.hitamTransparan,
+                      suffixIcon: Icon(
+                        Icons.calendar_today,
+                        color: Warna.ungu,
+                        size: isTablet ? 24 : 20,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+                        borderSide: BorderSide(
+                          color: Warna.putih.withOpacity(0.2),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+                        borderSide: BorderSide(
+                          color: Warna.putih.withOpacity(0.2),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
+              SizedBox(height: spacing),
 
-            // 4. Denda (Total) - Read Only / Auto Calc
-            _buildLabel('Total Denda (Rp) - Otomatis'),
-            const SizedBox(height: 8),
-            Container(
-              // Wrap TextField to show loading
-              child: Stack(
+              // 3. Keterlambatan (Hari) - Read Only & Auto Calc
+              _buildLabel('Keterlambatan (Hari) - Otomatis', labelSize),
+              SizedBox(height: isTablet ? 12 : 8),
+              TextField(
+                controller: _terlambatController,
+                keyboardType: TextInputType.number,
+                readOnly: true,
+                style: TextStyle(
+                  color: Warna.putih.withOpacity(0.7),
+                  fontSize: textSize,
+                ),
+                decoration: InputDecoration(
+                  hintText: '0',
+                  filled: true,
+                  fillColor: Warna.abuAbu,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+                    borderSide: BorderSide(color: Warna.putih.withOpacity(0.1)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+                    borderSide: BorderSide(color: Warna.putih.withOpacity(0.1)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+                    borderSide: BorderSide(color: Warna.putih.withOpacity(0.1)),
+                  ),
+                ),
+              ),
+              SizedBox(height: spacing),
+
+              // 4. Denda (Total) - Read Only / Auto Calc
+              _buildLabel('Total Denda (Rp) - Otomatis', labelSize),
+              SizedBox(height: isTablet ? 12 : 8),
+              Stack(
                 alignment: Alignment.centerRight,
                 children: [
                   TextField(
                     controller: _dendaController,
                     keyboardType: TextInputType.number,
-                    readOnly: true, // Make it read only as it's auto calc
-                    style: TextStyle(color: Warna.putih.withOpacity(0.7)),
+                    readOnly: true,
+                    style: TextStyle(
+                      color: Warna.putih.withOpacity(0.7),
+                      fontSize: textSize,
+                    ),
                     decoration: InputDecoration(
                       hintText: '0',
                       filled: true,
                       fillColor: Warna.abuAbu,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                         borderSide: BorderSide(
                           color: Warna.putih.withOpacity(0.1),
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                         borderSide: BorderSide(
                           color: Warna.putih.withOpacity(0.1),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                         borderSide: BorderSide(
                           color: Warna.putih.withOpacity(0.1),
                         ),
@@ -291,10 +333,10 @@ class _EditReturnDialogState extends State<EditReturnDialog> {
                   ),
                   if (_isCalculating)
                     Padding(
-                      padding: const EdgeInsets.only(right: 12.0),
+                      padding: EdgeInsets.only(right: isTablet ? 16 : 12),
                       child: SizedBox(
-                        width: 20,
-                        height: 20,
+                        width: isTablet ? 24 : 20,
+                        height: isTablet ? 24 : 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           color: Warna.ungu,
@@ -303,86 +345,106 @@ class _EditReturnDialogState extends State<EditReturnDialog> {
                     ),
                 ],
               ),
-            ),
-            const SizedBox(height: 24),
+              SizedBox(height: spacing + 8),
 
-            // Action Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(color: Warna.putih.withOpacity(0.2)),
-                      ),
-                    ),
-                    child: Text('Batal', style: TextStyle(color: Warna.putih)),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Warna.ungu,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Warna.putih,
-                            ),
-                          )
-                        : Text(
-                            'Update',
-                            style: TextStyle(
-                              color: Warna.putih,
-                              fontWeight: FontWeight.bold,
-                            ),
+              // Action Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: buttonPadding),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 16 : 12,
                           ),
+                          side: BorderSide(color: Warna.putih.withOpacity(0.2)),
+                        ),
+                      ),
+                      child: Text(
+                        'Batal',
+                        style: TextStyle(
+                          color: Warna.putih,
+                          fontSize: buttonFontSize,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  SizedBox(width: isTablet ? 16 : 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Warna.ungu,
+                        padding: EdgeInsets.symmetric(vertical: buttonPadding),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 16 : 12,
+                          ),
+                        ),
+                      ),
+                      child: _isLoading
+                          ? SizedBox(
+                              width: isTablet ? 24 : 20,
+                              height: isTablet ? 24 : 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Warna.putih,
+                              ),
+                            )
+                          : Text(
+                              'Update',
+                              style: TextStyle(
+                                color: Warna.putih,
+                                fontWeight: FontWeight.bold,
+                                fontSize: buttonFontSize,
+                              ),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildLabel(String text) {
+  Widget _buildLabel(String text, double fontSize) {
     return Text(
       text,
-      style: TextStyle(color: Warna.putih.withOpacity(0.7), fontSize: 14),
+      style: TextStyle(color: Warna.putih.withOpacity(0.7), fontSize: fontSize),
     );
   }
 
-  Widget _buildReadOnlyField(String label, String value) {
+  Widget _buildReadOnlyField(
+    String label,
+    String value,
+    double labelSize,
+    double textSize,
+    bool isTablet,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLabel(label),
-        const SizedBox(height: 4),
+        _buildLabel(label, labelSize),
+        SizedBox(height: isTablet ? 6 : 4),
         Container(
           width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          padding: EdgeInsets.symmetric(
+            vertical: isTablet ? 16 : 12,
+            horizontal: isTablet ? 20 : 16,
+          ),
           decoration: BoxDecoration(
             color: Warna.abuAbu,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
             border: Border.all(color: Warna.putih.withOpacity(0.1)),
           ),
           child: Text(
             value,
-            style: TextStyle(color: Warna.putih, fontSize: 14),
+            style: TextStyle(color: Warna.putih, fontSize: textSize),
           ),
         ),
       ],

@@ -1,4 +1,5 @@
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/admin/controllers/peminjaman_controller.dart';
 import 'package:jari/app/modules/admin/models/alat_model.dart';
 import 'package:jari/app/modules/admin/models/detail_peminjaman_model.dart';
@@ -25,13 +26,11 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
   late DateTime _tanggalJatuhTempo;
   late TextEditingController _catatanController;
 
-  // Alat Selection State
   Alat? _tempSelectedAlat;
   final TextEditingController _jumlahController = TextEditingController(
     text: '1',
   );
   final RxList<AlatSelection> _selectedAlatList = <AlatSelection>[].obs;
-  // Track original quantities to calculate net stock usage
   final Map<dynamic, int> _originalQuantities = {};
 
   bool _isLoading = false;
@@ -74,14 +73,28 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = Responsive.isTablet(context);
+
+    // Responsive sizing
+    final dialogWidth = isTablet ? 560.0 : 500.0;
+    final titleSize = isTablet ? 24.0 : 20.0;
+    final labelSize = isTablet ? 16.0 : 14.0;
+    final textSize = isTablet ? 16.0 : 14.0;
+    final buttonFontSize = isTablet ? 16.0 : 14.0;
+    final spacing = isTablet ? 20.0 : 16.0;
+    final borderRadius = isTablet ? 20.0 : 16.0;
+    final contentPadding = isTablet ? 28.0 : 24.0;
+    final iconSize = isTablet ? 24.0 : 20.0;
+    final buttonPadding = isTablet ? 18.0 : 16.0;
+
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        width: 500,
-        padding: const EdgeInsets.all(24),
+        width: dialogWidth,
+        padding: EdgeInsets.all(contentPadding),
         decoration: BoxDecoration(
           color: Warna.hitamBackground,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(borderRadius),
           border: Border.all(color: Warna.putih.withOpacity(0.1)),
         ),
         child: SingleChildScrollView(
@@ -97,42 +110,46 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                     'Edit Peminjaman',
                     style: TextStyle(
                       color: Warna.putih,
-                      fontSize: 20,
+                      fontSize: titleSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.close, color: Warna.putih),
+                    icon: Icon(
+                      Icons.close,
+                      color: Warna.putih,
+                      size: isTablet ? 28 : 24,
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: isTablet ? 12 : 8),
 
               // Kode Peminjaman (read-only)
               Text(
                 'Kode: ${widget.peminjaman.kodePeminjaman ?? "-"}',
-                style: TextStyle(color: Warna.ungu, fontSize: 14),
+                style: TextStyle(color: Warna.ungu, fontSize: labelSize),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: spacing + 8),
 
               // Status Dropdown
               Text(
                 'Status',
                 style: TextStyle(
                   color: Warna.putih.withOpacity(0.7),
-                  fontSize: 14,
+                  fontSize: labelSize,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: isTablet ? 12 : 8),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 4,
+                padding: EdgeInsets.symmetric(
+                  horizontal: isTablet ? 16 : 12,
+                  vertical: isTablet ? 6 : 4,
                 ),
                 decoration: BoxDecoration(
                   color: Warna.hitamTransparan,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                   border: Border.all(color: Warna.putih.withOpacity(0.2)),
                 ),
                 child: DropdownButtonHideUnderline(
@@ -145,7 +162,10 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                         value: status,
                         child: Text(
                           status.displayName,
-                          style: TextStyle(color: Warna.putih),
+                          style: TextStyle(
+                            color: Warna.putih,
+                            fontSize: textSize,
+                          ),
                         ),
                       );
                     }).toList(),
@@ -157,63 +177,66 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: spacing),
 
               // Tanggal Jatuh Tempo
               Text(
                 'Tanggal Jatuh Tempo',
                 style: TextStyle(
                   color: Warna.putih.withOpacity(0.7),
-                  fontSize: 14,
+                  fontSize: labelSize,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: isTablet ? 12 : 8),
               GestureDetector(
                 onTap: _selectDate,
                 child: Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(isTablet ? 18 : 16),
                   decoration: BoxDecoration(
                     color: Warna.hitamTransparan,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                     border: Border.all(color: Warna.putih.withOpacity(0.2)),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.event, color: Warna.ungu, size: 20),
-                      const SizedBox(width: 12),
+                      Icon(Icons.event, color: Warna.ungu, size: iconSize),
+                      SizedBox(width: isTablet ? 16 : 12),
                       Text(
                         _formatDate(_tanggalJatuhTempo),
-                        style: TextStyle(color: Warna.putih),
+                        style: TextStyle(
+                          color: Warna.putih,
+                          fontSize: textSize,
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: spacing),
 
               Divider(color: Warna.putih.withOpacity(0.1)),
-              const SizedBox(height: 16),
+              SizedBox(height: spacing),
 
               // Alat Selection Section
               Text(
                 'Daftar Alat',
                 style: TextStyle(
                   color: Warna.putih.withOpacity(0.7),
-                  fontSize: 14,
+                  fontSize: labelSize,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: isTablet ? 12 : 8),
 
               // Row 1: Dropdown Full Width
               Obx(
                 () => Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isTablet ? 16 : 12,
+                    vertical: isTablet ? 6 : 4,
                   ),
                   decoration: BoxDecoration(
                     color: Warna.hitamTransparan,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                     border: Border.all(color: Warna.putih.withOpacity(0.2)),
                   ),
                   child: DropdownButtonHideUnderline(
@@ -222,7 +245,10 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                       dropdownColor: Warna.hitamBackground,
                       hint: Text(
                         'Tambah Alat',
-                        style: TextStyle(color: Warna.putih.withOpacity(0.5)),
+                        style: TextStyle(
+                          color: Warna.putih.withOpacity(0.5),
+                          fontSize: textSize,
+                        ),
                       ),
                       value: _tempSelectedAlat,
                       items: widget.controller.alatList.map((alat) {
@@ -230,7 +256,10 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                           value: alat,
                           child: Text(
                             '${alat.namaAlat} (Stok: ${alat.stokTersedia})',
-                            style: TextStyle(color: Warna.putih),
+                            style: TextStyle(
+                              color: Warna.putih,
+                              fontSize: textSize,
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         );
@@ -242,7 +271,7 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: isTablet ? 16 : 12),
 
               // Row 2: Quantity and Add Button
               Row(
@@ -251,22 +280,24 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                     child: TextField(
                       controller: _jumlahController,
                       keyboardType: TextInputType.number,
-                      style: TextStyle(color: Warna.putih),
+                      style: TextStyle(color: Warna.putih, fontSize: textSize),
                       decoration: InputDecoration(
                         hintText: 'Jumlah Item',
                         prefixIcon: Icon(
                           Icons.numbers,
                           color: Warna.putih.withOpacity(0.5),
-                          size: 18,
+                          size: isTablet ? 22 : 18,
                         ),
                         contentPadding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 14,
+                          horizontal: isTablet ? 16 : 12,
+                          vertical: isTablet ? 18 : 14,
                         ),
                         filled: true,
                         fillColor: Warna.hitamTransparan,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 16 : 12,
+                          ),
                           borderSide: BorderSide(
                             color: Warna.putih.withOpacity(0.2),
                           ),
@@ -274,21 +305,22 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: isTablet ? 16 : 12),
                   Container(
                     decoration: BoxDecoration(
                       color: Warna.ungu,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                     ),
                     child: IconButton(
                       onPressed: _addAlatToList,
-                      icon: Icon(Icons.add, color: Warna.putih),
+                      icon: Icon(Icons.add, color: Warna.putih, size: iconSize),
                       tooltip: 'Tambah Alat',
+                      padding: EdgeInsets.all(isTablet ? 14 : 12),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: spacing),
 
               // Loading Items Indicator
               if (_isLoadingDetails)
@@ -298,19 +330,23 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
               Obx(
                 () => _selectedAlatList.isNotEmpty
                     ? Container(
-                        constraints: BoxConstraints(maxHeight: 150),
+                        constraints: BoxConstraints(
+                          maxHeight: isTablet ? 180 : 150,
+                        ),
                         child: ListView.separated(
                           shrinkWrap: true,
                           itemCount: _selectedAlatList.length,
                           separatorBuilder: (_, __) =>
-                              const SizedBox(height: 8),
+                              SizedBox(height: isTablet ? 12 : 8),
                           itemBuilder: (context, index) {
                             final selection = _selectedAlatList[index];
                             return Container(
-                              padding: const EdgeInsets.all(12),
+                              padding: EdgeInsets.all(isTablet ? 16 : 12),
                               decoration: BoxDecoration(
                                 color: Warna.hitamTransparan,
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(
+                                  isTablet ? 16 : 12,
+                                ),
                                 border: Border.all(
                                   color: Warna.putih.withOpacity(0.1),
                                 ),
@@ -322,7 +358,10 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                                   Expanded(
                                     child: Text(
                                       selection.alat.namaAlat,
-                                      style: TextStyle(color: Warna.putih),
+                                      style: TextStyle(
+                                        color: Warna.putih,
+                                        fontSize: textSize,
+                                      ),
                                     ),
                                   ),
                                   Text(
@@ -330,6 +369,7 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                                     style: TextStyle(
                                       color: Warna.ungu,
                                       fontWeight: FontWeight.bold,
+                                      fontSize: textSize,
                                     ),
                                   ),
                                   IconButton(
@@ -337,10 +377,13 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                                       _selectedAlatList.removeAt(index);
                                     },
                                     icon: Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
+                                      padding: EdgeInsets.only(
+                                        left: isTablet ? 12 : 8,
+                                      ),
                                       child: Icon(
                                         Icons.remove_circle,
                                         color: Colors.red.withOpacity(0.7),
+                                        size: iconSize,
                                       ),
                                     ),
                                     padding: EdgeInsets.zero,
@@ -355,7 +398,7 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                     : SizedBox(),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: spacing),
 
               // Catatan (visible when ditolak)
               if (_status == StatusPeminjaman.ditolak) ...[
@@ -363,41 +406,44 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                   'Catatan Penolakan',
                   style: TextStyle(
                     color: Warna.putih.withOpacity(0.7),
-                    fontSize: 14,
+                    fontSize: labelSize,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: isTablet ? 12 : 8),
                 TextField(
                   controller: _catatanController,
                   maxLines: 3,
-                  style: TextStyle(color: Warna.putih),
+                  style: TextStyle(color: Warna.putih, fontSize: textSize),
                   decoration: InputDecoration(
                     hintText: 'Masukkan alasan penolakan...',
-                    hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
+                    hintStyle: TextStyle(
+                      color: Warna.putih.withOpacity(0.5),
+                      fontSize: textSize,
+                    ),
                     filled: true,
                     fillColor: Warna.hitamTransparan,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                       borderSide: BorderSide(
                         color: Warna.putih.withOpacity(0.2),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                       borderSide: BorderSide(
                         color: Warna.putih.withOpacity(0.2),
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                       borderSide: BorderSide(color: Warna.ungu),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: spacing),
               ],
 
-              const SizedBox(height: 8),
+              SizedBox(height: isTablet ? 12 : 8),
 
               // Buttons
               Row(
@@ -406,33 +452,40 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                     child: TextButton(
                       onPressed: () => Navigator.pop(context),
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: buttonPadding),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 16 : 12,
+                          ),
                           side: BorderSide(color: Warna.putih.withOpacity(0.2)),
                         ),
                       ),
                       child: Text(
                         'Batal',
-                        style: TextStyle(color: Warna.putih),
+                        style: TextStyle(
+                          color: Warna.putih,
+                          fontSize: buttonFontSize,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: isTablet ? 16 : 12),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _submit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Warna.ungu,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: buttonPadding),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 16 : 12,
+                          ),
                         ),
                       ),
                       child: _isLoading
                           ? SizedBox(
-                              width: 20,
-                              height: 20,
+                              width: isTablet ? 24 : 20,
+                              height: isTablet ? 24 : 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 color: Warna.putih,
@@ -440,7 +493,10 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
                             )
                           : Text(
                               'Simpan',
-                              style: TextStyle(color: Warna.putih),
+                              style: TextStyle(
+                                color: Warna.putih,
+                                fontSize: buttonFontSize,
+                              ),
                             ),
                     ),
                   ),
@@ -471,8 +527,6 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
       return;
     }
 
-    // Validasi Stok (Calculate Net Usage)
-    // Net Needed = (CurrentInList + Adding) - OriginalReserved
     final existingIndex = _selectedAlatList.indexWhere(
       (item) => item.alat.id == _tempSelectedAlat!.id,
     );
@@ -484,9 +538,6 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
     final proposedTotal = currentQty + jumlah;
     final neededFromWarehouse = proposedTotal - originalQty;
 
-    // Use stokTersedia from dropdown (Snapshot of current warehouse stock)
-    // Logic: If needed > stock, fail.
-    // If needed <= 0 (returning stock), always OK.
     if (neededFromWarehouse > _tempSelectedAlat!.stokTersedia) {
       Get.snackbar(
         'Stok Tidak Cukup',
@@ -498,13 +549,6 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
       );
       return;
     }
-
-    // Note: Di edit mode, kita tidak bisa validasi stok dengan mudah
-    // karena mungkin kita sedang edit item yang sudah ada.
-    // Jadi validasi stok sebaiknya di DB trigger atau lenient here.
-    // Tapi jika item baru, harusnya cek stok.
-
-    // Cek apakah alat sudah ada di list
 
     if (existingIndex != -1) {
       _selectedAlatList[existingIndex].jumlah += jumlah;
@@ -554,7 +598,6 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
   Future<void> _submit() async {
     setState(() => _isLoading = true);
 
-    // 1. Update Header Peminjaman
     final headerSuccess = await widget.controller.updatePeminjaman(
       id: widget.peminjaman.id,
       status: _status,
@@ -564,7 +607,6 @@ class _EditLoanDialogState extends State<EditLoanDialog> {
           : null,
     );
 
-    // 2. Update Items
     bool itemsSuccess = true;
     if (headerSuccess) {
       itemsSuccess = await widget.controller.updateLoanItems(

@@ -1,10 +1,9 @@
 import 'package:jari/app/core/theme/app_colors.dart';
 import 'package:jari/app/core/theme/app_text_styles.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/peminjam/controllers/peminjam_dashboard_controller.dart';
 import 'package:jari/app/modules/peminjam/widgets/common/stock_container.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:get/get.dart';
 
 class NewEquipmentSection extends StatelessWidget {
   final PeminjamDashboardController controller;
@@ -16,9 +15,21 @@ class NewEquipmentSection extends StatelessWidget {
     final alat = controller.alatTerbaru;
     if (alat == null) return const SizedBox.shrink();
 
-    final int alatIndex = 0; // alat terbaru
+    // Responsive sizing - LARGER FOR TABLET
+    final isTablet = Responsive.isTablet(context);
+    final padding = isTablet ? 32.0 : 16.0;
+    final titleSize = isTablet ? 26.0 : 22.0;
+    final imageSize = isTablet ? 90.0 : 60.0;
+    final containerPadding = isTablet ? 24.0 : 14.0;
+    final nameSize = isTablet ? 20.0 : 16.0;
+    final subtitleSize = isTablet ? 16.0 : 12.0;
+    final badgeFontSize = isTablet ? 14.0 : 12.0;
+    final badgePaddingH = isTablet ? 12.0 : 8.0;
+    final badgePaddingV = isTablet ? 4.0 : 2.0;
+    final borderRadius = isTablet ? 16.0 : 10.0;
+
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(padding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -26,76 +37,96 @@ class NewEquipmentSection extends StatelessWidget {
             children: [
               Text(
                 "Alat Baru",
-                style: AppTextStyles.barangTerbaikText.copyWith(fontSize: 22),
+                style: AppTextStyles.barangTerbaikText.copyWith(
+                  fontSize: titleSize,
+                ),
               ),
-              SizedBox(width: 10),
-              //NewContainer
+              SizedBox(width: isTablet ? 14 : 10),
+              // NewContainer badge
               Container(
-                padding: EdgeInsets.only(top: 0, bottom: 0, left: 8, right: 8),
+                padding: EdgeInsets.symmetric(
+                  horizontal: badgePaddingH,
+                  vertical: badgePaddingV,
+                ),
                 decoration: BoxDecoration(
                   color: Warna.ungu,
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(isTablet ? 8 : 6),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Text("New", style: AppTextStyles.stokText),
+                child: Text(
+                  "New",
+                  style: AppTextStyles.stokText.copyWith(
+                    fontSize: badgeFontSize,
+                  ),
                 ),
               ),
             ],
           ),
           Container(
-            margin: EdgeInsets.only(top: 16),
-            padding: EdgeInsets.all(14),
+            margin: EdgeInsets.only(top: isTablet ? 20 : 16),
+            padding: EdgeInsets.all(containerPadding),
             decoration: BoxDecoration(
               color: Warna.ungu.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(borderRadius),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  width: 60,
-                  height: 60,
-                  margin: EdgeInsets.only(right: 16),
+                  width: imageSize,
+                  height: imageSize,
+                  margin: EdgeInsets.only(right: isTablet ? 20 : 16),
                   decoration: BoxDecoration(
                     color: Warna.putih,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(borderRadius),
                   ),
-                  child: Image.network(
-                    alat['alat_url'],
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) =>
-                        const Icon(Icons.broken_image, color: Colors.grey),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(borderRadius),
+                    child: Image.network(
+                      alat['alat_url'],
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Icon(
+                        Icons.broken_image,
+                        color: Colors.grey,
+                        size: isTablet ? 40 : 30,
+                      ),
+                    ),
                   ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          alat['nama_alat'],
-                          style: AppTextStyles.namaBarangText,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              alat['nama_alat'],
+                              style: AppTextStyles.namaBarangText.copyWith(
+                                fontSize: nameSize,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          SizedBox(width: isTablet ? 12 : 8),
+                          StockContainer(
+                            stock: alat['stok_tersedia'].toString(),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: isTablet ? 8 : 4),
+                      Text(
+                        "Sewa Sekarang! Sebelum Kehabisan",
+                        style: AppTextStyles.produkBaruText.copyWith(
+                          fontSize: subtitleSize,
                         ),
-                        SizedBox(width: 4),
-                        //Stok Container
-                        StockContainer(stock: alat['stok_tersedia'].toString()),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          "Sewa Sekarang! Sebelum Kehabisan",
-                          style: AppTextStyles.produkBaruText,
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: isTablet ? 16 : 8),
         ],
       ),
     );

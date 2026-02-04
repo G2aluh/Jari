@@ -1,4 +1,5 @@
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/admin/controllers/peminjaman_controller.dart';
 import 'package:jari/app/modules/admin/widgets/loan/add_peminjaman_dialog.dart';
 import 'package:jari/app/modules/admin/widgets/loan/delete_loan_dialog.dart';
@@ -14,62 +15,84 @@ class LoanManagementView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = Responsive.isTablet(context);
+
+    // Responsive sizing
+    final padding = isTablet ? 32.0 : 24.0;
+    final inputFontSize = isTablet ? 16.0 : 14.0;
+    final buttonFontSize = isTablet ? 16.0 : 14.0;
+    final buttonPadding = isTablet ? 18.0 : 16.0;
+    final iconSize = isTablet ? 24.0 : 20.0;
+    final emptyIconSize = isTablet ? 80.0 : 64.0;
+    final emptyTextSize = isTablet ? 18.0 : 16.0;
+    final spacing = isTablet ? 20.0 : 16.0;
+    final borderRadius = isTablet ? 14.0 : 12.0;
+
     return Container(
-      padding: const EdgeInsets.only(bottom: 24, left: 24, right: 24),
+      padding: EdgeInsets.only(bottom: padding, left: padding, right: padding),
       child: Column(
         children: [
           // Search Input
           TextField(
             onChanged: controller.searchPeminjaman,
-            style: TextStyle(color: Warna.putih),
+            style: TextStyle(color: Warna.putih, fontSize: inputFontSize),
             decoration: InputDecoration(
               hintText: 'Cari kode peminjaman...',
-              hintStyle: TextStyle(color: Warna.putih.withOpacity(0.5)),
+              hintStyle: TextStyle(
+                color: Warna.putih.withOpacity(0.5),
+                fontSize: inputFontSize,
+              ),
               prefixIcon: Icon(
                 Icons.search,
                 color: Warna.putih.withOpacity(0.5),
+                size: iconSize,
               ),
               filled: true,
               fillColor: Warna.hitamTransparan,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: isTablet ? 20 : 16,
+                vertical: isTablet ? 18 : 14,
+              ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(borderRadius),
                 borderSide: BorderSide(color: Warna.putih.withOpacity(0.2)),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(borderRadius),
                 borderSide: BorderSide(color: Warna.putih.withOpacity(0.2)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Warna.ungu),
+                borderRadius: BorderRadius.circular(borderRadius),
+                borderSide: BorderSide(color: Warna.ungu, width: 2),
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: spacing),
 
           // Add Button
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () => _showAddDialog(context),
-              icon: const Icon(Icons.add, color: Colors.white),
-              label: const Text(
+              icon: Icon(Icons.add, color: Colors.white, size: iconSize),
+              label: Text(
                 'Tambah Peminjaman',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
+                  fontSize: buttonFontSize,
                 ),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Warna.ungu,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: buttonPadding),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(borderRadius),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: spacing),
 
           // List
           Expanded(
@@ -87,15 +110,15 @@ class LoanManagementView extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.inbox_outlined,
-                        size: 64,
+                        size: emptyIconSize,
                         color: Warna.putih.withOpacity(0.3),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: spacing),
                       Text(
                         'Belum ada data peminjaman',
                         style: TextStyle(
                           color: Warna.putih.withOpacity(0.5),
-                          fontSize: 16,
+                          fontSize: emptyTextSize,
                         ),
                       ),
                     ],

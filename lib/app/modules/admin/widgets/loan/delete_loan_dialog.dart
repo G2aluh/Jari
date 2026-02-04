@@ -1,4 +1,5 @@
 import 'package:jari/app/core/theme/app_colors.dart';
+import 'package:jari/app/core/utils/responsive.dart';
 import 'package:jari/app/modules/admin/controllers/peminjaman_controller.dart';
 import 'package:jari/app/modules/admin/models/peminjaman_model.dart';
 import 'package:flutter/material.dart';
@@ -22,14 +23,27 @@ class _DeleteLoanDialogState extends State<DeleteLoanDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = Responsive.isTablet(context);
+
+    // Responsive sizing
+    final dialogWidth = isTablet ? 420.0 : 360.0;
+    final titleSize = isTablet ? 22.0 : 20.0;
+    final bodySize = isTablet ? 16.0 : 14.0;
+    final buttonFontSize = isTablet ? 16.0 : 14.0;
+    final spacing = isTablet ? 24.0 : 20.0;
+    final borderRadius = isTablet ? 20.0 : 16.0;
+    final contentPadding = isTablet ? 28.0 : 24.0;
+    final iconSize = isTablet ? 50.0 : 40.0;
+    final buttonPadding = isTablet ? 18.0 : 16.0;
+
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        width: 360,
-        padding: const EdgeInsets.all(24),
+        width: dialogWidth,
+        padding: EdgeInsets.all(contentPadding),
         decoration: BoxDecoration(
           color: Warna.hitamBackground,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(borderRadius),
           border: Border.all(color: Warna.putih.withOpacity(0.1)),
         ),
         child: Column(
@@ -37,29 +51,29 @@ class _DeleteLoanDialogState extends State<DeleteLoanDialog> {
           children: [
             // Warning Icon
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(isTablet ? 20 : 16),
               decoration: BoxDecoration(
                 color: Colors.red.withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.warning_rounded,
                 color: Colors.red,
-                size: 40,
+                size: iconSize,
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: spacing),
 
             // Title
             Text(
               'Hapus Peminjaman',
               style: TextStyle(
                 color: Warna.putih,
-                fontSize: 20,
+                fontSize: titleSize,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: isTablet ? 16 : 12),
 
             // Message
             Text(
@@ -67,10 +81,10 @@ class _DeleteLoanDialogState extends State<DeleteLoanDialog> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Warna.putih.withOpacity(0.7),
-                fontSize: 14,
+                fontSize: bodySize,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spacing + 4),
 
             // Buttons
             Row(
@@ -79,30 +93,36 @@ class _DeleteLoanDialogState extends State<DeleteLoanDialog> {
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(vertical: buttonPadding),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                         side: BorderSide(color: Warna.putih.withOpacity(0.2)),
                       ),
                     ),
-                    child: Text('Batal', style: TextStyle(color: Warna.putih)),
+                    child: Text(
+                      'Batal',
+                      style: TextStyle(
+                        color: Warna.putih,
+                        fontSize: buttonFontSize,
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: isTablet ? 16 : 12),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _delete,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(vertical: buttonPadding),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                       ),
                     ),
                     child: _isLoading
                         ? SizedBox(
-                            width: 20,
-                            height: 20,
+                            width: isTablet ? 24 : 20,
+                            height: isTablet ? 24 : 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               color: Warna.putih,
@@ -113,6 +133,7 @@ class _DeleteLoanDialogState extends State<DeleteLoanDialog> {
                             style: TextStyle(
                               color: Warna.putih,
                               fontWeight: FontWeight.bold,
+                              fontSize: buttonFontSize,
                             ),
                           ),
                   ),
