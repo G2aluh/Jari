@@ -66,83 +66,100 @@ class EquipmentList extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
                 final alat = controller.alatList[index];
+                final isRented = controller.rentedItems.contains(index);
 
-                //Card Alat
                 return SizedBox(
                   width: 130,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      //GAMBAR
+                      // =====================
+                      // GAMBAR + STOK + NAMA
+                      // =====================
                       Container(
-                        width: double.maxFinite,
+                        width: double.infinity,
                         height: 130,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           color: Colors.grey.shade200,
                           image: DecorationImage(
                             image: NetworkImage(alat['alat_url']),
+                            fit: BoxFit.cover,
                           ),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              //Stok
-                              StockContainer(
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: StockContainer(
                                 stock: alat['stok_tersedia'].toString(),
                               ),
-                            ],
-                          ),
+                            ),
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.6),
+                                  borderRadius: const BorderRadius.vertical(
+                                    bottom: Radius.circular(20),
+                                  ),
+                                ),
+                                child: Text(
+                                  alat['nama_alat'],
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyles.namaBarangText.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
 
-                      //NAMA BARANG
-                      Text(
-                        alat['nama_alat'],
-                        style: AppTextStyles.namaBarangText,
-                      ),
-                      SizedBox(height: 2),
-                      //Sewa Button
-                      Obx(
-                        () => ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            shadowColor: Colors.transparent,
-                            elevation: 0,
-                            backgroundColor:
-                                controller.rentedItems.contains(index)
-                                ? Colors.grey
-                                : Warna.ungu,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                      const SizedBox(height: 6),
+
+                      // =====================
+                      // BUTTON (TANPA Obx)
+                      // =====================
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 18),
+                          elevation: 0,
+                          backgroundColor: isRented ? Colors.grey : Warna.ungu,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        onPressed: () => controller.toggleRent(index),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              isRented ? "Disewa" : "Sewa",
+                              style: AppTextStyles.stokText,
                             ),
-                          ),
-                          onPressed: () => controller.toggleRent(index),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                controller.rentedItems.contains(index)
-                                    ? "Disewa"
-                                    : "Sewa",
-                                style: AppTextStyles.stokText,
-                              ),
-                              SizedBox(width: 5),
-                              Icon(
-                                IconlyBold.bag,
-                                size: 16,
-                                color: Warna.putih,
-                              ),
-                            ],
-                          ),
+                            const SizedBox(width: 5),
+                            Icon(IconlyBold.bag, size: 16, color: Warna.putih),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 );
               },
+
               separatorBuilder: (context, index) => SizedBox(width: 15),
               itemCount: controller.alatList.length,
             ),

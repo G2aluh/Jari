@@ -21,36 +21,39 @@ class PeminjamDashboardView extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       backgroundColor: Warna.hitamBackground,
       appBar: DashboardAppBar(controller: controller),
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: CategoryList(controller: controller),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: CategoryList(controller: controller),
+            ),
           ),
-          Container(
-            margin: EdgeInsets.only(top: 10),
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height * 0.67,
-            ),
-            decoration: BoxDecoration(
-              color: Warna.putih,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: Obx(() {
-              if (controller.isLoadingAlat.value) {
-                return _buildLoadingState();
-              }
 
-              return Column(
-                children: [
-                  EquipmentList(controller: controller),
-                  NewEquipmentSection(controller: controller),
-                ],
-              );
-            }),
-          ),
+          Obx(() {
+            return SliverFillRemaining(
+              hasScrollBody: false,
+              child: Container(
+                margin: const EdgeInsets.only(top: 10),
+                decoration: const BoxDecoration(
+                  color: Warna.putih,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                child: controller.isLoadingAlat.value
+                    ? _buildLoadingState()
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          EquipmentList(controller: controller),
+                          NewEquipmentSection(controller: controller),
+                        ],
+                      ),
+              ),
+            );
+          }),
         ],
       ),
+
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Warna.putih,
         selectedItemColor: Warna.ungu,
